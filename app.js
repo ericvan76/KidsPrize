@@ -2,17 +2,23 @@
 
 var express = require('express'),
   app = module.exports = express(),
-  path = require('path'),
-  favicon = require('serve-favicon'),
-  logger = require('morgan'),
+  mongoose = require('mongoose'),
+  passport = require('passport'),
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
   session = require('express-session'),
-  passport = require('./lib/auth/passport'),
+  MongoStore = require('connect-mongo')(session),
+  path = require('path'),
+  favicon = require('serve-favicon'),
+  logger = require('morgan'),
   home = require('./lib/home'),
   auth = require('./lib/auth'),
   user = require('./lib/user'),
   config = require('./lib/config');
+
+// connect to mongodb
+mongoose.connect(config.mongoose.dbURL, config.mongoose.options || {});
+mongoose.set('debug', config.mongoose.debug || false);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'lib/views'));
@@ -23,21 +29,38 @@ app.set('view engine', 'jade');
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(logger('dev'));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(cookieParser());
-app.use(session(config.session));
+
+// session
+app.use(session({
+  secret: 'do NOT tell ANY body',
+  saveUninitialized: true,
+  resave: false,
+  cookie: config.cookie,
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection
+  })
+}));
 
 // initialise passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// plug your sub apps here
-app.use(home);
-app.use('/auth', auth);
-app.use('/user', user);
+// auth
+app.use('/auth', auth.app);
+
+// rest api
+app.all('/api/*', auth.requiresToken);
+app.use('/api/user', user);
+
+// web app
+app.all('/*', auth.requiresLogin);
+app.use('/', home);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

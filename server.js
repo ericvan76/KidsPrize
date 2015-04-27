@@ -1,7 +1,7 @@
 'use strict';
 
-var cluster = require('cluster');
-var debug = require('debug')('kids-reward:server');
+var cluster = require('cluster'),
+  debug = require('debug')('kids-reward:server');
 
 if (cluster.isMaster) {
   // In real life, you'd probably use more than just 2 workers,
@@ -39,13 +39,8 @@ if (cluster.isMaster) {
 
   domain.run(function() {
 
-    var mongoose = require('mongoose'),
-      http = require('http'),
+    var http = require('http'),
       app = require('./app');
-
-    // connect mongodb
-    mongoose.connect(config.mongoose.dbURL, config.mongoose.options || {});
-    mongoose.set('debug', config.mongoose.debug || false);
 
     // create server
     var server = http.createServer(app);

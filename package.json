@@ -1,15 +1,11 @@
 {
-  "name": "kids-reward",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
-  },
   "dependencies": {
     "body-parser": "~1.12.0",
+    "connect-mongo": "^0.8.1",
     "cookie-parser": "~1.3.4",
     "debug": "~2.1.1",
     "express": "~4.12.2",
+    "express-http-proxy": "^0.6.0",
     "express-session": "^1.11.1",
     "jade": "^1.9.2",
     "js-base64": "^2.1.8",
@@ -21,5 +17,11 @@
     "passport-google-oauth": "^0.2.0",
     "passport-http-bearer": "^1.0.1",
     "serve-favicon": "~2.2.0"
-  }
+  },
+  "name": "kids-reward",
+  "private": true,
+  "scripts": {
+    "start": "node server"
+  },
+  "version": "0.0.0"
 }
