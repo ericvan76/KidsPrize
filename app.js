@@ -38,7 +38,7 @@ app.use(cookieParser());
 
 // session
 app.use(session({
-  secret: 'do NOT tell ANY body',
+  // secret: 'A secret to compute hash'
   saveUninitialized: true,
   resave: false,
   cookie: config.cookie,
