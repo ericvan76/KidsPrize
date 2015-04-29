@@ -16,7 +16,7 @@ if (cluster.isMaster) {
 
 } else {
   // the worker
-  var config = require('./lib/config'),
+  var config = require('./config'),
     port = normalizePort(process.env.PORT || '3000');
 
   // create domain
@@ -39,8 +39,14 @@ if (cluster.isMaster) {
 
   domain.run(function() {
 
-    var http = require('http'),
-      app = require('./app');
+    var mongoose = require('mongoose'),
+      http = require('http'),
+      app = require('./config/express'),
+      config = require('./config');
+
+    // connect to mongodb
+    mongoose.connect(config.mongoose.dbURL, config.mongoose.options || {});
+    mongoose.set('debug', config.mongoose.debug || false);
 
     // create server
     var server = http.createServer(app);
