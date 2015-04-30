@@ -15,7 +15,7 @@ var TokenSchema = new Schema({
   },
   token_type: {
     type: String,
-    require: true
+    required: true
   },
   access_token: {
     type: String,

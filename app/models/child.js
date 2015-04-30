@@ -8,12 +8,7 @@ var ChildSchema = new Schema({
     type: String,
     required: true
   },
-  tasks: [{
-    name: {
-      type: String,
-      require: true
-    }
-  }],
+  tasks: [String],
   update_at: {
     type: Date,
     default: new Date()
