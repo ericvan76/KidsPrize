@@ -1,12 +1,16 @@
 'use strict';
 
-var express = require('express'),
-  router = module.exports = express.Router(),
-  config = require('../../config');
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
+exports.index = function(req, res) {
   res.render('index', {
-    title: config.app.name
+    user: req.user
   });
-});
+};
+
+exports.partials = function(req, res) {
+  var name = req.params.name;
+  res.render('partials/' + name);
+};
+
+exports.auth = require('./auth');
+exports.api = require('./api');
+

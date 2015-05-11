@@ -4,7 +4,6 @@ var express = require('express'),
   app = module.exports = express(),
   mongoose = require('mongoose'),
   passport = require('passport'),
-  auth = require('./passport'),
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
   session = require('express-session'),
@@ -12,15 +11,23 @@ var express = require('express'),
   path = require('path'),
   favicon = require('serve-favicon'),
   logger = require('morgan'),
-  config = require('./');
+  routes = require('./routes'),
+  config = require('../config');
 
 // view engine setup
-app.set('views', path.join(__dirname, '../app/views'));
+app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', 'jade');
 
+// error handling
+if (process.env.NODE_ENV === 'development') {
+  app.use(express.errorHandler());
+} else {
+  // production only
+}
+
 // favicon & public
-app.use(favicon(path.join(__dirname, '../public/assets/favicon.ico')));
-app.use(express.static(path.join(__dirname, '../public/assets')));
+app.use(favicon(path.join(__dirname, '../public/favicon.ico')));
+app.use(express.static(path.join(__dirname, '../public')));
 app.use('/css/bootstrap-social',
   express.static(path.join(__dirname, '../bower_components/bootstrap-social')));
 
@@ -44,45 +51,27 @@ app.use(session({
 }));
 
 // initialise passport
+require('./passport');
 app.use(passport.initialize());
 app.use(passport.session());
 
 // auth
-app.use(require('../app/routes/auth'));
+app.use(routes.auth);
 
-// rest api
-app.all('/api/*', requiresToken);
+// api
+app.use('/api', requiresToken, routes.api);
 
-// web app
-app.all('/*', requiresLogin);
-app.use('/', require('../app/routes'));
+// index & partials
+app.get('/', routes.index);
+app.get('/partials/:name', routes.partials);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+// angular catch-all
+app.get('*', routes.index);
 
-// error handlers
-app.use(function(err, req, res, next) {
-  var stacktrace = {};
-  if (process.env.NODE_ENV === 'development') {
-    // will print stack trace to user
-    stacktrace = err;
-  }
-  res.status(err.status || 500);
-  res.render('error', {
-    title: 'Error',
-    message: err.message,
-    error: stacktrace
-  });
-});
-
-
+// authentication functions
 function requiresLogin(req, res, next) {
   if (!req.isAuthenticated()) {
-    res.redirect('/auth/login');
+    res.redirect('/login');
   } else {
     next();
   }
@@ -91,11 +80,5 @@ function requiresLogin(req, res, next) {
 function requiresToken(req, res, next) {
   passport.authenticate('bearer', {
     session: false
-  }, function(err, user) {
-    if (err || !user) {
-      res.status(401).send('Unauthorised');
-    } else {
-      next();
-    }
-  });
+  })(req, res, next);
 }

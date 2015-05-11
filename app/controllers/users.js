@@ -1,7 +1,6 @@
 'use strict';
 
-var User = require('../models/user'),
-  token = require('./tokens');
+var User = require('../models/user');
 
 exports.read = function(userId, callback) {
   User.findById(userId, callback);
@@ -30,13 +29,7 @@ exports.postAuth = function(provider, profile, callback) {
       if (err) {
         return callback(err);
       }
-      token.issueToken(user.id, 'implicitly', function(err, token) {
-        if (err) {
-          return callback(err);
-        }
-        user.token = token.access_token;
-        return callback(null, user);
-      });
+      return callback(null, user);
     });
   });
 };
@@ -66,3 +59,4 @@ function normaliseUser(provider, profile) {
   }
   return new Error('Invalid autheticate provider.');
 }
+
