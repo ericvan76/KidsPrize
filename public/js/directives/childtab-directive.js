@@ -6,11 +6,11 @@
 
       return {
         restrict: 'E',
-        templateUrl: '/partials/childtab',
+        templateUrl: '/partials/childtab.html',
         controller: ['$scope', '$rootScope', function($scope, $rootScope) {
 
           $scope.children = [];
-          
+
           $http.get('/api/child')
             .success(function(data, status) {
               $scope.children = data;

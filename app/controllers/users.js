@@ -59,4 +59,3 @@ function normaliseUser(provider, profile) {
   }
   return new Error('Invalid autheticate provider.');
 }
-

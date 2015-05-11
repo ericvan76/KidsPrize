@@ -30,12 +30,18 @@ router.get('/auth/google/callback',
     failureRedirect: '/login'
   }));
 
-// token apis
+// request token
 router.post('/auth/token', function(req, res, next) {
   if (!req.isAuthenticated()) {
     res.status(401).send('Unauthorised');
   } else {
-    tokens.issueToken(req.user.id, 'webapp', function(err, token) {
+    if (!req.query.response_type || req.query.response_type !== 'token') {
+      return res.status(400).send('Invalid response_type');
+    }
+    if (!req.query.client_id || req.query.client_id !== 'webapp') {
+      return res.status(400).send('Invalid client_id');
+    }
+    tokens.issueToken(req.user.id, req.query.client_id, req.query.state, function(err, token) {
       if (err || !token) {
         res.status(401).send('Unauthorised');
       } else {
@@ -45,23 +51,13 @@ router.post('/auth/token', function(req, res, next) {
   }
 });
 
+// revoke token
 router.post('/auth/token/revoke', function(req, res, next) {
-  var token = null;
-  // extract token from header
-  if (req.headers && req.headers.authorization) {
-    var parts = req.headers.authorization.split(' ');
-    if (parts.length == 2) {
-      var scheme = parts[0],
-        credentials = parts[1];
-      if (/^Bearer$/i.test(scheme)) {
-        token = credentials;
-      }
-    }
-  }
-  if (!token) {
+  var access_token = req.query.access_token;
+  if (!access_token) {
     return res.status(400).send('Bad Request');
   }
-  tokens.revokeToken(token, function(err) {
+  tokens.revokeToken(access_token, function(err) {
     if (err) {
       res.status(500).send('Unable to revoke token or token does not exists.');
     } else {
@@ -76,5 +72,19 @@ router.get('/auth/logout', function(req, res, next) {
   res.redirect('/login');
 });
 
-module.exports = router;
+// extract token from header
+function extractToken(req) {
+  if (req.headers && req.headers.authorization) {
+    var parts = req.headers.authorization.split(' ');
+    if (parts.length == 2) {
+      var scheme = parts[0],
+        credentials = parts[1];
+      if (/^Bearer$/i.test(scheme)) {
+        return credentials;
+      }
+    }
+  }
+  return null;
+}
 
+module.exports = router;

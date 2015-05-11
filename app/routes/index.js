@@ -13,4 +13,3 @@ exports.partials = function(req, res) {
 
 exports.auth = require('./auth');
 exports.api = require('./api');
-

@@ -1,0 +1,6 @@
+<section>
+  <ul class="nav nav-pills">
+    <li ng-class="{active: selectedChild === child.id}" ng-repeat="child in children"><a href="" ng-click="setChild(child.id)">{{child.name}}</a></li>
+  </ul>
+  <div>{{selectedChild}}</div>
+</section>

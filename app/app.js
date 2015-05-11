@@ -15,7 +15,7 @@ var express = require('express'),
   config = require('../config');
 
 // view engine setup
-app.set('views', path.join(__dirname, '../views'));
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // error handling
@@ -61,12 +61,10 @@ app.use(routes.auth);
 // api
 app.use('/api', requiresToken, routes.api);
 
-// index & partials
-app.get('/', routes.index);
-app.get('/partials/:name', routes.partials);
-
 // angular catch-all
-app.get('*', routes.index);
+app.get('*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 
 // authentication functions
 function requiresLogin(req, res, next) {

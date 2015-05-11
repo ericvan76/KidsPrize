@@ -17,10 +17,15 @@
       // config route
       $routeProvider
         .when('/', {
-          templateUrl: '/partials/index'
+          templateUrl: '/partials/index.html',
+          resolve: {
+            token: ['AuthenticationService', function(auth) {
+              auth.requestToken();
+            }],
+          },
         })
         .when('/login', {
-          templateUrl: '/partials/login'
+          templateUrl: '/partials/login.html'
         })
         .when('/logout', {
           redirectTo: '/login',
@@ -41,23 +46,23 @@
       $locationProvider.html5Mode(true);
 
       // config $http
-      $httpProvider.interceptors.push(['$q', '$location', '$rootScope', '$injector',
+      $httpProvider.interceptors.push(['$q', '$location', '$injector',
 
-        function($q, $location, $rootScope, $injector) {
+        function($q, $location, $injector) {
 
           return {
             request: function(config) {
               // add Authorization header for all calls startswith '/api/'
               if (/^\/api\//i.test(config.url)) {
                 var auth = $injector.get('AuthenticationService');
-                if ($rootScope.token && $rootScope.token.expires > new Date()) {
-                  config.headers.Authorization = 'Bearer ' + $rootScope.token.access_token;
+                if (auth.token && auth.token.expires > new Date()) {
+                  config.headers.Authorization = 'Bearer ' + auth.token.access_token;
                   return config;
                 } else {
                   var d = $q.defer();
                   var promise = auth.requestToken();
                   promise.then(function() {
-                    config.headers.Authorization = 'Bearer ' + $rootScope.token.access_token;
+                    config.headers.Authorization = 'Bearer ' + auth.token.access_token;
                     d.resolve(config);
                   });
                   return d.promise;
@@ -78,7 +83,6 @@
           };
         }
       ]);
-
     }
   ]);
 

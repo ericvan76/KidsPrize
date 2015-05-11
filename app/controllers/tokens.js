@@ -5,7 +5,7 @@ var Token = require('../models/token'),
   base64 = require('js-base64').Base64,
   config = require('../../config');
 
-exports.issueToken = function(userId, clientId, callback) {
+exports.issueToken = function(userId, clientId, state, callback) {
   var expires_in_seconds = Math.round((config.cookie.maxAge || 1440000) / 1000);
   var dt = new Date();
   dt.setSeconds(dt.getSeconds() + expires_in_seconds);
@@ -27,7 +27,7 @@ exports.issueToken = function(userId, clientId, callback) {
       token_type: t.token_type,
       access_token: t.access_token,
       expires_in: expires_in_seconds,
-      refresh_token: t.refresh_token || null
+      state: state
     });
   });
 };
