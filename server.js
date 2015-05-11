@@ -3,23 +3,22 @@
 var cluster = require('cluster'),
   config = require('./config');
 
+var numCPUs = config.numCPUs || require('os').cpus().length;
 
-//if (cluster.isMaster) {
-//
-//  var numCPUs = config.numCPUs || require('os').cpus().length;
-//
-//  // Fork workers.
-//  for (var i = 0; i < numCPUs; i++) {
-//    cluster.fork();
-//  }
-//
-//  cluster.on('exit', function(worker, code, signal) {
-//    console.log('worker %d died (%s). restarting...',
-//      worker.process.pid, signal || code);
-//    cluster.fork();
-//  });
-//
-//} else {
+if (numCPUs > 1 && cluster.isMaster) {
+
+  // Fork workers.
+  for (var i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', function(worker, code, signal) {
+    console.log('worker %d died (%s). restarting...',
+      worker.process.pid, signal || code);
+    cluster.fork();
+  });
+
+} else {
 
   // connect to mongodb
   var mongoose = require('mongoose');
@@ -38,5 +37,4 @@ var cluster = require('cluster'),
   // listen
   server.listen(port);
 
-//}
-
+}
