@@ -20,13 +20,11 @@ if (numCPUs > 1 && cluster.isMaster) {
 
 } else {
 
-  // connect to mongodb
-  var mongoose = require('mongoose');
-  mongoose.connect(config.mongoose.dbURL, config.mongoose.options || {});
-  mongoose.set('debug', config.mongoose.debug || false);
+  // initialise database
+  require('./config/database');
 
   // create http server
-  var app = require('./app/app.js');
+  var app = require('./app/express.js');
   var port = process.env.PORT || 3000;
   app.set('port', port);
 

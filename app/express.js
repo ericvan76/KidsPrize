@@ -1,7 +1,7 @@
 'use strict';
 
 var express = require('express'),
-  app = module.exports = express(),
+  app = express(),
   mongoose = require('mongoose'),
   passport = require('passport'),
   cookieParser = require('cookie-parser'),
@@ -51,7 +51,7 @@ app.use(session({
 }));
 
 // initialise passport
-require('./passport');
+require('../config/passport');
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -80,3 +80,5 @@ function requiresToken(req, res, next) {
     session: false
   })(req, res, next);
 }
+
+module.exports = app;
