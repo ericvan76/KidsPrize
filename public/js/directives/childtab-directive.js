@@ -6,7 +6,7 @@
 
       return {
         restrict: 'E',
-        templateUrl: '/partials/childtab.html',
+        templateUrl: 'partials/childtab.html',
         controller: ['$scope', '$rootScope', function($scope, $rootScope) {
 
           $scope.children = [];

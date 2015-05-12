@@ -6,7 +6,7 @@
 
   angular.module('app.controllers', []);
 
-  angular.module('app.directives', ['app.services']);
+  angular.module('app.directives', []);
 
   var app = angular.module('app', ['ngRoute', 'app.controllers', 'app.directives', 'app.services']);
 

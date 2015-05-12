@@ -24,11 +24,11 @@ if (numCPUs > 1 && cluster.isMaster) {
   require('./config/database');
 
   // create http server
-  var app = require('./app/express.js');
+  var express = require('./app/express');
   var port = process.env.PORT || 3000;
-  app.set('port', port);
+  express.set('port', port);
 
-  var server = require('http').createServer(app);
+  var server = require('http').createServer(express);
   server.on('listening', function() {
     console.log('Listening on ' + port);
   });

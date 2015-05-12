@@ -5,7 +5,7 @@
     .directive('weekhead', function() {
       return {
         restrict: 'A',
-        templateUrl: '/partials/weekhead.html',
+        templateUrl: 'partials/weekhead.html',
         controller: function() {
           this.days = [{
             date: '2015-01-01',

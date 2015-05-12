@@ -1,7 +1,7 @@
 'use strict';
 
 var express = require('express'),
-  app = express(),
+  errorhandler = require('errorhandler'),
   mongoose = require('mongoose'),
   passport = require('passport'),
   cookieParser = require('cookie-parser'),
@@ -14,20 +14,24 @@ var express = require('express'),
   routes = require('./routes'),
   config = require('../config');
 
+var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // error handling
-if (process.env.NODE_ENV === 'development') {
-  app.use(express.errorHandler());
+var nodeEnv = process.env.NODE_ENV || 'development';
+if (nodeEnv === 'development') {
+  app.use(errorhandler());
 } else {
   // production only
 }
 
+var publicFolder = '../public/dist';
+
 // favicon & public
-app.use(favicon(path.join(__dirname, '../public/favicon.ico')));
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(favicon(path.join(__dirname, publicFolder, 'img/favicon.ico')));
+app.use(express.static(path.join(__dirname, publicFolder)));
 app.use('/css/bootstrap-social',
   express.static(path.join(__dirname, '../bower_components/bootstrap-social')));
 
@@ -63,7 +67,7 @@ app.use('/api', requiresToken, routes.api);
 
 // angular catch-all
 app.get('*', function(req, res) {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.join(__dirname, publicFolder, 'index.html'));
 });
 
 // authentication functions
