@@ -7,7 +7,7 @@ module.exports = {
   },
   // mongoose
   mongoose: {
-    dbURL: 'MONGO_DB_URL',
+    dbURL: 'mongodb://127.0.0.1:27017/kids-reward',
     debug: false,
     options: {
       /**
@@ -19,8 +19,8 @@ module.exports = {
     }
   },
   session: {
-    secret: 'A secret to compute hash'
-	saveUninitialized: true,
+    secret: 'A secret to compute hash',
+    saveUninitialized: true,
     resave: false,
   },
   cookie: {
@@ -48,4 +48,3 @@ module.exports = {
     }
   }
 };
-
