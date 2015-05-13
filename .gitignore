@@ -1,1 +1,4 @@
+.settings/
 node_modules/
+bower_components/
+public/dist/

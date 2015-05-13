@@ -1,0 +1,22 @@
+{
+  "name": "kids-reward",
+  "version": "0.1.0",
+  "homepage": "https://github.com/ericvan76/kids-reward",
+  "authors": [
+    "Eric Fan <ericvan76@gmail.com>"
+  ],
+  "moduleType": [
+    "node"
+  ],
+  "license": "GPL2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-social": "~4.9.0"
+  }
+}
