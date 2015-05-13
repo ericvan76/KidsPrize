@@ -1,47 +1,67 @@
+'use strict';
+
 var gulp = require('gulp'),
-  ignore = require('gulp-ignore'),
-  uglify = require('gulp-uglify'),
   ngAnnotate = require('gulp-ng-annotate'),
-  minifyCss = require('gulp-minify-css'),
+  uglify = require('gulp-uglify'),
   image = require('gulp-image'),
+  sass = require('gulp-sass'),
+  minifyCss = require('gulp-minify-css'),
   minifyHTML = require('gulp-minify-html'),
   sourcemaps = require('gulp-sourcemaps'),
   nodemon = require('gulp-nodemon'),
-  watch = require('gulp-watch'),
-  del = require('del'),
-  path = require('path');
+  rename = require('gulp-rename'),
+  inject = require('gulp-inject'),
+  ignore = require('gulp-ignore'),
+  concat = require('gulp-concat'),
+  del = require('del');
 
-gulp.task('clean', function() {
-  return del.sync('public/dist/**/*');
-});
-
-gulp.task('minify-css', function() {
-  return gulp.src('public/css/**/*.css')
-    .pipe(watch('public/css/**/*.css'))
+gulp.task('styles', function() {
+  del.sync('public/dist/css/**/*');
+  return gulp.src('public/css/main.scss')
     .pipe(sourcemaps.init())
+    .pipe(sass.sync().on('error', sass.logError))
     .pipe(minifyCss({
       compatibility: 'ie8'
+    }))
+    .pipe(rename({
+      suffix: ".min"
     }))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest('public/dist/css'));
 });
 
-gulp.task('minify-js', function() {
+gulp.task('scripts', function() {
+  del.sync('public/dist/js/**/*');
   return gulp.src('public/js/**/*.js')
-    .pipe(watch('public/js/**/*.js'))
     .pipe(sourcemaps.init())
+    .pipe(concat('all.js'))
     .pipe(ngAnnotate())
     .pipe(uglify({
       mangle: false
+    }))
+    .pipe(rename({
+      suffix: ".min"
     }))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest('public/dist/js'));
 });
 
-gulp.task('minify-html', function() {
+gulp.task('images', function() {
+  del.sync('public/dist/img/**/*');
+  return gulp.src('public/img/**/*')
+    .pipe(image())
+    .pipe(gulp.dest('public/dist/img'));
+});
+
+gulp.task('views', ['styles', 'scripts'], function() {
+  del.sync('public/dist/**/*.html');
   return gulp.src(['public/**/*.html', '!public/dist/**/*'])
-    .pipe(watch(['public/**/*.html', '!public/dist/**/*']))
     .pipe(sourcemaps.init())
+    .pipe(inject(gulp.src(['public/dist/css/**/*.css', 'public/dist/js/**/*.js'], {
+      read: false
+    }), {
+      ignorePath: 'public/dist'
+    }))
     .pipe(minifyHTML({
       conditionals: true,
       spare: true
@@ -50,15 +70,13 @@ gulp.task('minify-html', function() {
     .pipe(gulp.dest('public/dist'));
 });
 
-gulp.task('compress-images', function() {
-  return gulp.src('public/img/**/*.*')
-    .pipe(watch('public/img/**/*.*'))
-    .pipe(image())
-    .pipe(gulp.dest('public/dist/img'));
+gulp.task('build', ['views', 'images'], function() {
+  gulp.watch(['public/css/**/*.*', 'public/js/**/*.*', 'public/**/*.html', '!public/dist/**/*'], ['views']);
+  gulp.watch('public/img/**/*.*', ['images']);
 });
 
 gulp.task('server', function() {
-  nodemon({
+  return nodemon({
     script: 'server.js',
     ext: 'js',
     ignore: ['public/**/*', 'node_modules/**/*', 'bower_components/**/*'],
@@ -68,8 +86,4 @@ gulp.task('server', function() {
   });
 });
 
-gulp.task('build', ['minify-css', 'minify-js', 'minify-html', 'compress-images']);
-
-gulp.task('default', ['clean'], function() {
-  gulp.run('build', 'server');
-});
+gulp.task('default', ['build', 'server']);
