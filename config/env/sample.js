@@ -1,12 +1,13 @@
 'use strict';
 
 module.exports = {
+  numCPUs: 1, // null to auto
   app: {
     name: 'Kids-Reward'
   },
   // mongoose
   mongoose: {
-    // dbURL: 'mongodb://{production-mongodb}/kids-reward',
+    dbURL: 'mongodb://127.0.0.1:27017/kids-reward',
     debug: false,
     options: {
       /**
@@ -18,7 +19,7 @@ module.exports = {
     }
   },
   session: {
-    // secret: 'A secret to compute hash'
+    secret: 'A secret to compute hash',
     saveUninitialized: true,
     resave: false,
   },
@@ -28,14 +29,14 @@ module.exports = {
   },
   // oauth setting
   facebook: {
-    // clientID: 'DEFAULT_APP_ID',
-    // clientSecret: 'APP_SECRET',
-    // callbackURL: 'REDIRECT_URL'
+    clientID: 'DEFAULT_APP_ID',
+    clientSecret: 'APP_SECRET',
+    callbackURL: 'REDIRECT_URL'
   },
   google: {
-    // clientID: 'DEFAULT_APP_ID',
-    // clientSecret: 'APP_SECRET',
-    // callbackURL: 'REDIRECT_URL'
+    clientID: 'DEFAULT_APP_ID',
+    clientSecret: 'APP_SECRET',
+    callbackURL: 'REDIRECT_URL'
   },
   // mailer settings
   emailFrom: 'SENDER EMAIL ADDRESS', // sender address like ABC <abc@example.com>
