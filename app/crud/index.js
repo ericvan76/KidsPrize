@@ -60,7 +60,7 @@
     var opt = option || {};
     var exclude = opt.exclude || [];
 
-    if (exclude.indexOf('create') === -1) {
+    if (typeof ctrl.create === 'function' && exclude.indexOf('create') === -1) {
       // create
       router.post(basePath, function(req, res, next) {
         ctrl.create(req.user._id, req.body, function(err, data) {
@@ -71,7 +71,7 @@
         });
       });
     }
-    if (exclude.indexOf('read') === -1) {
+    if (typeof ctrl.read === 'function' && exclude.indexOf('read') === -1) {
       // read
       router.get(basePath + '/:id', function(req, res, next) {
         ctrl.read(req.user._id, req.param.id, function(err, data) {
@@ -82,7 +82,7 @@
         });
       });
     }
-    if (exclude.indexOf('update') === -1) {
+    if (typeof ctrl.update === 'function' && exclude.indexOf('update') === -1) {
       // update
       router.put(basePath + '/:id', function(req, res, next) {
         ctrl.update(req.user._id, req.param.id, req.body, function(err, data) {
@@ -93,7 +93,7 @@
         });
       });
     }
-    if (exclude.indexOf('delete') === -1) {
+    if (typeof ctrl.delete === 'function' && exclude.indexOf('delete') === -1) {
       // delete
       router.delete(basePath + '/:id', function(req, res, next) {
         ctrl.delete(req.user._id, req.param.id, function(err) {
@@ -104,7 +104,7 @@
         });
       });
     }
-    if (exclude.indexOf('query') === -1) {
+    if (typeof ctrl.query === 'function' && exclude.indexOf('query') === -1) {
       // query
       router.get(basePath, function(req, res, next) {
         var q = {};
@@ -122,5 +122,10 @@
 
     return router;
   };
+
+  function getFuncArgs(f) {
+    var funStr = f.toString();
+    return funStr.slice(funStr.indexOf('(') + 1, funStr.indexOf(')')).match(/([^\s,]+)/g);
+  }
 
 })();
