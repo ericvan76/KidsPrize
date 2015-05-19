@@ -3,7 +3,7 @@
 var express = require('express'),
   router = express.Router(),
   passport = require('passport'),
-  tokens = require('../controllers/tokens');
+  tokenCtrl = require('./controller');
 
 // facebook endpoints
 router.get('/auth/facebook', passport.authenticate('facebook', {
@@ -41,7 +41,7 @@ router.post('/auth/token', function(req, res, next) {
     if (!req.query.client_id || req.query.client_id !== 'webapp') {
       return res.status(400).send('Invalid client_id');
     }
-    tokens.issueToken(req.user.id, req.query.client_id, req.query.state, function(err, token) {
+    tokenCtrl.issueToken(req.user.id, req.query.client_id, req.query.state, function(err, token) {
       if (err || !token) {
         res.status(401).send('Unauthorised');
       } else {
@@ -57,7 +57,7 @@ router.post('/auth/token/revoke', function(req, res, next) {
   if (!access_token) {
     return res.status(400).send('Bad Request');
   }
-  tokens.revokeToken(access_token, function(err) {
+  tokenCtrl.revokeToken(access_token, function(err) {
     if (err) {
       res.status(500).send('Unable to revoke token or token does not exists.');
     } else {

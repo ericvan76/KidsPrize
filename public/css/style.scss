@@ -7,7 +7,6 @@ a {
   color: #00B7FF;
 }
 
-ul.nav-tabs,
 ul.nav-pills {
   text-align: center;
   li {
@@ -16,4 +15,12 @@ ul.nav-pills {
     *display: inline;
     zoom: 1;
   }
+}
+
+.ng-invalid.ng-dirty {
+  border-color: #FA787E;
+}
+
+.break-word {
+  word-wrap: break-word;
 }

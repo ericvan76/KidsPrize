@@ -11,7 +11,6 @@ var express = require('express'),
   path = require('path'),
   favicon = require('serve-favicon'),
   logger = require('morgan'),
-  routes = require('./routes'),
   config = require('../config');
 
 var app = express();
@@ -60,12 +59,27 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // auth
-app.use(routes.auth);
+app.use(require('./auth/routes'));
 
 // api
-app.use('/api', requiresToken, routes.api);
+app.use('/api', requiresToken, require('./user/routes'));
+app.use('/api', requiresToken, require('./child/routes'));
 
-// angular catch-all
+
+// api: catch 404 and forward to error handler
+app.use('/api/*', function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// api: error handlers
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(err.status || 500).send(err.message);
+});
+
+// Client app: angular catch-all
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, publicFolder, 'index.html'));
 });

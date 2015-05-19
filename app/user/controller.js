@@ -1,6 +1,6 @@
 'use strict';
 
-var User = require('../models/user');
+var User = require('./user');
 
 exports.read = function(userId, callback) {
   User.findById(userId, callback);

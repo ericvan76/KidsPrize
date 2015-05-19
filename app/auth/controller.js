@@ -1,6 +1,6 @@
 'use static';
 
-var Token = require('../models/token'),
+var Token = require('./token'),
   uuid = require('node-uuid'),
   base64 = require('js-base64').Base64,
   config = require('../../config');
@@ -45,15 +45,14 @@ exports.validateToken = function(token, callback) {
     if (!t) {
       return callback(null, false);
     }
-    t.populate('_user', function(err, u) {
+    t.populate('_user', function(err, t) {
       if (err) {
         return callback(err);
       }
-      if (!u) {
+      if (!t._user) {
         return callback(null, false);
       }
-      u.token = token;
-      return callback(null, u);
+      return callback(null, t._user);
     });
   });
 };
