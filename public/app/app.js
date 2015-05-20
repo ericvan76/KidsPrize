@@ -1,9 +1,9 @@
 (function() {
   'use strict';
 
-  angular.module('app.util', ['ui.bootstrap']);
+  angular.module('app.util', []);
 
-  var app = angular.module('app', ['ngRoute', 'ngResource', 'app.templates', 'app.util', 'home']);
+  var app = angular.module('app', ['ngRoute', 'ngResource', 'ui.bootstrap', 'app.templates', 'app.util', 'home']);
 
   // Configurations
   app.config(['$routeProvider', function($routeProvider) {
@@ -12,8 +12,8 @@
       .when('/', {
         templateUrl: 'home.html',
         resolve: {
-          token: ['AuthSvc', function(auth) {
-            return auth.requestToken();
+          token: ['AuthSvc', function(AuthSvc) {
+            return AuthSvc.requestToken();
           }],
         }
       })
@@ -23,11 +23,11 @@
       .when('/logout', {
         redirectTo: '/login',
         resolve: {
-          revoke: ['AuthSvc', function(auth) {
-            return auth.revokeToken();
+          revoke: ['AuthSvc', function(AuthSvc) {
+            return AuthSvc.revokeToken();
           }],
-          logout: ['AuthSvc', function(auth) {
-            return auth.logout();
+          logout: ['AuthSvc', function(AuthSvc) {
+            return AuthSvc.logout();
           }]
         }
       })
@@ -53,15 +53,15 @@
           request: function(config) {
             // add Authorization header for all calls startswith '/api/'
             if (isApi(config.url)) {
-              var auth = $injector.get('AuthSvc');
-              if (auth.token && auth.token.expires > new Date()) {
-                config.headers.Authorization = 'Bearer ' + auth.token.access_token;
+              var AuthSvc = $injector.get('AuthSvc');
+              if (AuthSvc.token && AuthSvc.token.expires > new Date()) {
+                config.headers.Authorization = 'Bearer ' + AuthSvc.token.access_token;
                 return config;
               } else {
                 var d = $q.defer();
-                var promise = auth.requestToken();
+                var promise = AuthSvc.requestToken();
                 promise.then(function() {
-                  config.headers.Authorization = 'Bearer ' + auth.token.access_token;
+                  config.headers.Authorization = 'Bearer ' + AuthSvc.token.access_token;
                   d.resolve(config);
                 });
                 return d.promise;
@@ -89,20 +89,19 @@
                   resolve: {
                     info: function() {
                       return {
-                        class: 'danger',
-                        icon: 'exclamation',
+                        type: 'error',
                         commands: ['OK'],
-                        title: 'Error',
+                        title: 'Http Error',
                         content: [
-                          response.config.method + ' ' + response.config.url,
-                          response.status + ' ' + response.data
+                          'Status: ' + response.status + ' - ' + response.data,
+                          response.config.method + ' ' + response.config.url
                         ]
                       };
                     }
                   }
                 });
                 modalInstance.result.then(function(result) {
-                  return $scope.$apply();
+                  // return $scope.$apply();
                 }, function() {
                   // $log.info('Modal dismissed at: ' + new Date());
                 });

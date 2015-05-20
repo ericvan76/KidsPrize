@@ -20,8 +20,9 @@ var UserSchema = new Schema({
     type: Array,
     default: ['authenticated']
   },
+  preference: {},
   facebook: {},
-  google: {}
+  google: {},
 });
 
 module.exports = mongoose.model('User', UserSchema);

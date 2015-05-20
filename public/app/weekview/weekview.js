@@ -1,43 +1,44 @@
 (function() {
   'use strict';
 
-  angular.module('weekview', ['ui.bootstrap'])
-    .directive('kzWeekview', function() {
-      return {
-        restrict: 'E',
-        templateUrl: 'weekview.html',
-        controller: ['$scope', '$rootScope', function($scope, $rootScope) {
+  angular.module('weekview', ['ngResource'])
 
-          var today = new Date();
-          today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-          var thisWeek = getWeekStart(today, false);
+  .directive('kzWeekview', ['AuthSvc', function(AuthSvc) {
+    return {
+      restrict: 'E',
+      templateUrl: 'weekview.html',
+      controller: ['$scope', '$rootScope', function($scope, $rootScope) {
 
-          $scope.gotoThisWeek = function() {
-            $rootScope.currentWeek = thisWeek;
-            $scope.dates = getWeekDates($rootScope.currentWeek);
-          };
+        var today = new Date();
+        today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        var thisWeek = getWeekStart(today, false);
 
-          $scope.gotoPrevWeek = function() {
-            $rootScope.currentWeek = addDays($rootScope.currentWeek, -7);
-            $scope.dates = getWeekDates($rootScope.currentWeek);
-          };
+        $scope.gotoThisWeek = function() {
+          $rootScope.currentWeek = thisWeek;
+          $scope.dates = getWeekDates($rootScope.currentWeek);
+        };
 
-          $scope.gotoNextWeek = function() {
-            $rootScope.currentWeek = addDays($rootScope.currentWeek, 7);
-            $scope.dates = getWeekDates($rootScope.currentWeek);
-          };
+        $scope.gotoPrevWeek = function() {
+          $rootScope.currentWeek = addDays($rootScope.currentWeek, -7);
+          $scope.dates = getWeekDates($rootScope.currentWeek);
+        };
 
-          $scope.isThisWeek = function() {
-            return $rootScope.currentWeek.getTime() === thisWeek.getTime();
-          };
+        $scope.gotoNextWeek = function() {
+          $rootScope.currentWeek = addDays($rootScope.currentWeek, 7);
+          $scope.dates = getWeekDates($rootScope.currentWeek);
+        };
 
-          $scope.isToday = function(d) {
-            return d.getTime() === today.getTime();
-          };
+        $scope.isThisWeek = function() {
+          return $rootScope.currentWeek.getTime() === thisWeek.getTime();
+        };
 
-        }]
-      };
-    });
+        $scope.isToday = function(d) {
+          return d.getTime() === today.getTime();
+        };
+
+      }]
+    };
+  }]);
 
   function getWeekStart(d, startFromMonday) {
     var offset = d.getDay();

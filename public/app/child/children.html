@@ -2,10 +2,10 @@
   <nav>
     <ul class="nav nav-pills">
       <li ng-class="{active:isCurrent(child._id)}" ng-repeat="child in children">
-        <a href="#" ng-click="setCurrent(child._id)">{{child.name}}</a>
+        <a href="#" ng-click="setCurrent(child._id)"><i class="fa fa-child"></i> {{child.name}}</a>
       </li>
       <li ng-class="{active:isCurrent(null)}">
-        <a href="#" ng-click="addChild()">+</a>
+        <a href="#" ng-click="addChild()"><i class="fa fa-plus-circle"></i></a>
       </li>
     </ul>
   </nav>

@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('child', ['ngResource'])
+  angular.module('child', ['ngResource', 'app.util'])
 
   .controller('ChildCtrl', ['$http', '$modal', '$scope', '$rootScope', 'Child',
     function($http, $modal, $scope, $rootScope, Child) {

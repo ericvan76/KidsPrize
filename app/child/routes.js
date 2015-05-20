@@ -3,12 +3,10 @@
 var Child = require('./child'),
   crud = require('../crud');
 
-var controller = crud.controller(Child, {
-  exclude: ['create']
+var childCrud = new crud(Child, {
+  userRestrict: true,
+  path: '/child',
+  include: ['create', 'read', 'patch', 'delete', 'query']
 });
 
-var router = crud.router(controller, {
-  exclude: ['create']
-});
-
-module.exports = router;
+module.exports = childCrud.router;

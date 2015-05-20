@@ -64,6 +64,7 @@ app.use(require('./auth/routes'));
 // api
 app.use('/api', requiresToken, require('./user/routes'));
 app.use('/api', requiresToken, require('./child/routes'));
+app.use('/api', requiresToken, require('./dayscore/routes'));
 
 
 // api: catch 404 and forward to error handler

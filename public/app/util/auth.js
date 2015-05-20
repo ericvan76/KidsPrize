@@ -3,10 +3,11 @@
   // Global services & directives
   angular.module('app.util')
 
-  .factory('AuthSvc', function($q, $http, $location) {
+  .factory('AuthSvc', ['$q', '$http', '$location', 'User', function($q, $http, $location, User) {
 
     var auth = {
-      token: null
+      token: null,
+      user: null
     };
 
     auth.requestToken = function() {
@@ -44,6 +45,7 @@
         }
       }).then(function() {
         auth.token = null;
+        auth.user = null;
         deferred.resolve();
       });
       return deferred.promise;
@@ -57,8 +59,15 @@
       return deferred.promise;
     };
 
+    auth.getLoginUser = function() {
+      if (!auth.user) {
+        auth.user = User.get();
+      }
+      return auth.user;
+    };
+
     return auth;
 
-  });
+  }]);
 
 })();

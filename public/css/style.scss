@@ -1,10 +1,11 @@
+@import '_dropdown-submenu.scss';
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
 }
 
 a {
-  color: #00B7FF;
+  /*color: #00B7FF;*/
 }
 
 ul.nav-pills {
@@ -15,10 +16,6 @@ ul.nav-pills {
     *display: inline;
     zoom: 1;
   }
-}
-
-.ng-invalid.ng-dirty {
-  border-color: #FA787E;
 }
 
 .break-word {
