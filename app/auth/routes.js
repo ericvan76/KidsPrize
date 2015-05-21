@@ -41,7 +41,7 @@ router.post('/auth/token', function(req, res, next) {
     if (!req.query.client_id || req.query.client_id !== 'webapp') {
       return res.status(400).send('Invalid client_id');
     }
-    tokenCtrl.issueToken(req.user.id, req.query.client_id, req.query.state, function(err, token) {
+    tokenCtrl.issueToken(req.user.id, req.query.client_id, req.cookies['connect.sid'], req.query.state, function(err, token) {
       if (err || !token) {
         res.status(401).send('Unauthorised');
       } else {
@@ -71,20 +71,5 @@ router.get('/auth/logout', function(req, res, next) {
   req.logout();
   res.redirect('/login');
 });
-
-// extract token from header
-function extractToken(req) {
-  if (req.headers && req.headers.authorization) {
-    var parts = req.headers.authorization.split(' ');
-    if (parts.length == 2) {
-      var scheme = parts[0],
-        credentials = parts[1];
-      if (/^Bearer$/i.test(scheme)) {
-        return credentials;
-      }
-    }
-  }
-  return null;
-}
 
 module.exports = router;

@@ -22,7 +22,8 @@
         })
         .success(function(t) {
           if (!t.state || t.state !== state) {
-            return deferred.reject();
+            deferred.reject();
+            return $location.url('/login');
           }
           var expires = new Date();
           expires.setSeconds(expires.getSeconds() + t.expires_in - 300);
@@ -32,7 +33,7 @@
         })
         .error(function(err) {
           deferred.reject();
-          $location.url('/login');
+          return $location.url('/login');
         });
       return deferred.promise;
     };

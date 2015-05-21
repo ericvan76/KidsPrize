@@ -5,17 +5,36 @@ var Token = require('./token'),
   base64 = require('js-base64').Base64,
   config = require('../../config');
 
-exports.issueToken = function(userId, clientId, state, callback) {
-  var expires_in_seconds = Math.round((config.cookie.maxAge || 1440000) / 1000);
-  var dt = new Date();
-  dt.setSeconds(dt.getSeconds() + expires_in_seconds);
-  Token.create({
+exports.issueToken = function(userId, clientId, session, state, callback) {
+  if (clientId === 'webapp' && (session === undefined || session === null)) {
+    return callback(new Error('Unauthorised'));
+  }
+  var expires_in_hours = 4;
+  var access_token = base64.encode(uuid.v4());
+  var now = new Date();
+  var expire_at = new Date(now.getTime());
+  expire_at.setHours(expire_at.getHours() + expires_in_hours);
+
+  Token.findOneAndUpdate({
     _user: userId,
     client_id: clientId,
-    token_type: 'bearer',
-    access_token: base64.encode(uuid.v4()),
-    expire_at: dt,
-    open_at: new Date()
+    session: session
+  }, {
+    $setOnInsert: {
+      _user: userId,
+      client_id: clientId,
+      session: session,
+      token_type: 'bearer',
+      open_at: now
+    },
+    $set: {
+      access_token: access_token,
+      expire_at: expire_at,
+      refresh_at: now
+    }
+  }, {
+    new: true,
+    upsert: true
   }, function(err, t) {
     if (err) {
       return callback(err);
@@ -26,7 +45,7 @@ exports.issueToken = function(userId, clientId, state, callback) {
     return callback(null, {
       token_type: t.token_type,
       access_token: t.access_token,
-      expires_in: expires_in_seconds,
+      expires_in: expires_in_hours * 3600,
       state: state
     });
   });

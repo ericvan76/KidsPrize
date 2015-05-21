@@ -68,10 +68,8 @@ app.use('/api', requiresToken, require('./dayscore/routes'));
 
 
 // api: catch 404 and forward to error handler
-app.use('/api/*', function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.use(['/api/*', '/auth/*'], function(req, res, next) {
+  res.status(404).send('Not Found');
 });
 
 // api: error handlers

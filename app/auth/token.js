@@ -9,6 +9,11 @@ var TokenSchema = new Schema({
     ref: 'User',
     required: true
   },
+  session: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
   client_id: {
     type: String,
     required: true
