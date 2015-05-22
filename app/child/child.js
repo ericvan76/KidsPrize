@@ -20,7 +20,8 @@ var ChildSchema = new Schema({
   tasks: [String],
   update_at: {
     type: Date,
-    default: new Date()
+    required: true,
+    default: Date.now
   }
 });
 

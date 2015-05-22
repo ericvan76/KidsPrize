@@ -3,8 +3,10 @@
 
   module.exports = function(model, option) {
 
+    var base64 = require('js-base64').Base64;
+
     var opt = option || {};
-    var userRestrict = opt.userRestrict !== false;
+    var userRestrict = opt.userRestrict !== false; // default=true
     var path = opt.path || '/' + model.modelName.toLowerCase();
     var include = opt.include || ['create', 'read', 'patch', 'delete', 'query'];
 
@@ -49,7 +51,6 @@
       model.findOneAndRemove(q, cb);
     };
     controller.query = function(uid, q, cb) {
-      console.log(userRestrict);
       if (userRestrict) {
         q._user = uid;
       }
@@ -112,9 +113,9 @@
     if (include.indexOf('query') !== -1) {
       // query
       router.get(path, function(req, res, next) {
-        var q = {};
-        for (var k in req.query) {
-          q[k] = req.query[k];
+        var q = req.query.q || {};
+        if (req.query.q) {
+          q = JSON.parse(base64.decode(req.query.q));
         }
         controller.query(req.user._id, q, function(err, data) {
           if (err) {

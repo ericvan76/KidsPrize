@@ -41,7 +41,7 @@ router.post('/auth/token', function(req, res, next) {
     if (!req.query.client_id || req.query.client_id !== 'webapp') {
       return res.status(400).send('Invalid client_id');
     }
-    tokenCtrl.issueToken(req.user.id, req.query.client_id, req.cookies['connect.sid'], req.query.state, function(err, token) {
+    tokenCtrl.issueToken(req.user._id, req.query.client_id, req.cookies['connect.sid'], req.query.state, function(err, token) {
       if (err || !token) {
         res.status(401).send('Unauthorised');
       } else {
