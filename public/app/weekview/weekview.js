@@ -3,40 +3,42 @@
 
   angular.module('weekview', ['ngResource'])
 
+  .controller('WeekviewCtrl', ['$scope', function($scope) {
+
+    var today = new Date();
+    // date
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    var thisWeek = getWeekStart(today, false);
+
+    $scope.gotoThisWeek = function() {
+      $scope.currentWeek = thisWeek;
+      $scope.dates = getWeekDates($scope.currentWeek);
+    };
+
+    $scope.gotoPrevWeek = function() {
+      $scope.currentWeek = addDays($scope.currentWeek, -7);
+      $scope.dates = getWeekDates($scope.currentWeek);
+    };
+
+    $scope.gotoNextWeek = function() {
+      $scope.currentWeek = addDays($scope.currentWeek, 7);
+      $scope.dates = getWeekDates($scope.currentWeek);
+    };
+
+    $scope.isThisWeek = function() {
+      return $scope.currentWeek.getTime() === thisWeek.getTime();
+    };
+
+    $scope.isToday = function(d) {
+      return d.getTime() === today.getTime();
+    };
+
+  }])
+
   .directive('kzWeekview', ['AuthSvc', function(AuthSvc) {
     return {
       restrict: 'E',
-      templateUrl: 'weekview.html',
-      controller: ['$scope', '$rootScope', function($scope, $rootScope) {
-
-        var today = new Date();
-        today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        var thisWeek = getWeekStart(today, false);
-
-        $scope.gotoThisWeek = function() {
-          $rootScope.currentWeek = thisWeek;
-          $scope.dates = getWeekDates($rootScope.currentWeek);
-        };
-
-        $scope.gotoPrevWeek = function() {
-          $rootScope.currentWeek = addDays($rootScope.currentWeek, -7);
-          $scope.dates = getWeekDates($rootScope.currentWeek);
-        };
-
-        $scope.gotoNextWeek = function() {
-          $rootScope.currentWeek = addDays($rootScope.currentWeek, 7);
-          $scope.dates = getWeekDates($rootScope.currentWeek);
-        };
-
-        $scope.isThisWeek = function() {
-          return $rootScope.currentWeek.getTime() === thisWeek.getTime();
-        };
-
-        $scope.isToday = function(d) {
-          return d.getTime() === today.getTime();
-        };
-
-      }]
+      templateUrl: 'weekview.html'
     };
   }]);
 

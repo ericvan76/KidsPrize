@@ -1,9 +1,9 @@
 (function() {
   'use strict';
 
-  angular.module('home', ['user', 'child', 'weekview'])
+  angular.module('home', ['child', 'weekview'])
 
-  .controller('HomeCtrl', ['User', 'AuthSvc', '$scope', function(User, AuthSvc, $scope) {
+  .controller('HomeCtrl', ['AuthSvc', '$scope', function(AuthSvc, $scope) {
     $scope.user = AuthSvc.getLoginUser();
   }])
 

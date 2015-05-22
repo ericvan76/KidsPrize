@@ -7,16 +7,26 @@ exports.read = function(userId, callback) {
 };
 
 exports.postAuth = function(provider, profile, callback) {
-  var normUser = normaliseUser(provider, profile);
-  if (normUser instanceof Error) {
-    return callback(normUser);
+  var u = normaliseUser(provider, profile);
+  if (u instanceof Error) {
+    return callback(u);
   }
+
+  var updateSet = {
+    displayName: u.displayName,
+    name: u.name
+  };
+  updateSet[provider] = profile;
+
   User.findOneAndUpdate({
     email: {
-      $regex: new RegExp(normUser.email, "i")
+      $regex: new RegExp(u.email, "i")
     }
   }, {
-    $setOnInsert: normUser
+    $set: updateSet,
+    $setOnInsert: {
+      email: u.email
+    }
   }, {
     new: true,
     upsert: true
@@ -24,13 +34,7 @@ exports.postAuth = function(provider, profile, callback) {
     if (err) {
       return callback(err);
     }
-    user[provider] = profile;
-    user.save(function(err, n) {
-      if (err) {
-        return callback(err);
-      }
-      return callback(null, user);
-    });
+    return callback(null, user);
   });
 };
 

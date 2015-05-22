@@ -3,7 +3,7 @@
 var Child = require('./child'),
   crud = require('../crud');
 
-var childCrud = new crud(Child, {
+var childCrud = crud(Child, {
   userRestrict: true,
   path: '/child',
   include: ['create', 'read', 'patch', 'delete', 'query']

@@ -3,7 +3,7 @@
 var express = require('express'),
   router = express.Router(),
   passport = require('passport'),
-  tokenCtrl = require('./controller');
+  tokenCtrl = require('./token-controller');
 
 // facebook endpoints
 router.get('/auth/facebook', passport.authenticate('facebook', {

@@ -36,6 +36,10 @@
         q._user = uid;
         o._user = uid;
       }
+      if (mmodel.schema.path('update_at').instance === 'Date' &&
+        model.schema.pathType('update_at') === 'real') {
+        o.update_at = Date.now();
+      }
       model.findOneAndUpdate(q, o, {
         new: true,
         upsert: false
@@ -117,6 +121,7 @@
         if (req.query.q) {
           q = JSON.parse(base64.decode(req.query.q));
         }
+        console.log('Decoded query string: ' + q);
         controller.query(req.user._id, q, function(err, data) {
           if (err) {
             return next(err);

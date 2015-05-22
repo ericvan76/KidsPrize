@@ -20,17 +20,17 @@ exports.issueToken = function(userId, clientId, session, state, callback) {
     client_id: clientId,
     session: session
   }, {
+    $set: {
+      access_token: access_token,
+      expire_at: expire_at,
+      refresh_at: now
+    },
     $setOnInsert: {
       _user: userId,
       client_id: clientId,
       session: session,
       token_type: 'bearer',
       open_at: now
-    },
-    $set: {
-      access_token: access_token,
-      expire_at: expire_at,
-      refresh_at: now
     }
   }, {
     new: true,

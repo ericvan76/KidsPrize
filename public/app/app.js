@@ -3,7 +3,9 @@
 
   angular.module('app.util', []);
 
-  var app = angular.module('app', ['ngRoute', 'ngResource', 'ui.bootstrap', 'app.templates', 'app.util', 'home']);
+  angular.module('app.resource', []);
+
+  var app = angular.module('app', ['ngRoute', 'ngResource', 'ui.bootstrap', 'app.templates', 'app.util', 'app.resource', 'home']);
 
   // Configurations
   app.config(['$routeProvider', function($routeProvider) {
@@ -124,6 +126,9 @@
     $resourceProvider.defaults.stripTrailingSlashes = true;
   }]);
 
+  app.config(['$logProvider', function($logProvider) {
+    $logProvider.debugEnabled(true);
+  }]);
 
   // Run block
   app.run(['$injector', function($injector) {

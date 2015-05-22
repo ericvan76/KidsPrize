@@ -57,7 +57,12 @@
 
     $scope.child = {
       name: null,
-      gender: null
+      gender: null,
+      tasks: [
+        'Finish breakfast in 20 mins',
+        'Eating in good manners',
+        'Bath before 7pm'
+      ]
     };
 
     $scope.add = function() {
