@@ -20,7 +20,7 @@
       model.create(o, cb);
     };
     controller.read = function(uid, id, cb) {
-      q = {
+      var q = {
         _id: id
       };
       if (userRestrict) {
@@ -29,7 +29,7 @@
       model.findOne(q, cb);
     };
     controller.update = function(uid, id, o, cb) {
-      q = {
+      var q = {
         _id: id
       };
       if (userRestrict) {
@@ -46,7 +46,7 @@
       }, cb);
     };
     controller.delete = function(uid, id, cb) {
-      q = {
+      var q = {
         _id: id
       };
       if (userRestrict) {
@@ -121,7 +121,7 @@
         if (req.query.q) {
           q = JSON.parse(base64.decode(req.query.q));
         }
-        console.log('Decoded query string: ' + q);
+        console.log('Decoded query: ' + JSON.stringify(q));
         controller.query(req.user._id, q, function(err, data) {
           if (err) {
             return next(err);

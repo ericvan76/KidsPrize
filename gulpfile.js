@@ -61,7 +61,8 @@ gulp.task('scripts', function() {
     // concat vendors
     gulp.src([
       'bower_components/angular-bootstrap/ui-bootstrap.min.js',
-      'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js'
+      'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
+      'bower_components/js-base64/base64.min.js',
     ])
     .pipe(sourcemaps.init())
     .pipe(concat('vender.js'))

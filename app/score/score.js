@@ -26,6 +26,10 @@ var ScoreSchema = new Schema({
     type: Number,
     default: 0
   },
+  order: {
+    type: Number,
+    default: 0
+  },
   update_at: {
     type: Date,
     required: true,

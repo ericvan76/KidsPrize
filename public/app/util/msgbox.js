@@ -3,9 +3,9 @@
 
   angular.module('app.util')
 
-  .controller('MsgCtrl', function($scope, $modalInstance, info) {
+  .controller('MsgCtrl', function($scope, $modalInstance, data) {
 
-    switch (info.type) {
+    switch (data.type) {
       case 'error':
         $scope.icon = 'exclamation-circle';
         $scope.class = 'danger';
@@ -32,7 +32,7 @@
         break;
     }
 
-    $scope.commands = (info.commands || ['OK']).map(function(s) {
+    $scope.commands = (data.commands || ['OK']).map(function(s) {
       return {
         name: s,
         icon: (function(s) {
@@ -63,11 +63,11 @@
       };
     });
 
-    $scope.title = info.title || 'Infomation';
-    if (typeof info.content === 'string') {
-      $scope.content = [info.content];
+    $scope.title = data.title || 'Message';
+    if (typeof data.content === 'string') {
+      $scope.content = [data.content];
     } else {
-      $scope.content = info.content;
+      $scope.content = data.content;
     }
 
     $scope.onclick = function(cmd) {

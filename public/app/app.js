@@ -89,7 +89,7 @@
                   keyboard: false,
                   animation: true,
                   resolve: {
-                    info: function() {
+                    data: function() {
                       return {
                         type: 'error',
                         commands: ['OK'],

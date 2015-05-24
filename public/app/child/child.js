@@ -1,26 +1,26 @@
 (function() {
   'use strict';
 
-  angular.module('child', ['ngResource', 'app.util'])
+  angular.module('child', ['app.resource', 'app.util'])
 
-  .controller('ChildCtrl', ['$http', '$modal', '$scope', '$rootScope', 'Child',
-    function($http, $modal, $scope, $rootScope, Child) {
+  .controller('ChildCtrl', ['Child', '$modal', '$scope', '$rootScope',
+    function(Child, $modal, $scope, $rootScope) {
 
       $scope.children = [];
-      $scope.currentChild = null;
+      $rootScope.currentChild = null;
 
       $scope.children = Child.query({}, function(data) {
         if (data.length > 0) {
-          $scope.currentChild = data[0]._id;
+          $rootScope.currentChild = data[0];
         }
       });
 
-      $scope.setCurrent = function(childId) {
-        $scope.currentChild = childId;
+      $scope.setCurrent = function(child) {
+        $rootScope.currentChild = child;
       };
 
-      $scope.isCurrent = function(childId) {
-        return $scope.currentChild === childId;
+      $scope.isCurrent = function(child) {
+        return $rootScope.currentChild === child;
       };
 
       $scope.addChild = function() {
@@ -33,9 +33,9 @@
         });
 
         modalInstance.result.then(function(newChild) {
-          var child = Child.save(newChild, function() {
+          newChild.$save(function(child) {
             $scope.children.push(child);
-            $scope.currentChild = child._id;
+            $rootScope.currentChild = child;
           });
         }, function() {
           // $log.info('Modal dismissed at: ' + new Date());
@@ -53,35 +53,28 @@
     };
   })
 
-  .controller('AddChildCtrl', ['$scope', '$modalInstance', function($scope, $modalInstance) {
+  .controller('AddChildCtrl', ['Child', '$scope', '$modalInstance',
+    function(Child, $scope, $modalInstance) {
 
-    $scope.child = {
-      name: null,
-      gender: null,
-      tasks: [
-        'Finish breakfast in 20 mins',
-        'Eating in good manners',
-        'Bath before 7pm'
-      ]
-    };
+      $scope.child = new Child({
+        name: null,
+        gender: null,
+        tasks: [
+          'Finish breakfast in 20 mins',
+          'Eating in good manners',
+          'Bath before 7pm'
+        ]
+      });
 
-    $scope.add = function() {
-      $modalInstance.close($scope.child);
-    };
+      $scope.add = function() {
+        $modalInstance.close($scope.child);
+      };
 
-    $scope.cancel = function() {
-      $modalInstance.dismiss();
-    };
-  }])
+      $scope.cancel = function() {
+        $modalInstance.dismiss();
+      };
+    }
+  ]);
 
-  .factory('Child', ['$resource', function($resource) {
-    return $resource('/api/child/:id', {
-      id: '@id'
-    }, {
-      'update': {
-        method: 'PUT'
-      }
-    });
-  }]);
 
 })();

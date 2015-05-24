@@ -18,6 +18,7 @@
   ],
   "dependencies": {
     "bootstrap-social": "~4.9.0",
-    "angular-bootstrap": "~0.13.0"
+    "angular-bootstrap": "~0.13.0",
+    "js-base64": "~2.1.8"
   }
 }

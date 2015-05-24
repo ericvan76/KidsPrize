@@ -5,7 +5,7 @@ var Score = require('./score'),
 
 var router = crud(Score, {
   userRestrict: true,
-  path: '/child/:childId/score',
+  path: '/score',
   include: ['read', 'query']
 }).router;
 
