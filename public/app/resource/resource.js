@@ -13,6 +13,9 @@
         create: {
           method: 'POST'
         },
+        update: {
+          method: 'PUT'
+        },
         patch: {
           method: 'PATCH'
         }
@@ -24,7 +27,7 @@
         if (!this._id) {
           return this.$create.apply(this, arguments);
         } else {
-          return this.$patch.apply(this, arguments);
+          return this.$update.apply(this, arguments);
         }
       };
       // override query

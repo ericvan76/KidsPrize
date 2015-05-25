@@ -6,7 +6,7 @@ var Score = require('./score'),
 var router = crud(Score, {
   userRestrict: true,
   path: '/score',
-  include: ['create', 'read', 'patch', 'delete', 'query']
+  include: ['create', 'read', 'update', 'patch', 'delete', 'query']
 }).router;
 
 module.exports = router;

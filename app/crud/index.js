@@ -8,7 +8,7 @@
     var opt = option || {};
     var userRestrict = opt.userRestrict !== false; // default=true
     var path = opt.path || '/' + model.modelName.toLowerCase();
-    var include = opt.include || ['create', 'read', 'patch', 'delete', 'query'];
+    var include = opt.include || ['create', 'read', 'update', 'patch', 'delete', 'query'];
 
     var controller = {};
     var router = require('express').Router();
@@ -42,7 +42,26 @@
       }
       model.findOneAndUpdate(q, o, {
         new: true,
-        upsert: false
+        upsert: false,
+        overwrite: true
+      }, cb);
+    };
+    controller.patch = function(uid, id, o, cb) {
+      var q = {
+        _id: id
+      };
+      if (userRestrict) {
+        q._user = uid;
+        o._user = uid;
+      }
+      if (model.schema.path('update_at').instance === 'Date' &&
+        model.schema.pathType('update_at') === 'real') {
+        o.update_at = Date.now();
+      }
+      model.findOneAndUpdate(q, o, {
+        new: true,
+        upsert: false,
+        overwrite: false
       }, cb);
     };
     controller.delete = function(uid, id, cb) {
@@ -86,10 +105,24 @@
         });
       });
     }
+    if (include.indexOf('update') !== -1) {
+      // update
+      router.put(path + '/:id', function(req, res, next) {
+        controller.update(req.user._id, req.params.id, req.body, function(err, data) {
+          if (err) {
+            return next(err);
+          }
+          if (!data) {
+            return res.status(404).send(model.modelName + ' Not Found');
+          }
+          res.json(data);
+        });
+      });
+    }
     if (include.indexOf('patch') !== -1) {
       // patch
       router.patch(path + '/:id', function(req, res, next) {
-        controller.update(req.user._id, req.params.id, req.body, function(err, data) {
+        controller.patch(req.user._id, req.params.id, req.body, function(err, data) {
           if (err) {
             return next(err);
           }

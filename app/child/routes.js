@@ -6,7 +6,7 @@ var Child = require('./child'),
 var childCrud = crud(Child, {
   userRestrict: true,
   path: '/child',
-  include: ['create', 'read', 'patch', 'delete', 'query']
+  include: ['create', 'read', 'update', 'patch', 'delete', 'query']
 });
 
 module.exports = childCrud.router;
