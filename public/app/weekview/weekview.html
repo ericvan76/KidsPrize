@@ -12,13 +12,20 @@
       </li>
     </ul>
   </nav>
-  <table class="table table-responsive table-striped table-bordered">
+  <table class="table table-responsive table-striped table-bordered noselect">
     <thead>
       <tr>
         <th class="text-center"><i class="fa fa-tasks"></i> Tasks</th>
         <th ng-repeat="d in dates" class="text-center" ng-class="{info:isToday(d)}">{{d|date:'EEE dd/M'}}</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+      <tr ng-repeat="task in tasks">
+        <td class="text-center">{{task}}</td>
+        <td class="text-center" ng-repeat="d in dates" ng-click="toggleScore(d, task)">
+          <i class="fa fa-2x text-primary" ng-class="{'fa-star':getScore(d, task)>0,'fa-star-o':getScore(d, task)===0}"></i>
+        </td>
+      </tr>
+    </tbody>
   </table>
 </div>

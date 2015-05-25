@@ -36,7 +36,7 @@
         q._user = uid;
         o._user = uid;
       }
-      if (mmodel.schema.path('update_at').instance === 'Date' &&
+      if (model.schema.path('update_at').instance === 'Date' &&
         model.schema.pathType('update_at') === 'real') {
         o.update_at = Date.now();
       }
@@ -75,7 +75,7 @@
     if (include.indexOf('read') !== -1) {
       // read
       router.get(path + '/:id', function(req, res, next) {
-        controller.read(req.user._id, req.param.id, function(err, data) {
+        controller.read(req.user._id, req.params.id, function(err, data) {
           if (err) {
             return next(err);
           }
@@ -89,7 +89,7 @@
     if (include.indexOf('patch') !== -1) {
       // patch
       router.patch(path + '/:id', function(req, res, next) {
-        controller.update(req.user._id, req.param.id, req.body, function(err, data) {
+        controller.update(req.user._id, req.params.id, req.body, function(err, data) {
           if (err) {
             return next(err);
           }
@@ -103,7 +103,7 @@
     if (include.indexOf('delete') !== -1) {
       // delete
       router.delete(path + '/:id', function(req, res, next) {
-        controller.delete(req.user._id, req.param.id, function(err) {
+        controller.delete(req.user._id, req.params.id, function(err) {
           if (err) {
             return next(err);
           }

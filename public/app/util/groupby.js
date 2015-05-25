@@ -12,7 +12,7 @@
           })) {
           result.push({
             key: element.key,
-            values: element.filter(function(x) {
+            values: arr.filter(function(x) {
               return x.key === element.key;
             })
           });

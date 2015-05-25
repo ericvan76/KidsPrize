@@ -11,10 +11,11 @@
       $scope.currentWeek = null;
       $scope.dates = [];
       $scope.tasks = [];
-      $scope.scores = [];
+      $scope.scores = {}; // hash set
 
       $rootScope.$watch('currentChild', function() {
         if ($rootScope.currentChild && $scope.currentWeek) {
+          $scope.scores = {};
           $scope.updateWeekScores();
         }
       }, true);
@@ -28,6 +29,7 @@
           $scope.currentWeek = DateUtil.addDays($scope.currentWeek, offset);
         }
         $scope.dates = DateUtil.getWeekDates($scope.currentWeek);
+        $scope.updateWeekScores();
       };
 
       $scope.isThisWeek = function() {
@@ -39,33 +41,68 @@
       };
 
       $scope.updateWeekScores = function() {
-        Score.query({
-          _child: $rootScope.currentChild._id,
-          date: {
-            $gte: $scope.currentWeek,
-            $lte: DateUtil.addDays($scope.currentWeek, 7)
-          }
-        }, function(data) {
-          if ($scope.isThisWeek()) {
-            $scope.tasks = $rootScope.currentChild.tasks || [];
-          } else {
-            $scope.tasks = groupby(data, 'task').map(function(g) {
-              return {
-                task: g.key,
-                order: Math.max.apply(null, g.values.map(function(v) {
-                  return v.order || -1;
-                }))
-              };
-            }).sort(function(a, b) {
-              return (a.order || -1) - (b.order || -1);
-            }).map(function(x) {
-              return x.task;
+        if ($rootScope.currentChild && $scope.currentWeek) {
+          Score.query({
+            _child: $rootScope.currentChild._id,
+            date: {
+              $gte: $scope.currentWeek,
+              $lt: DateUtil.addDays($scope.currentWeek, 7)
+            }
+          }, function(data) {
+            if ($scope.currentWeek.getTime() >= $scope.thisWeek.getTime()) {
+              $scope.tasks = $rootScope.currentChild.tasks || [];
+            } else {
+              $scope.tasks = groupby(data, 'task').map(function(g) {
+                return {
+                  task: g.key,
+                  order: Math.max.apply(null, g.values.map(function(v) {
+                    return v.order || -1;
+                  }))
+                };
+              }).sort(function(a, b) {
+                return (a.order || -1) - (b.order || -1);
+              }).map(function(x) {
+                return x.task;
+              });
+            }
+            data.forEach(function(e) {
+              e.date = new Date(e.date);
+              var key = e.date.toISOString() + '|' + e.task;
+              $scope.scores[key] = e;
             });
-          }
-          $scope.scores = data;
-        });
+          });
+        }
       };
 
+      $scope.getScore = function(d, task) {
+        var key = d.toISOString() + '|' + task;
+        if (key in $scope.scores) {
+          return $scope.scores[key].value || 0;
+        }
+        return 0;
+      };
+
+      $scope.toggleScore = function(d, task) {
+        var key = d.toISOString() + '|' + task;
+        if (key in $scope.scores) {
+          if ($scope.scores[key].value === 1) {
+            $scope.scores[key].value = 0;
+          } else {
+            $scope.scores[key].value = 1;
+          }
+        } else {
+          $scope.scores[key] = new Score({
+            _child: $rootScope.currentChild._id,
+            date: d,
+            task: task,
+            value: 1
+          });
+        }
+        $scope.scores[key].$save(
+          function(s) {
+            $scope.scores[key] = s;
+          });
+      };
     }
   ])
 
