@@ -2,5 +2,9 @@ language: node_js
 node_js:
   - "0.12"
 script: "gulp build"
+cache:
+  directories:
+  - node_modules
+  - bower_components
 addons:
   artifacts: true
