@@ -20,7 +20,7 @@ module.exports = {
   },
   session: {
     secret: 'A secret to compute hash',
-    saveUninitialized: true,
+    saveUninitialized: false,
     resave: false,
   },
   cookie: {

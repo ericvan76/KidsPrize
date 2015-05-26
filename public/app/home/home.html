@@ -1,0 +1,28 @@
+<div ng-controller="HomeCtrl">
+  <div class="btn-group pull-right" dropdown>
+    <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle>
+      <i class="fa fa-user"></i> {{user.displayName}} <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+      <li class="dropdown-submenu"><a href="#">Themes</a>
+        <ul class="dropdown-menu pull-left" ng-controller="ThemeCtrl">
+          <li ng-repeat="theme in themes">
+            <a href="#" ng-click="changeTheme(theme)">
+              <i class="fa fa-fw" ng-class="{'fa-check':theme.name===currentTheme}"></i> {{theme.name}}
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="divider"></li>
+      <li>
+        <a href="/logout"><i class="fa fa-sign-out"></i> Signout</a>
+      </li>
+    </ul>
+  </div>
+  <div>
+    <kz-children></kz-children>
+  </div>
+  <div>
+    <kz-weekview></kz-weekview>
+  </div>
+</div>
