@@ -2,8 +2,18 @@
 
 var User = require('./user');
 
-exports.read = function(userId, callback) {
-  User.findById(userId, callback);
+exports.read = function(id, callback) {
+  User.findById(id, callback);
+};
+
+exports.savePreference = function(id, preference, callback) {
+  var update = {};
+  for (var prop in preference) {
+    update['preference.' + prop] = preference[prop];
+  }
+  User.findByIdAndUpdate(id, {
+    $set: update
+  }, callback);
 };
 
 exports.postAuth = function(provider, profile, callback) {
