@@ -55,9 +55,9 @@
               $scope.tasks = groupby(data, 'task').map(function(g) {
                 return {
                   task: g.key,
-                  order: Math.max.apply(null, g.values.map(function(v) {
-                    return v.order || -1;
-                  }))
+                  order: g.values.reduce(function(a, b) {
+                    return new Date(a.update_at) > new Date(b.update_at) ? a : b;
+                  }).order || -1
                 };
               }).sort(function(a, b) {
                 return (a.order || -1) - (b.order || -1);
@@ -98,6 +98,7 @@
             value: 1
           });
         }
+        $scope.scores[key].order = $scope.tasks.indexOf(task);
         $scope.scores[key].$save(
           function(s) {
             $scope.scores[key] = s;

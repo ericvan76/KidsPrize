@@ -1,4 +1,5 @@
 (function() {
+  'use strict';
 
   // Global services & directives
   angular.module('app.util')
