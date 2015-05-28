@@ -11,9 +11,12 @@ router.post('/user/preference', function(req, res, next) {
   return ctrl.savePreference(req.user._id, req.body, function(err, user) {
     if (err) {
       return next(err);
-    } else {
-      return res.json(user.preference);
     }
+    if (!user) {
+      return res.status(404).send('User Not Found');
+    }
+    return res.json(user.preference);
+
   });
 });
 

@@ -107,7 +107,7 @@
     }
   ])
 
-  .directive('kzWeekview', ['AuthSvc', function(AuthSvc) {
+  .directive('kzWeekview', [function() {
     return {
       restrict: 'E',
       templateUrl: 'weekview.html'

@@ -3,13 +3,12 @@
 
   angular.module('home', ['child', 'weekview'])
 
-  .controller('HomeCtrl', ['$scope', '$rootElement', 'User', 'user', 'themes',
-    function($scope, $rootElement, User, user, themes) {
+  .controller('HomeCtrl', ['$scope', 'User', 'Themes', 'user', 'themes',
+    function($scope, User, Themes, user, themes) {
 
       $scope.changeTheme = function(theme) {
         if (theme.cssCdn) {
-          var bs = $rootElement[0].children[0].getElementsByTagName('link')[0];
-          bs.href = theme.cssCdn;
+          Themes.changeTheme(theme.cssCdn);
         }
         if ($scope.currentTheme !== theme.name) {
           $scope.currentTheme = theme.name;

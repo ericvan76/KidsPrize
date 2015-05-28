@@ -1,10 +1,9 @@
 (function() {
   'use strict';
 
-  // Global services & directives
-  angular.module('app.util')
+  angular.module('app.auth')
 
-  .factory('AuthSvc', ['$q', '$http', '$location', 'User', function($q, $http, $location, User) {
+  .factory('Auth', ['$q', '$http', '$location', 'User', function($q, $http, $location, User) {
 
     var auth = {
       token: null,

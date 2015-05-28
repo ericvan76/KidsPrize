@@ -1,11 +1,15 @@
 (function() {
   'use strict';
 
+  angular.module('app.auth', []);
   angular.module('app.util', []);
-
   angular.module('app.resource', []);
 
-  var app = angular.module('app', ['ngRoute', 'ngResource', 'ui.bootstrap', 'app.templates', 'app.util', 'app.resource', 'home']);
+  var app = angular.module('app', [
+    'ngRoute', 'ngResource', 'ui.bootstrap',
+    'app.auth', 'app.util', 'app.resource', 'app.templates',
+    'home'
+  ]);
 
   // Configurations
   app.config(['$routeProvider', function($routeProvider) {
@@ -15,25 +19,11 @@
         controller: 'HomeCtrl',
         templateUrl: 'home.html',
         resolve: {
-          user: ['AuthSvc', function(AuthSvc) {
-            return AuthSvc.loginUser();
+          user: ['Auth', function(Auth) {
+            return Auth.loginUser();
           }],
-          themes: ['$http', '$q', function($http, $q) {
-            // load themes
-            var deferred = $q.defer();
-            var themes = [{
-              name: 'Default',
-              cssCdn: null
-            }];
-            $http.get('http://api.bootswatch.com/3/')
-              .success(function(data) {
-                themes = themes.concat(data.themes);
-                deferred.resolve(themes);
-              })
-              .error(function(err) {
-                deferred.resolve(themes);
-              });
-            return deferred.promise;
+          themes: ['Themes', function(Themes) {
+            return Themes.loadThemes();
           }]
         }
       })
@@ -43,11 +33,11 @@
       .when('/logout', {
         redirectTo: '/login',
         resolve: {
-          revoke: ['AuthSvc', function(AuthSvc) {
-            return AuthSvc.revokeToken();
+          revoke: ['Auth', function(Auth) {
+            return Auth.revokeToken();
           }],
-          logout: ['AuthSvc', function(AuthSvc) {
-            return AuthSvc.logout();
+          logout: ['Auth', function(Auth) {
+            return Auth.logout();
           }]
         }
       })
@@ -73,15 +63,15 @@
           request: function(config) {
             // add Authorization header for all calls startswith '/api/'
             if (isApi(config.url)) {
-              var AuthSvc = $injector.get('AuthSvc');
-              if (AuthSvc.token && AuthSvc.token.expires > new Date()) {
-                config.headers.Authorization = 'Bearer ' + AuthSvc.token.access_token;
+              var Auth = $injector.get('Auth');
+              if (Auth.token && Auth.token.expires > new Date()) {
+                config.headers.Authorization = 'Bearer ' + Auth.token.access_token;
                 return config;
               } else {
                 var d = $q.defer();
-                var promise = AuthSvc.requestToken();
+                var promise = Auth.requestToken();
                 promise.then(function() {
-                  config.headers.Authorization = 'Bearer ' + AuthSvc.token.access_token;
+                  config.headers.Authorization = 'Bearer ' + Auth.token.access_token;
                   d.resolve(config);
                 });
                 return d.promise;
