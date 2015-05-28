@@ -30,7 +30,7 @@
           expires.setSeconds(expires.getSeconds() + t.expires_in - 300);
           t.expires = expires;
           auth.token = t;
-          deferred.resolve();
+          deferred.resolve(t);
         })
         .error(function(err) {
           deferred.reject();
@@ -61,9 +61,16 @@
       return deferred.promise;
     };
 
-    auth.getLoginUser = function() {
+    auth.loginUser = function() {
       if (!auth.user) {
-        auth.user = User.get();
+        var deferred = $q.defer();
+        auth.user = User.get(function(u) {
+          deferred.resolve(u);
+        }, function() {
+          deferred.reject();
+          return $location.url('/login');
+        });
+        return deferred.promise;
       }
       return auth.user;
     };

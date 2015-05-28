@@ -47,7 +47,7 @@
   }])
 
   .factory('User', ['resource', function(resource) {
-    return resource('/api/user', {}, {
+    return resource('/api/user', null, {
       savePreference: {
         method: 'POST',
         url: '/api/user/preference'

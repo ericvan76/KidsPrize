@@ -12,11 +12,29 @@
     // client routes
     $routeProvider
       .when('/', {
+        controller: 'HomeCtrl',
         templateUrl: 'home.html',
         resolve: {
-          token: ['AuthSvc', function(AuthSvc) {
-            return AuthSvc.requestToken();
+          user: ['AuthSvc', function(AuthSvc) {
+            return AuthSvc.loginUser();
           }],
+          themes: ['$http', '$q', function($http, $q) {
+            // load themes
+            var deferred = $q.defer();
+            var themes = [{
+              name: 'Default',
+              cssCdn: null
+            }];
+            $http.get('http://api.bootswatch.com/3/')
+              .success(function(data) {
+                themes = themes.concat(data.themes);
+                deferred.resolve(themes);
+              })
+              .error(function(err) {
+                deferred.resolve(themes);
+              });
+            return deferred.promise;
+          }]
         }
       })
       .when('/login', {

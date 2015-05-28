@@ -13,6 +13,9 @@ exports.savePreference = function(id, preference, callback) {
   }
   User.findByIdAndUpdate(id, {
     $set: update
+  }, {
+    new: true,
+    upsert: false
   }, callback);
 };
 
@@ -35,7 +38,8 @@ exports.postAuth = function(provider, profile, callback) {
   }, {
     $set: updateSet,
     $setOnInsert: {
-      email: u.email
+      email: u.email,
+      preference: {}
     }
   }, {
     new: true,
