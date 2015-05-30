@@ -1,0 +1,23 @@
+<form name="form" ng-submit="form.$valid && save()" novalidate>
+  <div class="modal-header">
+    <button class="close" aria-label="Close" ng-click="cancel()">
+      <i class="fa fa-times"></i>
+    </button>
+    <h3 class="modal-title">Edit Tasks - {{childName}}</h3>
+  </div>
+  <div class="modal-body">
+    <alert type="warning">Update/delete a task will also delete its existing scores from this week.</alert>
+    <div ui-sortable="{'ui-floating':true}" ng-model="tasks">
+      <div class="input-group" ng-repeat="task in tasks track by $index" ng-class="{'has-error':form.task_{{$index}}.$invalid}">
+        <span class="input-group-addon"><i class="fa fa-bars handle"></i></span>
+        <input type="text" name="task_{{$index}}" class="form-control" ng-model="task.name" required maxlength=50>
+        <span class="input-group-addon"><i class="fa fa-times" ng-click="remove($index)"></i></span>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-default pull-left" ng-click="add()">Add</button>
+    <button class="btn btn-default" ng-click="cancel()"><i class="fa fa-times"></i> Cancel</button>
+    <button class="btn btn-primary" type="submit"><i class="fa fa-check"></i> Save</button>
+  </div>
+</form>

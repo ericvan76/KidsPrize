@@ -62,7 +62,9 @@ gulp.task('scripts', function() {
     gulp.src([
       'bower_components/angular-bootstrap/ui-bootstrap.min.js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
+      'bower_components/angular-ui-sortable/sortable.min.js',
       'bower_components/js-base64/base64.min.js',
+      'bower_components/date-utils/lib/date-utils.min.js'
     ])
     .pipe(sourcemaps.init())
     .pipe(concat('vender.js'))

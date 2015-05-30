@@ -2,7 +2,7 @@
   <nav>
     <ul class="nav nav-pills">
       <li ng-class="{active:isCurrent(child)}" ng-repeat="child in children">
-        <a href="#" ng-click="setCurrent(child)"><i class="fa fa-child"></i> {{child.name}}</a>
+        <a href="#" ng-click="setCurrent(child)"><i class="fa fa-child" ng-class="{'fa-spin':isCurrent(child)}"></i> {{child.name}}</a>
       </li>
       <li ng-class="{active:isCurrent(null)}">
         <a href="#" ng-click="addChild()"><i class="fa fa-plus-circle"></i></a>

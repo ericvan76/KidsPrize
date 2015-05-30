@@ -5,8 +5,13 @@
   angular.module('app.util', []);
   angular.module('app.resource', []);
 
+  angular.module('child', []);
+  angular.module('weekview', []);
+  angular.module('tasks', []);
+  angular.module('home', ['child', 'weekview', 'tasks']);
+
   var app = angular.module('app', [
-    'ngRoute', 'ngResource', 'ui.bootstrap',
+    'ngRoute', 'ngResource', 'ui.bootstrap', 'ui.sortable',
     'app.auth', 'app.util', 'app.resource', 'app.templates',
     'home'
   ]);
@@ -111,9 +116,7 @@
                   }
                 });
                 modalInstance.result.then(function(result) {
-                  // return $scope.$apply();
-                }, function() {
-                  // $log.info('Modal dismissed at: ' + new Date());
+                  // TODO: refresh page?
                 });
               }
             }

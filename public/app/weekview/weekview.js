@@ -1,10 +1,10 @@
 (function() {
   'use strict';
 
-  angular.module('weekview', ['app.resource'])
+  angular.module('weekview')
 
-  .controller('WeekviewCtrl', ['Score', 'DateUtil', 'groupby', '$scope', '$rootScope',
-    function(Score, DateUtil, groupby, $scope, $rootScope) {
+  .controller('WeekviewCtrl', ['Child', 'Score', 'groupby', '$scope', '$rootScope', '$modal',
+    function(Child, Score, groupby, $scope, $rootScope, $modal) {
 
       $scope.today = null;
       $scope.thisWeek = null;
@@ -21,23 +21,17 @@
       }, true);
 
       $scope.week = function(offset) {
-        $scope.today = DateUtil.getISODate();
-        $scope.thisWeek = DateUtil.getWeekStart($scope.today, false);
+        $scope.today = Date.UTCtoday();
+        $scope.thisWeek = $scope.today.clone().addHours(-24 * $scope.today.getDay());
         if (offset === 0 || $scope.currentWeek === null) {
           $scope.currentWeek = $scope.thisWeek;
         } else {
-          $scope.currentWeek = DateUtil.addDays($scope.currentWeek, offset);
+          $scope.currentWeek.addWeeks(offset);
         }
-        $scope.dates = DateUtil.getWeekDates($scope.currentWeek);
+        $scope.dates = [0, 1, 2, 3, 4, 5, 6].map(function(i) {
+          return $scope.currentWeek.clone().addHours(i * 24);
+        });
         $scope.updateWeekScores();
-      };
-
-      $scope.isThisWeek = function() {
-        return $scope.currentWeek.getTime() === $scope.thisWeek.getTime();
-      };
-
-      $scope.isToday = function(d) {
-        return d.getTime() === $scope.today.getTime();
       };
 
       $scope.updateWeekScores = function() {
@@ -46,10 +40,10 @@
             _child: $rootScope.currentChild._id,
             date: {
               $gte: $scope.currentWeek,
-              $lt: DateUtil.addDays($scope.currentWeek, 7)
+              $lt: $scope.currentWeek.clone().addWeeks(1)
             }
           }, function(data) {
-            if ($scope.currentWeek.getTime() >= $scope.thisWeek.getTime()) {
+            if ($scope.currentWeek.compareTo($scope.thisWeek) >= 0) {
               $scope.tasks = $rootScope.currentChild.tasks || [];
             } else {
               $scope.tasks = groupby(data, 'task').map(function(g) {
@@ -103,6 +97,41 @@
           function(s) {
             $scope.scores[key] = s;
           });
+      };
+
+      $scope.editTasks = function() {
+
+
+        var modalInstance = $modal.open({
+          animation: true,
+          templateUrl: 'edit-tasks.html',
+          controller: 'EditTasksCtrl',
+          windowClass: 'edit-tasks',
+          //size: 'sm',
+          resolve: {
+            childName: function() {
+              return $rootScope.currentChild.name;
+            },
+            tasks: function() {
+              return [].concat($rootScope.currentChild.tasks);
+            }
+          }
+        });
+
+        modalInstance.result.then(function(tasks) {
+          Child.saveTasks({
+            id: $rootScope.currentChild._id
+          }, tasks, function(data) {
+            $rootScope.currentChild.tasks = data;
+            $scope.tasks = data;
+            // cleanup removed tasks
+            Score.cleanup({}, {
+              _child: $rootScope.currentChild._id
+            }, function() {
+              $scope.updateWeekScores();
+            });
+          });
+        });
       };
     }
   ])

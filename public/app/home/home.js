@@ -1,7 +1,8 @@
 (function() {
   'use strict';
 
-  angular.module('home', ['child', 'weekview'])
+
+  angular.module('home')
 
   .controller('HomeCtrl', ['$scope', 'User', 'Themes', 'user', 'themes',
     function($scope, User, Themes, user, themes) {

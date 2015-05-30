@@ -32,3 +32,11 @@ table.noselect {
     user-select: none;
   }
 }
+
+.edit-tasks .modal-dialog {
+  width: 400px;
+}
+
+i.handle {
+  cursor: move;
+}

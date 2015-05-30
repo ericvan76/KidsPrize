@@ -58,12 +58,23 @@
   .factory('Child', ['resource', function(resource) {
     return resource('/api/child/:id', {
       id: '@_id'
+    }, {
+      saveTasks: {
+        method: 'POST',
+        url: '/api/child/:id/tasks',
+        isArray: true
+      }
     });
   }])
 
   .factory('Score', ['resource', function(resource) {
     return resource('/api/score/:id', {
       id: '@_id'
+    }, {
+      cleanup: {
+        method: 'POST',
+        url: '/api/score/cleanup'
+      }
     });
   }]);
 
