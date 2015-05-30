@@ -7,6 +7,7 @@
 
     function($scope, $modalInstance, childName, tasks) {
 
+      $scope.showWarning = true;
       $scope.childName = childName;
       $scope.tasks = tasks.map(function(e) {
         return {
