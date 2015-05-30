@@ -13,7 +13,7 @@
         var deferred = $q.defer();
         var themes = [{
           name: 'Default',
-          cssCdn: null
+          cssCdn: bootstrapElem().href
         }];
         $http.get('http://api.bootswatch.com/3/')
           .success(function(data) {
@@ -28,10 +28,13 @@
 
       svc.changeTheme = function(cssCdn) {
         if (cssCdn) {
-          var bs = $rootElement[0].children[0].getElementsByTagName('link')[0];
-          bs.href = cssCdn;
+          bootstrapElem().href = cssCdn;
         }
       };
+
+      function bootstrapElem() {
+        return $rootElement[0].children[0].getElementsByTagName('link')[0];
+      }
 
       return svc;
 
