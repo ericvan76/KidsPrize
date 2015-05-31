@@ -113,7 +113,7 @@
             return next(err);
           }
           if (!data) {
-            return res.status(404).send(model.modelName + ' Not Found');
+            return res.status(404).send(model.modelName + ' not found.');
           }
           res.json(data);
         });
@@ -127,7 +127,7 @@
             return next(err);
           }
           if (!data) {
-            return res.status(404).send(model.modelName + ' Not Found');
+            return res.status(404).send(model.modelName + ' not found.');
           }
           res.json(data);
         });
@@ -141,7 +141,7 @@
             return next(err);
           }
           if (!data) {
-            return res.status(404).send(model.modelName + ' Not Found');
+            return res.status(404).send(model.modelName + ' not found.');
           }
           res.status(200).send('OK');
         });

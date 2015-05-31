@@ -66,6 +66,7 @@
 
         return {
           request: function(config) {
+            config.timeout = 30000; // timeout 30 sec
             // add Authorization header for all calls startswith '/api/'
             if (isApi(config.url)) {
               var Auth = $injector.get('Auth');
@@ -93,27 +94,19 @@
               $location.url('/login');
             } else {
               if (isApi(response.config.url)) {
-                var modal = $injector.get('$modal');
-                var modalInstance = modal.open({
-                  templateUrl: 'msgbox.html',
-                  controller: 'MsgCtrl',
+                if (!response.data) {
+                  response.data = 'Unexpected Error';
+                }
+                var msgBox = $injector.get('msgBox');
+                var modalInstance = msgBox({
+                  type: 'error',
                   size: 'md',
-                  backdrop: 'static',
-                  keyboard: false,
-                  animation: true,
-                  resolve: {
-                    data: function() {
-                      return {
-                        type: 'error',
-                        commands: ['OK'],
-                        title: 'Http Error',
-                        content: [
-                          'Status: ' + response.status + ' - ' + response.data,
-                          response.config.method + ' ' + response.config.url
-                        ]
-                      };
-                    }
-                  }
+                  commands: ['OK'],
+                  title: 'Http Error',
+                  content: [
+                    'Status: ' + response.status + ' - ' + response.data,
+                    response.config.method + ' ' + response.config.url
+                  ]
                 });
                 modalInstance.result.then(function(result) {
                   // TODO: refresh page?

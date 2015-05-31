@@ -25,7 +25,7 @@ router.post('/child/:id/tasks', function(req, res, next) {
       return next(err);
     }
     if (!child) {
-      return res.status(404).send('Child Not Found');
+      return res.status(404).send('Child not found.');
     }
     return res.json(child.tasks);
   });

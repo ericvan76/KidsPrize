@@ -1,4 +1,4 @@
-'use static';
+'use strict';
 
 var Token = require('./token'),
   uuid = require('node-uuid'),
@@ -7,7 +7,7 @@ var Token = require('./token'),
 
 exports.issueToken = function(userId, clientId, session, state, callback) {
   if (clientId === 'webapp' && (session === undefined || session === null)) {
-    return callback(new Error('Unauthorised'));
+    return callback(new Error('Unauthorised.'));
   }
   var expires_in_hours = 4;
   var access_token = base64.encode(uuid.v4());

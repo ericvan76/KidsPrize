@@ -26,7 +26,7 @@ router.post('/score/cleanup', function(req, res, next) {
       return next(err);
     }
     if (!child) {
-      return res.status(404).send('Child Not Found');
+      return res.status(404).send('Child not found.');
     }
     var td = Date.UTCtoday();
     var thisWeek = td.addHours(-24 * td.getDay());
@@ -43,6 +43,7 @@ router.post('/score/cleanup', function(req, res, next) {
       if (err) {
         return next(err);
       }
+      return res.status(200).end();
     });
   });
 });

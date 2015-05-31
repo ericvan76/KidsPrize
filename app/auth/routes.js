@@ -33,17 +33,17 @@ router.get('/auth/google/callback',
 // request token
 router.post('/auth/token', function(req, res, next) {
   if (!req.isAuthenticated()) {
-    res.status(401).send('Unauthorised');
+    res.status(401).send('Unauthorised.');
   } else {
     if (!req.query.response_type || req.query.response_type !== 'token') {
-      return res.status(400).send('Invalid response_type');
+      return res.status(400).send('Invalid response_type.');
     }
     if (!req.query.client_id || req.query.client_id !== 'webapp') {
-      return res.status(400).send('Invalid client_id');
+      return res.status(400).send('Invalid client_id.');
     }
     tokenCtrl.issueToken(req.user._id, req.query.client_id, req.cookies['connect.sid'], req.query.state, function(err, token) {
       if (err || !token) {
-        res.status(401).send('Unauthorised');
+        res.status(401).send('Unauthorised.');
       } else {
         res.json(token);
       }
@@ -55,7 +55,7 @@ router.post('/auth/token', function(req, res, next) {
 router.post('/auth/token/revoke', function(req, res, next) {
   var access_token = req.query.access_token;
   if (!access_token) {
-    return res.status(400).send('Bad Request');
+    return res.status(400).send('Bad Request.');
   }
   tokenCtrl.revokeToken(access_token, function(err) {
     if (err) {

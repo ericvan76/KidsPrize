@@ -13,7 +13,7 @@ router.post('/user/preference', function(req, res, next) {
       return next(err);
     }
     if (!user) {
-      return res.status(404).send('User Not Found');
+      return res.status(404).send('User not found.');
     }
     return res.json(user.preference);
 
