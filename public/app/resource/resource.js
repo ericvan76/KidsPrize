@@ -13,9 +13,6 @@
         create: {
           method: 'POST'
         },
-        update: {
-          method: 'PUT'
-        },
         patch: {
           method: 'PATCH'
         }
@@ -27,7 +24,7 @@
         if (!this._id) {
           return this.$create.apply(this, arguments);
         } else {
-          return this.$update.apply(this, arguments);
+          return this.$patch.apply(this, arguments);
         }
       };
       // override query
@@ -70,11 +67,6 @@
   .factory('Score', ['resource', function(resource) {
     return resource('/api/score/:id', {
       id: '@_id'
-    }, {
-      cleanup: {
-        method: 'POST',
-        url: '/api/score/cleanup'
-      }
     });
   }]);
 

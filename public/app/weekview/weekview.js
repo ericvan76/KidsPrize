@@ -14,10 +14,7 @@
       $scope.scores = {}; // hash set
 
       $rootScope.$watch('currentChild', function() {
-        if ($rootScope.currentChild && $scope.currentWeek) {
-          $scope.scores = {};
-          $scope.updateWeekScores();
-        }
+        $scope.updateWeekScores();
       }, true);
 
       $scope.week = function(offset) {
@@ -35,7 +32,10 @@
       };
 
       $scope.updateWeekScores = function() {
-        if ($rootScope.currentChild && $scope.currentWeek) {
+        if (!$rootScope.currentChild || !$scope.currentWeek) {
+          $scope.tasks = [];
+          $scope.scores = {};
+        } else {
           Score.query({
             _child: $rootScope.currentChild._id,
             date: {
@@ -59,6 +59,7 @@
                 return x.task;
               });
             }
+            $scope.scores = {};
             data.forEach(function(e) {
               e.date = new Date(e.date);
               var key = e.date.toISOString() + '|' + e.task;
@@ -101,7 +102,6 @@
 
       $scope.editTasks = function() {
 
-
         var modalInstance = $modal.open({
           animation: true,
           templateUrl: 'edit-tasks.html',
@@ -124,12 +124,7 @@
           }, tasks, function(data) {
             $rootScope.currentChild.tasks = data;
             $scope.tasks = data;
-            // cleanup removed tasks
-            Score.cleanup({}, {
-              _child: $rootScope.currentChild._id
-            }, function() {
-              $scope.updateWeekScores();
-            });
+            $scope.updateWeekScores();
           });
         });
       };

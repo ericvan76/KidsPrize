@@ -1,13 +1,34 @@
 'use strict';
 
 var Child = require('./child'),
+  Score = require('../score/score'),
   crud = require('../crud');
 
 var router = crud(Child, {
   userRestrict: true,
   path: '/child',
-  include: ['create', 'read', 'update', 'patch', 'delete', 'query']
+  include: ['create', 'read', 'patch', 'query']
 }).router;
+
+router.delete('/child/:id', function(req, res, next) {
+  Child.findOneAndRemove({
+    _user: req.user._id,
+    _id: req.params.id
+  }, function(err) {
+    if (err) {
+      return next(err);
+    }
+    Score.remove({
+      _user: req.user._id,
+      _child: req.params.id
+    }, function(err) {
+      if (err) {
+        return next(err);
+      }
+      res.status(200).end();
+    });
+  });
+});
 
 router.post('/child/:id/tasks', function(req, res, next) {
   Child.findOneAndUpdate({
@@ -27,7 +48,24 @@ router.post('/child/:id/tasks', function(req, res, next) {
     if (!child) {
       return res.status(404).send('Child not found.');
     }
-    return res.json(child.tasks);
+    var td = Date.UTCtoday();
+    var thisWeek = td.addHours(-24 * td.getDay());
+    Score.remove({
+      _user: req.user._id,
+      _child: child._id,
+      date: {
+        $gte: thisWeek
+      },
+      task: {
+        $nin: child.tasks
+      }
+    }, function(err) {
+      if (err) {
+        return next(err);
+      }
+      return res.json(child.tasks);
+    });
+
   });
 });
 

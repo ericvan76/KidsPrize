@@ -15,6 +15,12 @@ ul.nav-pills {
     display: inline-block;
     *display: inline;
     zoom: 1;
+    ul.dropdown-menu {
+      text-align: left;
+      li {
+        display: block;
+      }
+    }
   }
 }
 

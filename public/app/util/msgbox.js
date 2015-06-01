@@ -16,7 +16,7 @@
         break;
       case 'question':
         $scope.icon = 'question-circle';
-        data.commands = data.commands || ['Yes' | 'No' | 'Cancel'];
+        data.commands = data.commands || ['No' | 'Yes'];
         break;
       case 'info':
         $scope.icon = 'info-circle';
@@ -84,7 +84,7 @@
       return $modal.open({
         templateUrl: 'msgbox.html',
         controller: 'MsgCtrl',
-        size: data.size || 'sm',
+        size: data.size || 'md',
         backdrop: 'static',
         keyboard: false,
         animation: true,
