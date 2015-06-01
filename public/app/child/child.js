@@ -21,7 +21,7 @@
         }
       });
 
-      $scope.onClick = function($event, tab) {
+      $scope.onClick = function(tab, $event) {
         if ($scope.isSelected(tab)) {
           $event.preventDefault();
           $event.stopPropagation();
@@ -36,28 +36,54 @@
       };
 
       $scope.addChild = function() {
+        return $scope.editChild(null);
+      };
+
+      $scope.editChild = function(tab) {
 
         var modalInstance = $modal.open({
           animation: true,
-          templateUrl: 'add-child.html',
-          controller: 'AddChildCtrl',
-          size: 'sm'
+          templateUrl: 'edit-child.html',
+          controller: 'EditChildCtrl',
+          size: 'sm',
+          resolve: {
+            title: function() {
+              return tab ? 'Edit Child' : 'Add Child';
+            },
+            child: function() {
+              if (tab) {
+                return angular.copy(tab.child);
+              } else {
+                return new Child({
+                  name: null,
+                  gender: null,
+                  tasks: [
+                    'Finish breakfast in 20 mins',
+                    'Eating in good manners',
+                    'Bath before 7pm'
+                  ]
+                });
+              }
+            }
+          }
         });
 
-        modalInstance.result.then(function(newChild) {
-          newChild.$save(function(child) {
-            var tab = {
-              child: child,
-              isopen: false
-            };
-            $scope.tabs.push(tab);
-            $rootScope.currentChild = child;
+        modalInstance.result.then(function(child) {
+          child.$save(function(data) {
+            if (tab) {
+              tab.child = data;
+              $rootScope.currentChild = data;
+            } else {
+              var newtab = {
+                child: data,
+                isopen: false
+              };
+              $scope.tabs.push(newtab);
+              $rootScope.currentChild = data;
+            }
           });
         });
-
       };
-
-      $scope.editChild = function(tab) {};
 
       $scope.deleteChild = function(tab) {
         var modalInstance = msgBox({

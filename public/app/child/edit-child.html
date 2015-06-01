@@ -1,9 +1,9 @@
-<form name="form" ng-submit="form.$valid && add()" novalidate>
+<form name="form" ng-submit="form.$valid && save()" novalidate>
   <div class="modal-header">
     <button class="close" aria-label="Close" ng-click="cancel()">
       <i class="fa fa-times"></i>
     </button>
-    <h3 class="modal-title">Add Child</h3>
+    <h3 class="modal-title">{{title}}</h3>
   </div>
   <div class="modal-body">
     <div class="form-group" ng-class="{'has-error': (form.$submitted || form.name.$dirty) && form.name.$invalid }">
@@ -20,6 +20,6 @@
   </div>
   <div class="modal-footer">
     <button class="btn btn-default" ng-click="cancel()"><i class="fa fa-times"></i> Cancel</button>
-    <button class="btn btn-primary" type="submit"><i class="fa fa-check"></i> Add</button>
+    <button class="btn btn-primary" type="submit"><i class="fa fa-check"></i> Save</button>
   </div>
 </form>

@@ -1,19 +1,17 @@
 <div ng-controller="WeekviewCtrl" ng-init="week(0)">
-  <nav>
-    <ul class="pager">
-      <li class="previous">
-        <a href="#" ng-click="week(-1)"><i class="fa fa-hand-o-left"></i> Previous</a>
-      </li>
-      <li>
-        <a href="#" ng-click="week(0)" ng-show="!currentWeek.equals(thisWeek)">
-          <i class="fa fa-undo"></i> Today
-        </a>
-      </li>
-      <li class="next">
-        <a href="#" ng-click="week(1)">Next <i class="fa fa-hand-o-right"></i></a>
-      </li>
-    </ul>
-  </nav>
+  <ul class="pager noselect">
+    <li class="previous">
+      <a href="#" ng-click="week(-1)"><i class="fa fa-hand-o-left"></i> Previous</a>
+    </li>
+    <li>
+      <a href="#" ng-click="week(0)" ng-show="!currentWeek.equals(thisWeek)">
+        <i class="fa fa-undo"></i> Today
+      </a>
+    </li>
+    <li class="next">
+      <a href="#" ng-click="week(1)">Next <i class="fa fa-hand-o-right"></i></a>
+    </li>
+  </ul>
   <table class="table table-responsive table-striped table-bordered noselect">
     <thead>
       <tr>

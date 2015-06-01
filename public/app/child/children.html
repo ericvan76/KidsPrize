@@ -1,7 +1,7 @@
 <div ng-controller="ChildCtrl">
-  <ul class="nav nav-pills">
+  <ul class="nav nav-pills noselect">
     <li ng-class="{'active':isSelected(tab)}" ng-repeat="tab in tabs" dropdown is-open="tab.isopen">
-      <a href="#" ng-click="onClick($event, tab)">
+      <a href="#" ng-click="onClick(tab, $event)">
         <i class="fa fa-child" ng-class="{'fa-spin':isSelected(tab)}"></i> {{tab.child.name}} <span class="caret" ng-show="isSelected(tab)"></span>
       </a>
       <ul class="dropdown-menu" role="menu">
