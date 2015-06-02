@@ -4,8 +4,8 @@ require('date-utils');
 
 var base64 = require('js-base64').Base64;
 
-var Score = require('./score'),
-  Child = require('../child/child'),
+var Score = require('./score-model'),
+  Child = require('../child/child-model'),
   crud = require('../crud');
 
 var router = crud(Score, {

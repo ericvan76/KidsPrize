@@ -5,7 +5,7 @@
     FacebookStrategy = require('passport-facebook').Strategy,
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
     BearerStrategy = require('passport-http-bearer').Strategy,
-    userCtrl = require('../app/user/controller'),
+    userCtrl = require('../app/user/user-controller'),
     tokenCtrl = require('../app/auth/token-controller'),
     config = require('../config');
 

@@ -1,7 +1,7 @@
 'use strict';
 
-var Child = require('./child'),
-  Score = require('../score/score'),
+var Child = require('./child-model'),
+  Score = require('../score/score-model'),
   crud = require('../crud');
 
 var router = crud(Child, {

@@ -1,6 +1,6 @@
 'use strict';
 
-var Token = require('./token'),
+var Token = require('./token-model'),
   uuid = require('node-uuid'),
   base64 = require('js-base64').Base64,
   config = require('../../config');

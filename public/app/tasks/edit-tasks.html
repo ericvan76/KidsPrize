@@ -6,7 +6,7 @@
     <h3 class="modal-title">Edit Tasks - {{childName}}</h3>
   </div>
   <div class="modal-body">
-    <alert type="warning" ng-show="showWarning" close="showWarning=false">Update/delete a task will also delete its existing scores from this week.</alert>
+    <alert type="warning" ng-show="showWarning" close="showWarning=false">Update/delete a task will also clean its scores from this week. Past scores won't be affected.</alert>
     <div ui-sortable="{'ui-floating':true}" ng-model="tasks">
       <div class="input-group" ng-repeat="task in tasks track by $index" ng-class="{'has-error':form.task_{{$index}}.$invalid}">
         <span class="input-group-addon"><i class="fa fa-bars handle"></i></span>

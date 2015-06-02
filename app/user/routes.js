@@ -1,7 +1,7 @@
 'use strict';
 
 var router = require('express').Router(),
-  ctrl = require('./controller');
+  ctrl = require('./user-controller');
 
 router.get('/user', function(req, res, next) {
   return res.json(req.user);

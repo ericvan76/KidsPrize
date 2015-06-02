@@ -1,6 +1,6 @@
 'use strict';
 
-var User = require('./user');
+var User = require('./user-model');
 
 exports.read = function(id, callback) {
   User.findById(id, callback);
@@ -19,6 +19,7 @@ exports.savePreference = function(id, preference, callback) {
   }, callback);
 };
 
+// used by passport
 exports.postAuth = function(provider, profile, callback) {
   var u = normaliseUser(provider, profile);
   if (u instanceof Error) {
