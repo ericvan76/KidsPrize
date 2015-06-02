@@ -2,6 +2,8 @@
 
 require('date-utils');
 
+var base64 = require('js-base64').Base64;
+
 var Score = require('./score'),
   Child = require('../child/child'),
   crud = require('../crud');
@@ -12,39 +14,58 @@ var router = crud(Score, {
   include: ['create', 'read', 'patch', 'delete', 'query']
 }).router;
 
-router.post('/score/cleanup', function(req, res, next) {
-  if (!req.body._child) {
-    return res.status(400).send('_child is required.');
+router.get('/score/total/:childId', function(req, res, next) {
+  if (!req.params.childId) {
+    return res.status(400).end();
   }
-  console.log(req.user._id);
-  console.log(req.body._child);
   Child.findOne({
     _user: req.user._id,
-    _id: req.body._child
+    _id: req.params.childId
   }, function(err, child) {
     if (err) {
       return next(err);
     }
     if (!child) {
-      return res.status(404).send('Child not found.');
+      return res.status(404).end();
     }
     var td = Date.UTCtoday();
     var thisWeek = td.addHours(-24 * td.getDay());
-    Score.remove({
-      _user: req.user._id,
-      _child: child._id,
-      date: {
-        $gte: thisWeek
-      },
-      task: {
-        $nin: child.tasks
-      }
-    }, function(err) {
-      if (err) {
-        return next(err);
-      }
-      return res.status(200).end();
-    });
+    Score.aggregate([{
+        $match: {
+          _user: req.user._id,
+          _child: child._id,
+          $or: [{
+            date: {
+              $lt: thisWeek
+            }
+          }, {
+            task: {
+              $in: child.tasks
+            }
+          }]
+        }
+      }, {
+        $group: {
+          _id: null,
+          total: {
+            $sum: '$value'
+          }
+        }
+      }, {
+        $project: {
+          _id: 0,
+          total: 1
+        }
+      }],
+      function(err, data) {
+        if (err) {
+          return next(err);
+        }
+        console.log(data);
+        return res.json(data[0] || {
+          total: 0
+        });
+      });
   });
 });
 

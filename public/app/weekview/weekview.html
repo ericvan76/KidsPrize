@@ -12,7 +12,7 @@
       <a href="#" ng-click="week(1)">Next <i class="fa fa-hand-o-right"></i></a>
     </li>
   </ul>
-  <table class="table table-responsive table-striped table-bordered noselect">
+  <table class="table table-responsive table-striped table-bordered">
     <thead>
       <tr>
         <th class="text-center">
@@ -29,10 +29,19 @@
     <tbody>
       <tr ng-repeat="task in tasks">
         <td class="text-center">{{task}}</td>
-        <td class="text-center" ng-repeat="d in dates" ng-click="toggleScore(d, task)">
+        <td class="text-center noselect" ng-repeat="d in dates" ng-click="toggleScore(d, task)">
           <i class="fa fa-2x text-primary" ng-class="{'fa-star fa-spin':getScore(d, task)>0,'fa-star-o':getScore(d, task)===0}"></i>
         </td>
       </tr>
     </tbody>
+    <tfoot>
+      <tr>
+        <th class="text-center" colspan="8">
+          <i class="fa fa-diamond text-primary"></i> Total earned: {{total.total}} | Week: {{total.week}} | Balance: {{total.balance}} |
+          <a href="#" ng-click="payout()">Payout</a>
+          <i class="fa fa-diamond text-primary"></i>
+        </th>
+      </tr>
+    </tfoot>
   </table>
 </div>

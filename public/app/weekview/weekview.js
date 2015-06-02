@@ -12,6 +12,27 @@
       $scope.dates = [];
       $scope.tasks = [];
       $scope.scores = {}; // hash set
+      $scope.total = {
+        _total: 0,
+        _week: 0,
+        get week() {
+          return Object.keys($scope.scores).map(function(k) {
+            return $scope.scores[k].value || 0;
+          }).reduce(function(a, b) {
+            return a + b;
+          }, 0);
+        },
+        get total() {
+          return this._total + this.week - this._week;
+        },
+        get balance() {
+          return this.total;
+        },
+        clean: function() {
+          this._total = 0;
+          this._week = 0;
+        }
+      };
 
       $rootScope.$watch('currentChild', function() {
         $scope.updateWeekScores();
@@ -35,14 +56,23 @@
         if (!$rootScope.currentChild || !$scope.currentWeek) {
           $scope.tasks = [];
           $scope.scores = {};
+          $scope.total.clean();
         } else {
-          Score.query({
+          var q = {
             _child: $rootScope.currentChild._id,
             date: {
               $gte: $scope.currentWeek,
               $lt: $scope.currentWeek.clone().addWeeks(1)
             }
-          }, function(data) {
+          };
+          // opt-out removed tasks
+          if ($scope.currentWeek.compareTo($scope.thisWeek) >= 0) {
+            q.task = {
+              $in: $rootScope.currentChild.tasks
+            };
+          }
+          // query
+          Score.query(q, function(data) {
             if ($scope.currentWeek.compareTo($scope.thisWeek) >= 0) {
               $scope.tasks = $rootScope.currentChild.tasks || [];
             } else {
@@ -50,7 +80,7 @@
                 return {
                   task: g.key,
                   order: g.values.reduce(function(a, b) {
-                    return new Date(a.update_at) > new Date(b.update_at) ? a : b;
+                    return new Date(a.update_at).compareTo(new Date(b.update_at)) > 0 ? a : b;
                   }).order || -1
                 };
               }).sort(function(a, b) {
@@ -60,11 +90,23 @@
               });
             }
             $scope.scores = {};
+            $scope.total.clean();
             data.forEach(function(e) {
               e.date = new Date(e.date);
               var key = e.date.toISOString() + '|' + e.task;
               $scope.scores[key] = e;
             });
+            $scope.total._week = data.map(function(e) {
+              return e.value || 0;
+            }).reduce(function(a, b) {
+              return a + b;
+            }, 0);
+          });
+          // calc totals
+          Score.total({
+            _child: $rootScope.currentChild._id
+          }, function(d) {
+            $scope.total._total = d.total;
           });
         }
       };
@@ -123,7 +165,6 @@
             id: $rootScope.currentChild._id
           }, tasks, function(data) {
             $rootScope.currentChild.tasks = data;
-            $scope.tasks = data;
             $scope.updateWeekScores();
           });
         });

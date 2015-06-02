@@ -67,6 +67,11 @@
   .factory('Score', ['resource', function(resource) {
     return resource('/api/score/:id', {
       id: '@_id'
+    }, {
+      total: {
+        method: 'GET',
+        url: '/api/score/total/:_child'
+      }
     });
   }]);
 
