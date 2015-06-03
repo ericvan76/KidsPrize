@@ -1,14 +1,15 @@
 'use strict';
 
-var Child = require('./child-model'),
-  Score = require('../score/score-model'),
-  crud = require('../crud');
+var router = require('express').Router(),
+  crud = require('../util/crud'),
+  Child = require('./child-model'),
+  Score = require('../score/score-model');
 
-var router = crud(Child, {
+crud(router, Child, {
   userRestrict: true,
   path: '/child',
   include: ['create', 'read', 'patch', 'query']
-}).router;
+});
 
 router.delete('/child/:id', function(req, res, next) {
   Child.findOneAndRemove({

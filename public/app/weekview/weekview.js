@@ -13,8 +13,9 @@
       $scope.tasks = [];
       $scope.scores = {}; // hash set
       $scope.total = {
-        _total: 0,
         _week: 0,
+        _total: 0,
+        _balance: 0,
         get week() {
           return Object.keys($scope.scores).map(function(k) {
             return $scope.scores[k].value || 0;
@@ -26,16 +27,13 @@
           return this._total + this.week - this._week;
         },
         get balance() {
-          return this.total;
-        },
-        clean: function() {
-          this._total = 0;
-          this._week = 0;
+          return this.total - this._balance;
         }
       };
 
       $rootScope.$watch('currentChild', function() {
         $scope.updateWeekScores();
+        $scope.updateTotal();
       }, true);
 
       $scope.week = function(offset) {
@@ -50,13 +48,14 @@
           return $scope.currentWeek.clone().addHours(i * 24);
         });
         $scope.updateWeekScores();
+        $scope.updateTotal();
       };
 
       $scope.updateWeekScores = function() {
         if (!$rootScope.currentChild || !$scope.currentWeek) {
           $scope.tasks = [];
           $scope.scores = {};
-          $scope.total.clean();
+          $scope.total._week = 0;
         } else {
           var q = {
             _child: $rootScope.currentChild._id,
@@ -90,7 +89,6 @@
               });
             }
             $scope.scores = {};
-            $scope.total.clean();
             data.forEach(function(e) {
               e.date = new Date(e.date);
               var key = e.date.toISOString() + '|' + e.task;
@@ -102,7 +100,13 @@
               return a + b;
             }, 0);
           });
-          // calc totals
+        }
+      };
+
+      $scope.updateTotal = function() {
+        if (!$rootScope.currentChild || !$scope.currentWeek) {
+          $scope.total._total = 0;
+        } else {
           Score.total({
             _child: $rootScope.currentChild._id
           }, function(d) {
@@ -151,22 +155,10 @@
           windowClass: 'edit-tasks',
           //size: 'sm',
           resolve: {
-            childName: function() {
-              return $rootScope.currentChild.name;
-            },
-            tasks: function() {
-              return [].concat($rootScope.currentChild.tasks);
+            child: function() {
+              return $rootScope.currentChild;
             }
           }
-        });
-
-        modalInstance.result.then(function(tasks) {
-          Child.saveTasks({
-            id: $rootScope.currentChild._id
-          }, tasks, function(data) {
-            $rootScope.currentChild.tasks = data;
-            $scope.updateWeekScores();
-          });
         });
       };
     }

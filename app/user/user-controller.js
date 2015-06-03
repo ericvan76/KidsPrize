@@ -2,10 +2,21 @@
 
 var User = require('./user-model');
 
+/**
+ * Read a user by id
+ * @param  {ObjectId} id
+ * @param  {Function} callback
+ */
 exports.read = function(id, callback) {
   User.findById(id, callback);
 };
 
+/**
+ * Save user's preference
+ * @param  {ObjectId} id
+ * @param  {Object}   preference
+ * @param  {Function} callback
+ */
 exports.savePreference = function(id, preference, callback) {
   var update = {};
   for (var prop in preference) {
@@ -19,7 +30,12 @@ exports.savePreference = function(id, preference, callback) {
   }, callback);
 };
 
-// used by passport
+/**
+ * Will be called when passport got authorised.
+ * @param  {String}   provider [description]
+ * @param  {Object}   profile  [description]
+ * @param  {Function} callback [description]
+ */
 exports.postAuth = function(provider, profile, callback) {
   var u = normaliseUser(provider, profile);
   if (u instanceof Error) {
@@ -53,6 +69,12 @@ exports.postAuth = function(provider, profile, callback) {
   });
 };
 
+/**
+ * Returns a normalised user from social profile
+ * @param  {String} provider facebook|google|etc
+ * @param  {Object} profile  [description]
+ * @return {Object} normalised user
+ */
 function normaliseUser(provider, profile) {
   switch (provider) {
     case 'facebook':

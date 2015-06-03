@@ -47,9 +47,6 @@
           controller: 'EditChildCtrl',
           size: 'sm',
           resolve: {
-            title: function() {
-              return tab ? 'Edit Child' : 'Add Child';
-            },
             child: function() {
               if (tab) {
                 return angular.copy(tab.child);
@@ -69,19 +66,16 @@
         });
 
         modalInstance.result.then(function(child) {
-          child.$save(function(data) {
-            if (tab) {
-              tab.child = data;
-              $rootScope.currentChild = data;
-            } else {
-              var newtab = {
-                child: data,
-                isopen: false
-              };
-              $scope.tabs.push(newtab);
-              $rootScope.currentChild = data;
-            }
-          });
+          if (tab) {
+            $rootScope.currentChild = child;
+          } else {
+            var newtab = {
+              child: child,
+              isopen: false
+            };
+            $scope.tabs.push(newtab);
+            $rootScope.currentChild = child;
+          }
         });
       };
 

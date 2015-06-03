@@ -10,6 +10,10 @@
       user: null
     };
 
+    /**
+     * Requests access token
+     * @return {Promise} [description]
+     */
     auth.requestToken = function() {
       var deferred = $q.defer();
       var state = Math.floor((Math.random() * 10000) + 1).toString();
@@ -38,6 +42,10 @@
       return deferred.promise;
     };
 
+    /**
+     * Revokes access token
+     * @return {Promise} [description]
+     */
     auth.revokeToken = function() {
       var deferred = $q.defer();
       $http.post('/auth/token/revoke', null, {
@@ -52,6 +60,10 @@
       return deferred.promise;
     };
 
+    /**
+     * Logout
+     * @return {Promise} [description]
+     */
     auth.logout = function() {
       var deferred = $q.defer();
       $http.get('/auth/logout').then(function() {
@@ -60,6 +72,10 @@
       return deferred.promise;
     };
 
+    /**
+     * Returns login user
+     * @return {(Object|Promise)} Returns a user if it exists, otherwise returns a promise
+     */
     auth.loginUser = function() {
       if (!auth.user) {
         var deferred = $q.defer();

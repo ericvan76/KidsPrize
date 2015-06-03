@@ -81,7 +81,6 @@ app.use(['/api/*', '/auth/*'], function(req, res, next) {
 
 // api: error handlers
 app.use(function(err, req, res, next) {
-  console.error(err.stack);
   res.status(err.status || 500).send(err.message);
 });
 

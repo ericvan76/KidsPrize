@@ -73,6 +73,12 @@
         url: '/api/score/total/:_child'
       }
     });
+  }])
+
+  .factory('Payout', ['resource', function(resource) {
+    return resource('/api/payout/:id', {
+      id: '@_id'
+    });
   }]);
 
 })();

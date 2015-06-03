@@ -8,6 +8,10 @@
 
       var svc = {};
 
+      /**
+       * Loads themes
+       * @return {Promise} [description]
+       */
       svc.loadThemes = function() {
         // load themes
         var deferred = $q.defer();
@@ -26,12 +30,20 @@
         return deferred.promise;
       };
 
+      /**
+       * Changes theme
+       * @param  {String} cssCdn [description]
+       */
       svc.changeTheme = function(cssCdn) {
         if (cssCdn) {
           bootstrapElem().href = cssCdn;
         }
       };
 
+      /**
+       * Gets bootstrap link element from html
+       * @return {Element} [description]
+       */
       function bootstrapElem() {
         return $rootElement[0].children[0].getElementsByTagName('link')[0];
       }

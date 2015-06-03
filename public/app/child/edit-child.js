@@ -3,14 +3,16 @@
 
   angular.module('child')
 
-  .controller('EditChildCtrl', ['title', 'child', '$scope', '$modalInstance',
-    function(title, child, $scope, $modalInstance) {
+  .controller('EditChildCtrl', ['child', '$scope', '$modalInstance',
+    function(child, $scope, $modalInstance) {
 
-      $scope.title = title;
       $scope.child = child;
+      $scope.title = child._id === undefined ? 'Add Child' : 'Edit Child';
 
       $scope.save = function() {
-        $modalInstance.close($scope.child);
+        $scope.child.$save(function(data) {
+          $modalInstance.close(data);
+        });
       };
 
       $scope.cancel = function() {

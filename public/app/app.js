@@ -6,12 +6,12 @@
   angular.module('app.resource', []);
 
   angular.module('child', []);
-  angular.module('weekview', []);
   angular.module('tasks', []);
-  angular.module('home', ['child', 'weekview', 'tasks']);
+  angular.module('weekview', ['tasks']);
+  angular.module('home', ['child', 'weekview']);
 
   var app = angular.module('app', [
-    'ngRoute', 'ngResource', 'ui.bootstrap', 'ui.sortable',
+    'ngRoute', 'ngResource', 'ui.bootstrap', 'ui.sortable', 'ui.validate',
     'app.auth', 'app.util', 'app.resource', 'app.templates',
     'home'
   ]);

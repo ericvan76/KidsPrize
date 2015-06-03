@@ -63,6 +63,7 @@ gulp.task('scripts', function() {
       'bower_components/angular-bootstrap/ui-bootstrap.min.js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
       'bower_components/angular-ui-sortable/sortable.min.js',
+      'bower_components/angular-ui-utils/validate.min.js',
       'bower_components/js-base64/base64.min.js',
       'bower_components/date-utils/lib/date-utils.min.js'
     ])

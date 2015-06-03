@@ -4,6 +4,13 @@
   angular.module('app.util')
 
   .factory('groupby', [function() {
+
+    /**
+     * groupby function
+     * @param  {Object[]} arr [description]
+     * @param  {String}   key [description]
+     * @return {Object[]}       [description]
+     */
     return function groupby(arr, key) {
       var result = [];
       arr.forEach(function(element, index) {

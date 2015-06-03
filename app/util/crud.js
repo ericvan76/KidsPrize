@@ -1,7 +1,14 @@
 (function() {
   'use strict';
 
-  module.exports = function(model, option) {
+  /**
+   * Generates CURD routes
+   * @param  {express.Router} router    [description]
+   * @param  {mongoose.Model} model     [description]
+   * @param  {Object}         [option]  [description]
+   * @return {express.Router}           [description]
+   */
+  module.exports = function(router, model, option) {
 
     var base64 = require('js-base64').Base64;
 
@@ -11,7 +18,6 @@
     var include = opt.include || ['create', 'read', 'patch', 'delete', 'query'];
 
     var controller = {};
-    var router = require('express').Router();
 
     controller.create = function(uid, o, cb) {
       if (userRestrict) {
@@ -127,10 +133,7 @@
         });
       });
     }
-    return {
-      controller: controller,
-      router: router
-    };
+    return router;
   };
 
 })();
