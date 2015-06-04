@@ -44,21 +44,25 @@
   }])
 
   .factory('User', ['resource', function(resource) {
-    return resource('/api/user', null, {
+    return resource('/api/user/:verb', null, {
       savePreference: {
         method: 'POST',
-        url: '/api/user/preference'
+        params: {
+          verb: 'preference'
+        }
       }
     });
   }])
 
   .factory('Child', ['resource', function(resource) {
-    return resource('/api/child/:id', {
+    return resource('/api/child/:id/:verb', {
       id: '@_id'
     }, {
       saveTasks: {
         method: 'POST',
-        url: '/api/child/:id/tasks',
+        params: {
+          verb: 'tasks'
+        },
         isArray: true
       }
     });
@@ -78,6 +82,11 @@
   .factory('Payout', ['resource', function(resource) {
     return resource('/api/payout/:id', {
       id: '@_id'
+    }, {
+      total: {
+        method: 'GET',
+        url: '/api/payout/total/:_child'
+      }
     });
   }]);
 

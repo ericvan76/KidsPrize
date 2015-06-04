@@ -7,8 +7,10 @@
 
   angular.module('child', []);
   angular.module('tasks', []);
-  angular.module('weekview', ['tasks']);
-  angular.module('home', ['child', 'weekview']);
+  angular.module('weekview', []);
+  angular.module('payout', []);
+
+  angular.module('home', ['child', 'weekview', 'tasks', 'payout']);
 
   var app = angular.module('app', [
     'ngRoute', 'ngResource', 'ui.bootstrap', 'ui.sortable', 'ui.validate',

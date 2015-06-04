@@ -1,4 +1,4 @@
-<ul class="nav nav-pills noselect">
+<ul class="children nav nav-pills noselect">
   <li ng-class="{'active':isSelected(tab)}" ng-repeat="tab in tabs" dropdown is-open="tab.isopen">
     <a href="#" ng-click="onClick(tab, $event)">
       <i class="fa fa-child" ng-class="{'fa-spin':isSelected(tab)}"></i> {{tab.child.name}} <span class="caret" ng-show="isSelected(tab)"></span>

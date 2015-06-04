@@ -67,6 +67,7 @@
 
         modalInstance.result.then(function(child) {
           if (tab) {
+            tab.child = child;
             $rootScope.currentChild = child;
           } else {
             var newtab = {

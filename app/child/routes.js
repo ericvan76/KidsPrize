@@ -3,7 +3,8 @@
 var router = require('express').Router(),
   crud = require('../util/crud'),
   Child = require('./child-model'),
-  Score = require('../score/score-model');
+  Score = require('../score/score-model'),
+  Payout = require('../score/payout-model');
 
 crud(router, Child, {
   userRestrict: true,
@@ -22,12 +23,12 @@ router.delete('/child/:id', function(req, res, next) {
     Score.remove({
       _user: req.user._id,
       _child: req.params.id
-    }, function(err) {
-      if (err) {
-        return next(err);
-      }
-      res.status(200).end();
-    });
+    }, function(err) {});
+    Payout.remove({
+      _user: req.user._id,
+      _child: req.params.id
+    }, function(err) {});
+    return res.status(200).end();
   });
 });
 

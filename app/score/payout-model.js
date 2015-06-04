@@ -3,7 +3,7 @@
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
-var ScoreSchema = new Schema({
+var PayoutSchema = new Schema({
   _user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -18,7 +18,7 @@ var ScoreSchema = new Schema({
     type: String,
     required: true,
   },
-  value: {
+  amount: {
     type: Number,
     required: true,
     min: 0
@@ -29,3 +29,6 @@ var ScoreSchema = new Schema({
     default: Date.now
   }
 });
+
+// exports
+module.exports = mongoose.model('Payout', PayoutSchema);

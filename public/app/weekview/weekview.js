@@ -3,8 +3,8 @@
 
   angular.module('weekview')
 
-  .controller('WeekviewCtrl', ['Child', 'Score', 'groupby', '$scope', '$rootScope', '$modal',
-    function(Child, Score, groupby, $scope, $rootScope, $modal) {
+  .controller('WeekviewCtrl', ['Child', 'Score', 'Payout', 'groupby', '$scope', '$rootScope', '$modal',
+    function(Child, Score, Payout, groupby, $scope, $rootScope, $modal) {
 
       $scope.today = null;
       $scope.thisWeek = null;
@@ -15,7 +15,7 @@
       $scope.total = {
         _week: 0,
         _total: 0,
-        _balance: 0,
+        _payouts: 0,
         get week() {
           return Object.keys($scope.scores).map(function(k) {
             return $scope.scores[k].value || 0;
@@ -27,12 +27,13 @@
           return this._total + this.week - this._week;
         },
         get balance() {
-          return this.total - this._balance;
+          return this.total - this._payouts;
         }
       };
 
       $rootScope.$watch('currentChild', function() {
         $scope.updateWeekScores();
+        $scope.updatePayouts();
         $scope.updateTotal();
       }, true);
 
@@ -104,13 +105,25 @@
       };
 
       $scope.updateTotal = function() {
-        if (!$rootScope.currentChild || !$scope.currentWeek) {
+        if (!$rootScope.currentChild) {
           $scope.total._total = 0;
         } else {
           Score.total({
             _child: $rootScope.currentChild._id
           }, function(d) {
             $scope.total._total = d.total;
+          });
+        }
+      };
+
+      $scope.updatePayouts = function() {
+        if (!$rootScope.currentChild) {
+          $scope.total._payouts = 0;
+        } else {
+          Payout.total({
+            _child: $rootScope.currentChild._id
+          }, function(d) {
+            $scope.total._payouts = d.total;
           });
         }
       };
@@ -147,7 +160,6 @@
       };
 
       $scope.editTasks = function() {
-
         var modalInstance = $modal.open({
           animation: true,
           templateUrl: 'edit-tasks.html',
@@ -160,6 +172,33 @@
             }
           }
         });
+
+        modalInstance.result.then(function(tasks) {
+          $rootScope.currentChild.tasks = tasks;
+        });
+      };
+
+      $scope.payout = function() {
+        var modalInstance = $modal.open({
+          animation: true,
+          templateUrl: 'payout.html',
+          controller: 'PayoutCtrl',
+          windowClass: 'payout',
+          size: 'md',
+          resolve: {
+            child: function() {
+              return $rootScope.currentChild;
+            },
+            balance: function() {
+              return $scope.total.balance;
+            }
+          }
+        });
+
+        modalInstance.result.then(function() {
+          $scope.updatePayouts();
+        });
+
       };
     }
   ])

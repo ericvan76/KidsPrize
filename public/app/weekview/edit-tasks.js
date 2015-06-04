@@ -22,8 +22,7 @@
         Child.saveTasks({
           id: $scope.child._id
         }, newTasks, function(data) {
-          $scope.child.tasks = data;
-          $modalInstance.close();
+          $modalInstance.close(data);
         });
       };
 
