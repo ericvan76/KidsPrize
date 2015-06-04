@@ -25,7 +25,7 @@
     "start": "node server"
   },
   "license": "GPL2",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "devDependencies": {
     "del": "^1.1.1",
     "gulp": "^3.8.11",
