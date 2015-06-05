@@ -4,7 +4,6 @@ var gulp = require('gulp'),
   ngAnnotate = require('gulp-ng-annotate'),
   ngTemplates = require('gulp-ng-templates'),
   uglify = require('gulp-uglify'),
-  image = require('gulp-image'),
   sass = require('gulp-sass'),
   minifyCss = require('gulp-minify-css'),
   minifyHTML = require('gulp-minify-html'),
@@ -130,7 +129,6 @@ gulp.task('images', function() {
   del.sync('public/dist/img/**/*');
 
   return gulp.src('public/img/**/*')
-    .pipe(image())
     .pipe(gulp.dest('public/dist/img'));
 
 });

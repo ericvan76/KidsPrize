@@ -26,7 +26,6 @@ router.get('/score/total/:childId',
     }
     ScoreCtrl.total(req.user._id, req.params.childId, function(err, data) {
       if (err) {
-        console.log(err);
         return next(err);
       }
       return res.json(data);
@@ -48,7 +47,6 @@ router.get('/payout/total/:childId',
     }
     PayoutCtrl.total(req.user._id, req.params.childId, function(err, data) {
       if (err) {
-        console.log(err);
         return next(err);
       }
       return res.json(data);
