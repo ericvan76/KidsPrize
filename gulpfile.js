@@ -156,3 +156,15 @@ gulp.task('server', function() {
 
 // build & start server
 gulp.task('default', ['watch', 'server']);
+
+gulp.task('production', ['build'], function() {
+  return nodemon({
+    script: 'server.js',
+    ext: 'js',
+    ignore: ['public/**/*', 'node_modules/**/*', 'bower_components/**/*'],
+    env: {
+      'NODE_ENV': 'production',
+      'PORT': 80
+    }
+  });
+});
