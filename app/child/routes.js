@@ -33,12 +33,15 @@ router.delete('/child/:id', function(req, res, next) {
 });
 
 router.post('/child/:id/tasks', function(req, res, next) {
+  var uniqueTasks = req.body.filter(function(item, pos) {
+    return req.body.indexOf(item) === pos;
+  });
   Child.findOneAndUpdate({
     _user: req.user._id,
     _id: req.params.id
   }, {
     $set: {
-      tasks: req.body
+      tasks: uniqueTasks
     }
   }, {
     new: true,

@@ -22,6 +22,7 @@
     "js-base64": "~2.1.8",
     "angular-ui-sortable": "~0.13.3",
     "date-utils": "~1.2.16",
-    "angular-ui-utils": "bower-validate"
+    "angular-ui-utils": "bower-validate",
+    "underscore": "~1.8.3"
   }
 }

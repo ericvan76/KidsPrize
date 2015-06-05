@@ -25,8 +25,7 @@ gulp.task('styles', function() {
   return merge(
     // concat vendors
     gulp.src([
-      'bower_components/bootstrap-social/bootstrap-social.css',
-      'bower_components/angular-bootstrap/ui-bootstrap-csp.css'
+      'bower_components/bootstrap-social/bootstrap-social.css'
     ])
     .pipe(sourcemaps.init())
     .pipe(concat('vender.css'))
@@ -60,12 +59,12 @@ gulp.task('scripts', function() {
   return merge(
     // concat vendors
     gulp.src([
-      'bower_components/angular-bootstrap/ui-bootstrap.min.js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
       'bower_components/angular-ui-sortable/sortable.min.js',
       'bower_components/angular-ui-utils/validate.min.js',
       'bower_components/js-base64/base64.min.js',
-      'bower_components/date-utils/lib/date-utils.min.js'
+      'bower_components/date-utils/lib/date-utils.min.js',
+      'bower_components/underscore/underscore.min.js'
     ])
     .pipe(sourcemaps.init())
     .pipe(concat('vender.js'))

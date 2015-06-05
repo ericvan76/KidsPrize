@@ -17,7 +17,8 @@
     "passport-facebook": "^2.0.0",
     "passport-google-oauth": "^0.2.0",
     "passport-http-bearer": "^1.0.1",
-    "serve-favicon": "^2.2.0"
+    "serve-favicon": "^2.2.0",
+    "underscore": "^1.8.3"
   },
   "name": "kids-reward",
   "private": true,
