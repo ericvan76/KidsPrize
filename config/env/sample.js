@@ -3,11 +3,11 @@
 module.exports = {
   numCPUs: 1, // null to auto
   app: {
-    name: 'Kids-Reward'
+    name: 'Kids-Prize'
   },
   // mongoose
   mongoose: {
-    dbURL: 'mongodb://127.0.0.1:27017/kids-reward',
+    dbURL: 'mongodb://127.0.0.1:27017/kids-prize',
     debug: false,
     options: {
       /**

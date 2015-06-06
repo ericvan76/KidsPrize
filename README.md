@@ -1,1 +1,1 @@
-# kids-reward
+# kids-prize
