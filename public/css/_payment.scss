@@ -1,4 +1,4 @@
-.payout .modal-dialog {
+.payment .modal-dialog {
   height: 90%;
   .modal-content {
     display: flex;
@@ -18,7 +18,7 @@
   }
 }
 
-table.payout {
+table.payment {
   table-layout: fixed;
   .row-date {
     width: 30%;

@@ -3,9 +3,9 @@
 
   angular.module('tasks')
 
-  .controller('EditTasksCtrl', ['Child', '$scope', '$modalInstance', 'child',
+  .controller('EditTasksCtrl', ['Child', 'Score', '$scope', '$modalInstance', 'child', 'thisWeek',
 
-    function(Child, $scope, $modalInstance, child) {
+    function(Child, Score, $scope, $modalInstance, child, thisWeek) {
 
       $scope.showWarning = true;
       $scope.child = child;
@@ -22,7 +22,12 @@
         Child.saveTasks({
           id: $scope.child._id
         }, newTasks, function(data) {
-          $modalInstance.close(data);
+          Score.cleanup({
+            childId: $scope.child._id,
+            from: thisWeek
+          }, function() {
+            $modalInstance.close(data);
+          });
         });
       };
 

@@ -1,7 +1,6 @@
 (function() {
   'use strict';
 
-
   angular.module('home')
 
   .controller('HomeCtrl', ['$scope', 'User', 'Themes', 'user', 'themes',

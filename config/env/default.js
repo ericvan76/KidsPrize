@@ -1,9 +1,10 @@
 'use strict';
 
 module.exports = {
-  numCPUs: 1, // null to auto
+  numCPUs: null, // null to auto
   app: {
-    name: 'Kids-Prize'
+    name: 'Kids-Prize',
+    version: '1.0.0'
   },
   // mongoose
   mongoose: {
@@ -25,7 +26,7 @@ module.exports = {
   },
   cookie: {
     httpOnly: true,
-    maxAge: 3600000
+    maxAge: 604800000
   },
   // oauth setting
   facebook: {

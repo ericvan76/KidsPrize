@@ -75,17 +75,21 @@
       total: {
         method: 'GET',
         url: '/api/score/total/:_child'
+      },
+      cleanup: {
+        method: 'POST',
+        url: '/api/score/cleanup'
       }
     });
   }])
 
-  .factory('Payout', ['resource', function(resource) {
-    return resource('/api/payout/:id', {
+  .factory('Payment', ['resource', function(resource) {
+    return resource('/api/payment/:id', {
       id: '@_id'
     }, {
       total: {
         method: 'GET',
-        url: '/api/payout/total/:_child'
+        url: '/api/payment/total/:_child'
       }
     });
   }]);

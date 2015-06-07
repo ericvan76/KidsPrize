@@ -3,8 +3,7 @@
 var router = require('express').Router(),
   crud = require('../util/crud'),
   Child = require('./child-model'),
-  Score = require('../score/score-model'),
-  Payout = require('../score/payout-model');
+  ChildCtrl = require('./child-controller');
 
 crud(router, Child, {
   userRestrict: true,
@@ -13,64 +12,20 @@ crud(router, Child, {
 });
 
 router.delete('/child/:id', function(req, res, next) {
-  Child.findOneAndRemove({
-    _user: req.user._id,
-    _id: req.params.id
-  }, function(err) {
+  ChildCtrl.deleteChild(req.user._id, req.params.id, function(err) {
     if (err) {
       return next(err);
     }
-    Score.remove({
-      _user: req.user._id,
-      _child: req.params.id
-    }, function(err) {});
-    Payout.remove({
-      _user: req.user._id,
-      _child: req.params.id
-    }, function(err) {});
     return res.status(200).end();
   });
 });
 
 router.post('/child/:id/tasks', function(req, res, next) {
-  var uniqueTasks = req.body.filter(function(item, pos) {
-    return req.body.indexOf(item) === pos;
-  });
-  Child.findOneAndUpdate({
-    _user: req.user._id,
-    _id: req.params.id
-  }, {
-    $set: {
-      tasks: uniqueTasks
-    }
-  }, {
-    new: true,
-    upsert: false
-  }, function(err, child) {
+  ChildCtrl.updateTasks(req.user._id, req.params.id, req.body, function(err, data) {
     if (err) {
       return next(err);
     }
-    if (!child) {
-      return res.status(404).send('Child not found.');
-    }
-    var td = Date.UTCtoday();
-    var thisWeek = td.addHours(-24 * td.getDay());
-    Score.remove({
-      _user: req.user._id,
-      _child: child._id,
-      date: {
-        $gte: thisWeek
-      },
-      task: {
-        $nin: child.tasks
-      }
-    }, function(err) {
-      if (err) {
-        return next(err);
-      }
-      return res.json(child.tasks);
-    });
-
+    return res.json(data);
   });
 });
 

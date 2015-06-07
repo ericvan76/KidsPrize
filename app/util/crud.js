@@ -41,7 +41,7 @@
       if (userRestrict) {
         q._user = uid;
       }
-      delete o._id;
+      delete o._id; // do not update _id
       if (model.schema.path('update_at').instance === 'Date' &&
         model.schema.pathType('update_at') === 'real') {
         o.update_at = Date.now();

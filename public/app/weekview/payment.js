@@ -1,18 +1,18 @@
 (function() {
   'use strict';
 
-  angular.module('payout')
+  angular.module('payment')
 
-  .controller('PayoutCtrl', ['child', 'balance', 'Payout', '$scope', '$modalInstance',
-    function(child, balance, Payout, $scope, $modalInstance) {
+  .controller('PaymentCtrl', ['child', 'balance', 'Payment', '$scope', '$modalInstance',
+    function(child, balance, Payment, $scope, $modalInstance) {
 
       $scope.child = child;
       $scope.balance = balance;
-      $scope.payouts = [];
-      $scope.newPayout = createNew();
+      $scope.payments = [];
+      $scope.newPayment = createNew();
 
       function createNew() {
-        return new Payout({
+        return new Payment({
           _child: $scope.child._id,
           description: null,
           amount: 0
@@ -20,21 +20,21 @@
       }
 
       $scope.query = function() {
-        Payout.query({
+        Payment.query({
           _child: $scope.child._id,
           update_at: {
             $gt: Date.today().addYears(-1)
           }
         }, function(data) {
-          $scope.payouts = data || [];
+          $scope.payments = data || [];
         });
       };
 
       $scope.submit = function() {
-        $scope.newPayout.$save(function(data) {
-          $scope.payouts.push(data);
+        $scope.newPayment.$save(function(data) {
+          $scope.payments.push(data);
           $scope.balance -= data.amount;
-          $scope.newPayout = createNew();
+          $scope.newPayment = createNew();
           $scope.form.$setPristine(true);
         });
       };
