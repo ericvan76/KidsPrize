@@ -171,7 +171,7 @@
           templateUrl: 'edit-tasks.html',
           controller: 'EditTasksCtrl',
           windowClass: 'edit-tasks',
-          //size: 'sm',
+          size: 'md',
           resolve: {
             child: function() {
               return $rootScope.currentChild;
