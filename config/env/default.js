@@ -2,6 +2,7 @@
 
 module.exports = {
   numCPUs: null, // null to auto
+  port: 3000,
   app: {
     name: 'Kids-Prize',
     version: '1.0.0'

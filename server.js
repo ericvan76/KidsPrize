@@ -28,7 +28,7 @@ if (numCPUs > 1 && cluster.isMaster) {
 
   // create http server
   var express = require('./app/express');
-  var port = process.env.PORT || 3000;
+  var port = process.env.PORT || config.port || 3000;
   express.set('port', port);
 
   var server = require('http').createServer(express);
