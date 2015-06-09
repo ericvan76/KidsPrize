@@ -5,3 +5,4 @@ public/dist/
 logs
 config/env/*.js
 !config/env/default.js
+*.pem

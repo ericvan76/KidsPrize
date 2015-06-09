@@ -1,7 +1,8 @@
 (function() {
   'use strict';
 
-  var log4js = require('log4js');
+  var log4js = require('log4js'),
+    config = require('./');
 
   log4js.configure({
     appenders: [{
@@ -13,7 +14,7 @@
       }
     }, {
       type: 'dateFile',
-      filename: 'logs/file.log',
+      filename: config.log.filename,
       pattern: '-yyyy-MM-dd',
       alwaysIncludePattern: false,
       category: 'console',

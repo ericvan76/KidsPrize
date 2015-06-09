@@ -7,6 +7,9 @@ module.exports = {
     name: 'Kids-Prize',
     version: '1.0.0'
   },
+  log: {
+    filename: 'logs/file.log'
+  },
   // mongoose
   mongoose: {
     dbURL: 'mongodb://127.0.0.1:27017/kids-prize',
