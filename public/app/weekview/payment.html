@@ -1,21 +1,23 @@
+<kz-spinner></kz-spinner>
 <div class="modal-header">
   <button type="button" class="close" aria-label="Close" ng-click="close()">
     <i class="fa fa-times"></i>
   </button>
-  <h3 class="modal-title">Payout - {{child.name}}</h3>
+  <h3 class="modal-title">Rewards - {{child.name}}</h3>
 </div>
 <div class="modal-body">
   <form class="form-inline" name="form" ng-submit="form.$valid && submit()" novalidate>
     <div class="form-group" ng-class="{'has-error': (form.$submitted || form.description.$dirty) && form.description.$invalid }">
-      <input type="text" size="40" ng-disabled="balance<1" class="form-control" name="description" ng-model="newPayout.description" required maxlength="50" placeholder="Description">
+      <input type="text" size="30" ng-disabled="balance<1" class="form-control" name="description" ng-model="newPayment.description" required maxlength="50" placeholder="A set of Lego or icecream :-)">
     </div>
+    <span>&nbsp;</span>
     <div class="form-group" ng-class="{'has-error': (form.$submitted || form.amount.$dirty) && form.amount.$invalid }">
-      <input type="number" ng-disabled="balance<1" class="form-control" name="amount" ng-model="newPayout.amount" min="1" max="{{balance}}" required>
+      <input type="number" ng-disabled="balance<1" class="form-control" name="amount" ng-model="newPayment.amount" min="1" max="{{balance}}" required>
     </div>
-    <button type="submit" ng-disabled="balance<1" class="btn btn-default">Pay</button>
-    <span class="pull-right">Balance: {{balance}}</span>
+    <span>&nbsp;Balance: {{balance}}</span>
+    <button type="submit" ng-disabled="balance<1" class="btn btn-default pull-right">Pay for it!</button>
   </form>
-  <table class="payout table table-responsive table-striped">
+  <table class="payment table table-responsive table-striped">
     <thead>
       <tr>
         <th class="row-date">Date</th>
@@ -24,7 +26,7 @@
       </tr>
     </thead>
     <tbody ng-init="query()">
-      <tr ng-repeat="p in payouts | orderBy:'-update_at'">
+      <tr ng-repeat="p in payments | orderBy:'-update_at'">
         <td>{{p.update_at | date: 'mediumDate'}}</td>
         <td class="break-word">{{p.description}}</td>
         <td>{{p.amount}}</td>
@@ -32,6 +34,3 @@
     </tbody>
   </table>
 </div>
-<!-- <div class="modal-footer">
-  <button type="button" class="btn btn-default" ng-click="close()">Close</button>
-</div> -->

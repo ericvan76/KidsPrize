@@ -3,8 +3,8 @@
 
   angular.module('weekview')
 
-  .controller('WeekviewCtrl', ['Child', 'Score', 'Payout', 'groupby', '$scope', '$rootScope', '$modal',
-    function(Child, Score, Payout, groupby, $scope, $rootScope, $modal) {
+  .controller('WeekviewCtrl', ['Child', 'Score', 'Payment', 'groupby', '$scope', '$rootScope', '$modal',
+    function(Child, Score, Payment, groupby, $scope, $rootScope, $modal) {
 
       $scope.today = null;
       $scope.thisWeek = null;
@@ -15,7 +15,7 @@
       $scope.total = {
         _week: 0,
         _total: 0,
-        _payouts: 0,
+        _payments: 0,
         get week() {
           return Object.keys($scope.scores).map(function(k) {
             return $scope.scores[k].value || 0;
@@ -27,26 +27,32 @@
           return this._total + this.week - this._week;
         },
         get balance() {
-          return this.total - this._payouts;
+          return this.total - this._payments;
         }
       };
 
       $rootScope.$watch('currentChild', function() {
         $scope.updateWeekScores();
-        $scope.updatePayouts();
+        $scope.updatePayments();
         $scope.updateTotal();
       }, true);
 
       $scope.week = function(offset) {
-        $scope.today = Date.UTCtoday();
-        $scope.thisWeek = $scope.today.clone().addHours(-24 * $scope.today.getDay());
+        $scope.today = new Date(Date.today().toYMD());
+        $scope.thisWeek = $scope.today.clone().add({
+          days: -1 * $scope.today.getDay()
+        });
         if (offset === 0 || $scope.currentWeek === null) {
           $scope.currentWeek = $scope.thisWeek;
         } else {
-          $scope.currentWeek.addWeeks(offset);
+          $scope.currentWeek.add({
+            weeks: offset
+          });
         }
         $scope.dates = [0, 1, 2, 3, 4, 5, 6].map(function(i) {
-          return $scope.currentWeek.clone().addHours(i * 24);
+          return $scope.currentWeek.clone().add({
+            days: i
+          });
         });
         $scope.updateWeekScores();
         $scope.updateTotal();
@@ -116,14 +122,14 @@
         }
       };
 
-      $scope.updatePayouts = function() {
+      $scope.updatePayments = function() {
         if (!$rootScope.currentChild) {
-          $scope.total._payouts = 0;
+          $scope.total._payments = 0;
         } else {
-          Payout.total({
+          Payment.total({
             _child: $rootScope.currentChild._id
           }, function(d) {
-            $scope.total._payouts = d.total;
+            $scope.total._payments = d.total;
           });
         }
       };
@@ -165,10 +171,13 @@
           templateUrl: 'edit-tasks.html',
           controller: 'EditTasksCtrl',
           windowClass: 'edit-tasks',
-          //size: 'sm',
+          size: 'md',
           resolve: {
             child: function() {
               return $rootScope.currentChild;
+            },
+            thisWeek: function() {
+              return $scope.thisWeek;
             }
           }
         });
@@ -178,12 +187,12 @@
         });
       };
 
-      $scope.payout = function() {
+      $scope.payment = function() {
         var modalInstance = $modal.open({
           animation: true,
-          templateUrl: 'payout.html',
-          controller: 'PayoutCtrl',
-          windowClass: 'payout',
+          templateUrl: 'payment.html',
+          controller: 'PaymentCtrl',
+          windowClass: 'payment',
           size: 'md',
           resolve: {
             child: function() {
@@ -196,7 +205,7 @@
         });
 
         modalInstance.result.then(function() {
-          $scope.updatePayouts();
+          $scope.updatePayments();
         });
 
       };

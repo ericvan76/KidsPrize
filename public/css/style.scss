@@ -1,27 +1,10 @@
-@import '_dropdown-submenu.css';
+@import '_dropdown-submenu.scss';
+@import '_children.scss';
+@import '_weekview.scss';
+@import '_payment.scss';
 body {
   padding: 50px;
   /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
-}
-
-a {
-  /*color: #00B7FF;*/
-}
-
-ul.children {
-  text-align: center;
-  li {
-    float: none;
-    display: inline-block;
-    *display: inline;
-    zoom: 1;
-    ul.dropdown-menu {
-      text-align: left;
-      li {
-        display: block;
-      }
-    }
-  }
 }
 
 .break-word {
@@ -41,49 +24,23 @@ i.handle {
   cursor: move;
 }
 
-.weekview .table {
-  table-layout: fixed;
-  .row-task {
-    width: 30%;
-  }
-  .row-score {
-    width: 10%;
-  }
-}
-
-.edit-tasks .modal-dialog {
-  width: 400px;
-}
-
-.payout .modal-dialog {
-  height: 90%;
-  .modal-content {
-    display: flex;
-    display: -webkit-flex;
-    display: -ms-flex;
-    flex-flow: column;
-    -webkit-flex-flow: column;
-    -ms-flex-flow: column;
-    height: 100%;
-    overflow-y: initial !important;
-    .modal-body {
-      flex: 1;
-      -webkit-flex: 1;
-      -ms-flex: 1;
-      overflow-y: auto;
-    }
+.spinner {
+  position: absolute;
+  z-index: 999;
+  overflow: show;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  line-height: 100%;
+  text-align: center;
+  display: inline-block;
+  i {
+    position: absolute;
+    bottom: 50%;
   }
 }
 
-.payout .table {
-  table-layout: fixed;
-  .row-date {
-    width: 20%;
-  }
-  .row-description {
-    width: 60%;
-  }
-  .row-amount {
-    width: 20%;
-  }
+.unclickable {
+  pointer-events: none;
 }

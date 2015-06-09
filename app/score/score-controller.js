@@ -21,21 +21,10 @@ exports.total = function(userId, childId, callback) {
     if (!child) {
       return callback(new HttpError(404, 'Child not found.'));
     }
-    var td = Date.UTCtoday();
-    var thisWeek = td.addHours(-24 * td.getDay());
     Score.aggregate([{
       $match: {
         _user: userId,
-        _child: child._id,
-        $or: [{
-          date: {
-            $lt: thisWeek
-          }
-        }, {
-          task: {
-            $in: child.tasks
-          }
-        }]
+        _child: child._id
       }
     }, {
       $group: {
@@ -56,6 +45,43 @@ exports.total = function(userId, childId, callback) {
       return callback(null, data[0] || {
         total: 0
       });
+    });
+  });
+};
+
+
+/**
+ * cleanup inactive scores after tasks updating.
+ * @param  {ObjectId}   userId   [description]
+ * @param  {ObjectId}   childId  [description]
+ * @param  {Date}   from     [description]
+ * @param  {Function} callback [description]
+ */
+exports.cleanup = function(userId, childId, from, callback) {
+  Child.findOne({
+    _user: userId,
+    _id: childId
+  }, function(err, child) {
+    if (err) {
+      return callback(err);
+    }
+    if (!child) {
+      return callback(new HttpError(404, 'Child not found.'));
+    }
+    Score.remove({
+      _user: userId,
+      _child: child._id,
+      date: {
+        $gte: from
+      },
+      task: {
+        $nin: child.tasks
+      }
+    }, function(err) {
+      if (err) {
+        return callback(err);
+      }
+      return callback(null);
     });
   });
 };

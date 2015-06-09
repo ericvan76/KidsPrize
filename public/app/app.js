@@ -8,9 +8,9 @@
   angular.module('child', []);
   angular.module('tasks', []);
   angular.module('weekview', []);
-  angular.module('payout', []);
+  angular.module('payment', []);
 
-  angular.module('home', ['child', 'weekview', 'tasks', 'payout']);
+  angular.module('home', ['child', 'weekview', 'tasks', 'payment']);
 
   var app = angular.module('app', [
     'ngRoute', 'ngResource', 'ui.bootstrap', 'ui.sortable', 'ui.validate',
@@ -55,9 +55,9 @@
 
   app.config(['$httpProvider', function($httpProvider) {
 
-    $httpProvider.interceptors.push(['$q', '$location', '$injector',
+    $httpProvider.interceptors.push(['$q', '$location', '$injector', '$rootScope', '$timeout',
 
-      function($q, $location, $injector) {
+      function($q, $location, $injector, $rootScope, $timeout) {
 
         function isApi(url) {
           if (/^\/api\//i.test(url)) {
@@ -68,6 +68,7 @@
 
         return {
           request: function(config) {
+            $rootScope.loading = true;
             config.timeout = 30000; // timeout 30 sec
             // add Authorization header for all calls startswith '/api/'
             if (isApi(config.url)) {
@@ -89,9 +90,13 @@
             }
           },
           response: function(response) {
-            return response;
+            return $timeout(function() {
+              $rootScope.loading = false;
+              return response;
+            }, 0);
           },
           responseError: function(response) {
+            $rootScope.loading = false;
             if (response.status === 401) {
               $location.url('/login');
             } else {

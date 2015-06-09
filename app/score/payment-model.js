@@ -3,7 +3,7 @@
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
-var PayoutSchema = new Schema({
+var PaymentSchema = new Schema({
   _user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -31,4 +31,4 @@ var PayoutSchema = new Schema({
 });
 
 // exports
-module.exports = mongoose.model('Payout', PayoutSchema);
+module.exports = mongoose.model('Payment', PaymentSchema);
