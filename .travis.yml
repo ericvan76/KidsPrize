@@ -10,4 +10,4 @@ cache:
   - node_modules
   - bower_components
 addons:
-  artifacts: true
+  artifacts: false
