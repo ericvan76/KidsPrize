@@ -1,13 +1,21 @@
-'use static';
+'use strict';
 
-var Token = require('./token'),
+var Token = require('./token-model'),
   uuid = require('node-uuid'),
   base64 = require('js-base64').Base64,
   config = require('../../config');
 
+/**
+ * Issues access token
+ * @param  {ObjectId} userId
+ * @param  {String}   clientId
+ * @param  {String}   session
+ * @param  {String}   state
+ * @param  {Function} callback
+ */
 exports.issueToken = function(userId, clientId, session, state, callback) {
   if (clientId === 'webapp' && (session === undefined || session === null)) {
-    return callback(new Error('Unauthorised'));
+    return callback(new Error('Unauthorised.'));
   }
   var expires_in_hours = 4;
   var access_token = base64.encode(uuid.v4());
@@ -51,6 +59,11 @@ exports.issueToken = function(userId, clientId, session, state, callback) {
   });
 };
 
+/**
+ * Validates given access token
+ * @param  {String}   token
+ * @param  {Function} callback
+ */
 exports.validateToken = function(token, callback) {
   Token.findOne({
     access_token: token,
@@ -76,6 +89,11 @@ exports.validateToken = function(token, callback) {
   });
 };
 
+/**
+ * Revokes given access token
+ * @param  {String}   token
+ * @param  {Function} callback
+ */
 exports.revokeToken = function(token, callback) {
   Token.remove({
     access_token: token

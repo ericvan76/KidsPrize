@@ -1,7 +1,6 @@
 'use strict';
 
 var express = require('express'),
-  errorhandler = require('errorhandler'),
   mongoose = require('mongoose'),
   passport = require('passport'),
   cookieParser = require('cookie-parser'),
@@ -10,7 +9,8 @@ var express = require('express'),
   MongoStore = require('connect-mongo')(session),
   path = require('path'),
   favicon = require('serve-favicon'),
-  morgan = require('morgan'),
+  errorhandler = require('errorhandler'),
+  log4js = require('log4js'),
   config = require('../config');
 
 var app = express();
@@ -29,19 +29,12 @@ app.use(express.static(path.join(__dirname, publicFolder)));
 var nodeEnv = process.env.NODE_ENV || 'development';
 
 if (nodeEnv === 'development') {
-  // error handling
   app.use(errorhandler());
-  // morgan logger
-  app.use(morgan('dev'));
-
-} else {
-  // morgan logger
-  app.use(morgan('combined', {
-    skip: function(req, res) {
-      return res.statusCode < 400;
-    }
-  }));
 }
+
+log4js.connectLogger(log4js.getLogger('console'), {
+  level: 'auto'
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({

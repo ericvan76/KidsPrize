@@ -3,6 +3,9 @@
 var cluster = require('cluster'),
   config = require('./config');
 
+// configure log4js
+require('./config/log');
+
 var numCPUs = config.numCPUs || require('os').cpus().length;
 
 if (numCPUs > 1 && cluster.isMaster) {

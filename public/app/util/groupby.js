@@ -4,16 +4,23 @@
   angular.module('app.util')
 
   .factory('groupby', [function() {
+
+    /**
+     * groupby function
+     * @param  {Object[]} arr [description]
+     * @param  {String}   key [description]
+     * @return {Object[]}       [description]
+     */
     return function groupby(arr, key) {
       var result = [];
       arr.forEach(function(element, index) {
         if (!result.some(function(e) {
-            return e.key === element.key;
+            return e.key === element[key];
           })) {
           result.push({
-            key: element.key,
+            key: element[key],
             values: arr.filter(function(x) {
-              return x.key === element.key;
+              return x[key] === element[key];
             })
           });
         }

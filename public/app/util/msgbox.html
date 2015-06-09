@@ -9,5 +9,5 @@
   </article>
 </div>
 <div class="modal-footer">
-  <button ng-repeat="cmd in commands" class="btn btn-{{cmd.class}}" ng-click="onclick(cmd.name)"><i class="fa fa-{{cmd.icon}}"></i> {{cmd.name}}</button>
+  <button ng-repeat="cmd in commands" type="button" class="btn btn-{{cmd.class}}" ng-click="onclick(cmd.name)"><i class="fa fa-{{cmd.icon}}"></i> {{cmd.name}}</button>
 </div>

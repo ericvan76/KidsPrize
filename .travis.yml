@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "0.12"
+before_script:
+  - npm install -g bower
+  - bower install
+script: "gulp build"
+cache:
+  directories:
+  - node_modules
+  - bower_components
+addons:
+  artifacts: true

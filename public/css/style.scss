@@ -1,34 +1,46 @@
-@import '_dropdown-submenu.css';
+@import '_dropdown-submenu.scss';
+@import '_children.scss';
+@import '_weekview.scss';
+@import '_payment.scss';
 body {
   padding: 50px;
   /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
-}
-
-a {
-  /*color: #00B7FF;*/
-}
-
-ul.nav-pills {
-  text-align: center;
-  li {
-    float: none;
-    display: inline-block;
-    *display: inline;
-    zoom: 1;
-  }
 }
 
 .break-word {
   word-wrap: break-word;
 }
 
-table.noselect {
-  tr, th, td {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+i.handle {
+  cursor: move;
+}
+
+.spinner {
+  position: absolute;
+  z-index: 999;
+  overflow: show;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  line-height: 100%;
+  text-align: center;
+  display: inline-block;
+  i {
+    position: absolute;
+    bottom: 50%;
   }
+}
+
+.unclickable {
+  pointer-events: none;
 }

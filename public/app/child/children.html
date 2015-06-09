@@ -1,12 +1,14 @@
-<div ng-controller="ChildCtrl">
-  <nav>
-    <ul class="nav nav-pills">
-      <li ng-class="{active:isCurrent(child)}" ng-repeat="child in children">
-        <a href="#" ng-click="setCurrent(child)"><i class="fa fa-child"></i> {{child.name}}</a>
-      </li>
-      <li ng-class="{active:isCurrent(null)}">
-        <a href="#" ng-click="addChild()"><i class="fa fa-plus-circle"></i></a>
-      </li>
+<ul class="children nav nav-pills noselect">
+  <li ng-class="{'active':isSelected(tab)}" ng-repeat="tab in tabs" dropdown is-open="tab.isopen">
+    <a href="#" ng-click="onClick(tab, $event)">
+      <i class="fa fa-child" ng-class="{'fa-spin':isSelected(tab)}"></i> {{tab.child.name}} <span class="caret" ng-show="isSelected(tab)"></span>
+    </a>
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="#" ng-click="editChild(tab)">Edit</a></li>
+      <li><a href="#" ng-click="deleteChild(tab)">Delete</a></li>
     </ul>
-  </nav>
-</div>
+  </li>
+  <li ng-class="{'active':isSelected({})}">
+    <a href="# " ng-click="addChild()"><i class="fa fa-plus-circle"></i></a>
+  </li>
+</ul>

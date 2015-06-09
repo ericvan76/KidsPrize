@@ -1,11 +1,41 @@
 'use strict';
 
-var User = require('./user');
+var User = require('./user-model');
 
-exports.read = function(userId, callback) {
-  User.findById(userId, callback);
+/**
+ * Read a user by id
+ * @param  {ObjectId} id
+ * @param  {Function} callback
+ */
+exports.read = function(id, callback) {
+  User.findById(id, callback);
 };
 
+/**
+ * Save user's preference
+ * @param  {ObjectId} id
+ * @param  {Object}   preference
+ * @param  {Function} callback
+ */
+exports.savePreference = function(id, preference, callback) {
+  var update = {};
+  for (var prop in preference) {
+    update['preference.' + prop] = preference[prop];
+  }
+  User.findByIdAndUpdate(id, {
+    $set: update
+  }, {
+    new: true,
+    upsert: false
+  }, callback);
+};
+
+/**
+ * Will be called when passport got authorised.
+ * @param  {String}   provider [description]
+ * @param  {Object}   profile  [description]
+ * @param  {Function} callback [description]
+ */
 exports.postAuth = function(provider, profile, callback) {
   var u = normaliseUser(provider, profile);
   if (u instanceof Error) {
@@ -25,7 +55,8 @@ exports.postAuth = function(provider, profile, callback) {
   }, {
     $set: updateSet,
     $setOnInsert: {
-      email: u.email
+      email: u.email,
+      preference: {}
     }
   }, {
     new: true,
@@ -38,6 +69,12 @@ exports.postAuth = function(provider, profile, callback) {
   });
 };
 
+/**
+ * Returns a normalised user from social profile
+ * @param  {String} provider facebook|google|etc
+ * @param  {Object} profile  [description]
+ * @return {Object} normalised user
+ */
 function normaliseUser(provider, profile) {
   switch (provider) {
     case 'facebook':

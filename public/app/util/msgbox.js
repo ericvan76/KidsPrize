@@ -8,53 +8,49 @@
     switch (data.type) {
       case 'error':
         $scope.icon = 'exclamation-circle';
-        $scope.class = 'danger';
+        data.commands = data.commands || ['OK'];
         break;
       case 'warning':
         $scope.icon = 'exclamation-triangle';
-        $scope.class = 'warning';
+        data.commands = data.commands || ['Cancel' | 'OK'];
         break;
       case 'question':
         $scope.icon = 'question-circle';
-        $scope.class = 'warning';
+        data.commands = data.commands || ['No' | 'Yes'];
         break;
       case 'info':
         $scope.icon = 'info-circle';
-        $scope.class = 'info';
+        data.commands = data.commands || ['OK'];
         break;
       case 'success':
         $scope.icon = 'check-circle';
-        $scope.class = 'success';
+        data.commands = data.commands || ['OK'];
         break;
       default:
-        $scope.icon = 'info';
-        $scope.class = 'default';
+        $scope.icon = '';
+        data.commands = data.commands || ['OK'];
         break;
     }
 
-    $scope.commands = (data.commands || ['OK']).map(function(s) {
+    $scope.commands = data.commands.map(function(s) {
       return {
         name: s,
         icon: (function(s) {
           switch (s.toLowerCase()) {
             case 'ok':
             case 'yes':
-            case 'confirm':
-            case 'close':
               return 'check';
             case 'cancel':
             case 'no':
               return 'times';
             default:
-              return 'invisible';
+              return '';
           }
         })(s),
         class: (function(s) {
           switch (s.toLowerCase()) {
             case 'ok':
             case 'yes':
-            case 'confirm':
-            case 'close':
               return 'primary';
             default:
               return 'default';
@@ -73,6 +69,33 @@
     $scope.onclick = function(cmd) {
       $modalInstance.close(cmd.toLowerCase());
     };
-  });
+  })
+
+  .factory('msgBox', ['$modal', function($modal) {
+
+    return function(data) {
+      /** data: {
+        type: 'error', // error|warning|question|info|success
+        size: 'sm', // sm|md|lg
+        commands: ['Cancel|'OK'],
+        title: 'Http Error',
+        content: ['line1', 'line2']  // lines
+      } */
+      return $modal.open({
+        templateUrl: 'msgbox.html',
+        controller: 'MsgCtrl',
+        size: data.size || 'md',
+        backdrop: 'static',
+        keyboard: false,
+        animation: true,
+        resolve: {
+          data: function() {
+            return data;
+          }
+        }
+      });
+    };
+
+  }]);
 
 })();

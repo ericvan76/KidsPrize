@@ -1,15 +1,19 @@
 (function() {
+  'use strict';
 
-  // Global services & directives
-  angular.module('app.util')
+  angular.module('app.auth')
 
-  .factory('AuthSvc', ['$q', '$http', '$location', 'User', function($q, $http, $location, User) {
+  .factory('Auth', ['$q', '$http', '$location', 'User', function($q, $http, $location, User) {
 
     var auth = {
       token: null,
       user: null
     };
 
+    /**
+     * Requests access token
+     * @return {Promise} [description]
+     */
     auth.requestToken = function() {
       var deferred = $q.defer();
       var state = Math.floor((Math.random() * 10000) + 1).toString();
@@ -29,7 +33,7 @@
           expires.setSeconds(expires.getSeconds() + t.expires_in - 300);
           t.expires = expires;
           auth.token = t;
-          deferred.resolve();
+          deferred.resolve(t);
         })
         .error(function(err) {
           deferred.reject();
@@ -38,6 +42,10 @@
       return deferred.promise;
     };
 
+    /**
+     * Revokes access token
+     * @return {Promise} [description]
+     */
     auth.revokeToken = function() {
       var deferred = $q.defer();
       $http.post('/auth/token/revoke', null, {
@@ -52,6 +60,10 @@
       return deferred.promise;
     };
 
+    /**
+     * Logout
+     * @return {Promise} [description]
+     */
     auth.logout = function() {
       var deferred = $q.defer();
       $http.get('/auth/logout').then(function() {
@@ -60,9 +72,20 @@
       return deferred.promise;
     };
 
-    auth.getLoginUser = function() {
+    /**
+     * Returns login user
+     * @return {(Object|Promise)} Returns a user if it exists, otherwise returns a promise
+     */
+    auth.loginUser = function() {
       if (!auth.user) {
-        auth.user = User.get();
+        var deferred = $q.defer();
+        auth.user = User.get(function(u) {
+          deferred.resolve(u);
+        }, function() {
+          deferred.reject();
+          return $location.url('/login');
+        });
+        return deferred.promise;
       }
       return auth.user;
     };

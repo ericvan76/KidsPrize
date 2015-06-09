@@ -1,22 +1,37 @@
 (function() {
   'use strict';
 
+  angular.module('app.auth', []);
   angular.module('app.util', []);
-
   angular.module('app.resource', []);
 
-  var app = angular.module('app', ['ngRoute', 'ngResource', 'ui.bootstrap', 'app.templates', 'app.util', 'app.resource', 'home']);
+  angular.module('child', []);
+  angular.module('tasks', []);
+  angular.module('weekview', []);
+  angular.module('payment', []);
+
+  angular.module('home', ['child', 'weekview', 'tasks', 'payment']);
+
+  var app = angular.module('app', [
+    'ngRoute', 'ngResource', 'ui.bootstrap', 'ui.sortable', 'ui.validate',
+    'app.auth', 'app.util', 'app.resource', 'app.templates',
+    'home'
+  ]);
 
   // Configurations
   app.config(['$routeProvider', function($routeProvider) {
     // client routes
     $routeProvider
       .when('/', {
+        controller: 'HomeCtrl',
         templateUrl: 'home.html',
         resolve: {
-          token: ['AuthSvc', function(AuthSvc) {
-            return AuthSvc.requestToken();
+          user: ['Auth', function(Auth) {
+            return Auth.loginUser();
           }],
+          themes: ['Themes', function(Themes) {
+            return Themes.loadThemes();
+          }]
         }
       })
       .when('/login', {
@@ -25,11 +40,11 @@
       .when('/logout', {
         redirectTo: '/login',
         resolve: {
-          revoke: ['AuthSvc', function(AuthSvc) {
-            return AuthSvc.revokeToken();
+          revoke: ['Auth', function(Auth) {
+            return Auth.revokeToken();
           }],
-          logout: ['AuthSvc', function(AuthSvc) {
-            return AuthSvc.logout();
+          logout: ['Auth', function(Auth) {
+            return Auth.logout();
           }]
         }
       })
@@ -40,9 +55,9 @@
 
   app.config(['$httpProvider', function($httpProvider) {
 
-    $httpProvider.interceptors.push(['$q', '$location', '$injector',
+    $httpProvider.interceptors.push(['$q', '$location', '$injector', '$rootScope', '$timeout',
 
-      function($q, $location, $injector) {
+      function($q, $location, $injector, $rootScope, $timeout) {
 
         function isApi(url) {
           if (/^\/api\//i.test(url)) {
@@ -53,17 +68,19 @@
 
         return {
           request: function(config) {
+            $rootScope.loading = true;
+            config.timeout = 30000; // timeout 30 sec
             // add Authorization header for all calls startswith '/api/'
             if (isApi(config.url)) {
-              var AuthSvc = $injector.get('AuthSvc');
-              if (AuthSvc.token && AuthSvc.token.expires > new Date()) {
-                config.headers.Authorization = 'Bearer ' + AuthSvc.token.access_token;
+              var Auth = $injector.get('Auth');
+              if (Auth.token && Auth.token.expires > new Date()) {
+                config.headers.Authorization = 'Bearer ' + Auth.token.access_token;
                 return config;
               } else {
                 var d = $q.defer();
-                var promise = AuthSvc.requestToken();
+                var promise = Auth.requestToken();
                 promise.then(function() {
-                  config.headers.Authorization = 'Bearer ' + AuthSvc.token.access_token;
+                  config.headers.Authorization = 'Bearer ' + Auth.token.access_token;
                   d.resolve(config);
                 });
                 return d.promise;
@@ -73,39 +90,33 @@
             }
           },
           response: function(response) {
-            return response;
+            return $timeout(function() {
+              $rootScope.loading = false;
+              return response;
+            }, 0);
           },
           responseError: function(response) {
+            $rootScope.loading = false;
             if (response.status === 401) {
               $location.url('/login');
             } else {
               if (isApi(response.config.url)) {
-                var modal = $injector.get('$modal');
-                var modalInstance = modal.open({
-                  templateUrl: 'msgbox.html',
-                  controller: 'MsgCtrl',
+                if (!response.data) {
+                  response.data = 'Unexpected Error';
+                }
+                var msgBox = $injector.get('msgBox');
+                var modalInstance = msgBox({
+                  type: 'error',
                   size: 'md',
-                  backdrop: 'static',
-                  keyboard: false,
-                  animation: true,
-                  resolve: {
-                    data: function() {
-                      return {
-                        type: 'error',
-                        commands: ['OK'],
-                        title: 'Http Error',
-                        content: [
-                          'Status: ' + response.status + ' - ' + response.data,
-                          response.config.method + ' ' + response.config.url
-                        ]
-                      };
-                    }
-                  }
+                  commands: ['OK'],
+                  title: 'Http Error',
+                  content: [
+                    'Status: ' + response.status + ' - ' + response.data,
+                    response.config.method + ' ' + response.config.url
+                  ]
                 });
                 modalInstance.result.then(function(result) {
-                  // return $scope.$apply();
-                }, function() {
-                  // $log.info('Modal dismissed at: ' + new Date());
+                  // TODO: refresh page?
                 });
               }
             }

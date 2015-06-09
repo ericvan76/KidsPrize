@@ -3,7 +3,7 @@
 
   angular.module('app.util')
 
-  .directive('focusMe', function($timeout) {
+  .directive('focusMe', ['$timeout', function($timeout) {
     return {
       restrict: 'A',
       link: function(scope, element) {
@@ -12,6 +12,6 @@
         });
       }
     };
-  });
+  }]);
 
 })();

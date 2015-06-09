@@ -4,3 +4,4 @@ bower_components/
 public/dist/
 config/env/development.js
 config/env/production.js
+logs

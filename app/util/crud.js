@@ -1,7 +1,14 @@
 (function() {
   'use strict';
 
-  module.exports = function(model, option) {
+  /**
+   * Generates CURD routes
+   * @param  {express.Router} router    [description]
+   * @param  {mongoose.Model} model     [description]
+   * @param  {Object}         [option]  [description]
+   * @return {express.Router}           [description]
+   */
+  module.exports = function(router, model, option) {
 
     var base64 = require('js-base64').Base64;
 
@@ -11,7 +18,6 @@
     var include = opt.include || ['create', 'read', 'patch', 'delete', 'query'];
 
     var controller = {};
-    var router = require('express').Router();
 
     controller.create = function(uid, o, cb) {
       if (userRestrict) {
@@ -28,14 +34,14 @@
       }
       model.findOne(q, cb);
     };
-    controller.update = function(uid, id, o, cb) {
+    controller.patch = function(uid, id, o, cb) {
       var q = {
         _id: id
       };
       if (userRestrict) {
         q._user = uid;
-        o._user = uid;
       }
+      delete o._id; // do not update _id
       if (model.schema.path('update_at').instance === 'Date' &&
         model.schema.pathType('update_at') === 'real') {
         o.update_at = Date.now();
@@ -89,12 +95,12 @@
     if (include.indexOf('patch') !== -1) {
       // patch
       router.patch(path + '/:id', function(req, res, next) {
-        controller.update(req.user._id, req.params.id, req.body, function(err, data) {
+        controller.patch(req.user._id, req.params.id, req.body, function(err, data) {
           if (err) {
             return next(err);
           }
           if (!data) {
-            return res.status(404).send(model.modelName + ' Not Found');
+            return res.status(404).send(model.modelName + ' not found.');
           }
           res.json(data);
         });
@@ -106,9 +112,6 @@
         controller.delete(req.user._id, req.params.id, function(err) {
           if (err) {
             return next(err);
-          }
-          if (!data) {
-            return res.status(404).send(model.modelName + ' Not Found');
           }
           res.status(200).send('OK');
         });
@@ -130,10 +133,7 @@
         });
       });
     }
-    return {
-      controller: controller,
-      router: router
-    };
+    return router;
   };
 
 })();

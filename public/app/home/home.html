@@ -1,28 +1,37 @@
-<div ng-controller="HomeCtrl">
-  <div class="btn-group pull-right" dropdown>
-    <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle>
-      <i class="fa fa-user"></i> {{user.displayName}} <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu">
-      <li class="dropdown-submenu"><a href="#">Themes</a>
-        <ul class="dropdown-menu pull-left" ng-controller="ThemeCtrl">
-          <li ng-repeat="theme in themes">
-            <a href="#" ng-click="changeTheme(theme)">
-              <i class="fa fa-fw" ng-class="{'fa-check':theme.name===currentTheme}"></i> {{theme.name}}
-            </a>
-          </li>
-        </ul>
-      </li>
-      <li class="divider"></li>
-      <li>
-        <a href="/logout"><i class="fa fa-sign-out"></i> Signout</a>
-      </li>
-    </ul>
-  </div>
-  <div>
-    <kz-children></kz-children>
-  </div>
-  <div>
-    <kz-weekview></kz-weekview>
+<div class="row">
+  <div class="col-xs-0 col-md-1"></div>
+  <div class="col-xs-12 col-md-10">
+    <kz-spinner></kz-spinner>
+    <div class="btn-group pull-right" dropdown>
+      <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle>
+        <i class="fa fa-user"></i> {{user.displayName}} <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li class="dropdown-submenu"><a href="#">Themes</a>
+          <ul class="dropdown-menu pull-left">
+            <li ng-repeat="theme in themes">
+              <a href="#" ng-click="changeTheme(theme)">
+                <i class="fa fa-fw" ng-class="{'fa-check':theme.name===currentTheme}"></i> {{theme.name}}
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="divider"></li>
+        <li>
+          <a href="/logout">Signout <i class="fa fa-sign-out"></i></a>
+        </li>
+      </ul>
+    </div>
+    <div ng-controller="ChildCtrl">
+      <kz-children></kz-children>
+    </div>
+    <div ng-controller="WeekviewCtrl">
+      <kz-weekview></kz-weekview>
+    </div>
+    <footer>
+      <p class="text-center"><i class="fa fa-copyright"></i>2015 -
+        <a href="https://github.com/ericvan76/kids-prize">Github</a> -
+        <a href="https://github.com/ericvan76/kids-prize/issues">Support</a></p>
+    </footer>
   </div>
 </div>
