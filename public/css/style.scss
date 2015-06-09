@@ -23,3 +23,24 @@ body {
 i.handle {
   cursor: move;
 }
+
+.spinner {
+  position: absolute;
+  z-index: 999;
+  overflow: show;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  line-height: 100%;
+  text-align: center;
+  display: inline-block;
+  i {
+    position: absolute;
+    bottom: 50%;
+  }
+}
+
+.unclickable {
+  pointer-events: none;
+}

@@ -1,3 +1,4 @@
+<kz-spinner></kz-spinner>
 <div class="modal-header">
   <button type="button" class="close" aria-label="Close" ng-click="close()">
     <i class="fa fa-times"></i>
@@ -9,11 +10,12 @@
     <div class="form-group" ng-class="{'has-error': (form.$submitted || form.description.$dirty) && form.description.$invalid }">
       <input type="text" size="30" ng-disabled="balance<1" class="form-control" name="description" ng-model="newPayment.description" required maxlength="50" placeholder="A set of Lego or icecream :-)">
     </div>
+    <span>&nbsp;</span>
     <div class="form-group" ng-class="{'has-error': (form.$submitted || form.amount.$dirty) && form.amount.$invalid }">
       <input type="number" ng-disabled="balance<1" class="form-control" name="amount" ng-model="newPayment.amount" min="1" max="{{balance}}" required>
     </div>
-    <button type="submit" ng-disabled="balance<1" class="btn btn-default">Pay for it!</button>
-    <span class="pull-right">Balance: {{balance}}</span>
+    <span>&nbsp;Balance: {{balance}}</span>
+    <button type="submit" ng-disabled="balance<1" class="btn btn-default pull-right">Pay for it!</button>
   </form>
   <table class="payment table table-responsive table-striped">
     <thead>
