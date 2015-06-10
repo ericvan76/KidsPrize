@@ -1,6 +1,7 @@
 {
   "node": true,
   "es5": true,
+  "mocha": true,
   "browser": true,
   "strict": true
 }

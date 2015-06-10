@@ -2,8 +2,7 @@
 
 var merge = require('merge'),
   path = require('path'),
-  defaultPath = path.join(__dirname, 'env/default'),
-  configPath = path.join(__dirname,
-    'env', (process.env.NODE_ENV || 'development'));
+  cfg = require('./env/default'),
+  cfg2 = require(path.join(__dirname, 'env', (process.env.NODE_ENV || 'development')));
 
-module.exports = merge.recursive(true, require(defaultPath), require(configPath));
+module.exports = merge.recursive(true, cfg, cfg2);

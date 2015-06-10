@@ -24,7 +24,8 @@
   "name": "kids-prize",
   "private": true,
   "scripts": {
-    "start": "node server"
+    "start": "node server",
+    "test": "mocha test"
   },
   "license": "GPL2",
   "version": "1.0.0",
@@ -43,6 +44,7 @@
     "gulp-sass": "^2.0.0",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify": "^1.2.0",
-    "merge-stream": "^0.1.7"
+    "merge-stream": "^0.1.7",
+    "mocha": "^2.2.5"
   }
 }
