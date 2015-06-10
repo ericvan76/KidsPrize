@@ -6,10 +6,8 @@ services:
 before_script:
   - npm install -g bower
   - bower install
-script: "gulp build"
+script: gulp build && npm test
 cache:
   directories:
   - node_modules
   - bower_components
-addons:
-  artifacts: false
