@@ -1,6 +1,8 @@
 (function() {
   'use strict';
 
+  var HttpError = require('./http-error');
+
   /**
    * Generates CURD routes
    * @param  {express.Router} router    [description]
@@ -18,9 +20,13 @@
     var include = opt.include || ['create', 'read', 'patch', 'delete', 'query'];
 
     var controller = {};
+    router.__crud_controller = controller;
 
     controller.create = function(uid, o, cb) {
       if (userRestrict) {
+        if (uid === null) {
+          return cb(new HttpError(401));
+        }
         o._user = uid;
       }
       model.create(o, cb);
@@ -30,15 +36,29 @@
         _id: id
       };
       if (userRestrict) {
+        if (uid === null) {
+          return cb(new HttpError(401));
+        }
         q._user = uid;
       }
-      model.findOne(q, cb);
+      model.findOne(q, function(err, r) {
+        if (err) {
+          return cb(err);
+        }
+        if (!r) {
+          return cb(new HttpError(404));
+        }
+        return cb(null, r);
+      });
     };
     controller.patch = function(uid, id, o, cb) {
       var q = {
         _id: id
       };
       if (userRestrict) {
+        if (uid === null) {
+          return cb(new HttpError(401));
+        }
         q._user = uid;
       }
       delete o._id; // do not update _id
@@ -49,19 +69,41 @@
       model.findOneAndUpdate(q, o, {
         new: true,
         upsert: false
-      }, cb);
+      }, function(err, r) {
+        if (err) {
+          return cb(err);
+        }
+        if (!r) {
+          return cb(new HttpError(404));
+        }
+        return cb(null, r);
+      });
     };
     controller.delete = function(uid, id, cb) {
       var q = {
         _id: id
       };
       if (userRestrict) {
+        if (uid === null) {
+          return cb(new HttpError(401));
+        }
         q._user = uid;
       }
-      model.findOneAndRemove(q, cb);
+      model.findOneAndRemove(q, function(err, r) {
+        if (err) {
+          return cb(err);
+        }
+        if (!r) {
+          return cb(new HttpError(404));
+        }
+        return cb(null, r);
+      });
     };
     controller.query = function(uid, q, cb) {
       if (userRestrict) {
+        if (uid === null) {
+          return cb(new HttpError(401));
+        }
         q._user = uid;
       }
       model.find(q, cb);
@@ -85,9 +127,6 @@
           if (err) {
             return next(err);
           }
-          if (!data) {
-            return res.status(404).send(model.modelName + ' Not Found');
-          }
           res.json(data);
         });
       });
@@ -98,9 +137,6 @@
         controller.patch(req.user._id, req.params.id, req.body, function(err, data) {
           if (err) {
             return next(err);
-          }
-          if (!data) {
-            return res.status(404).send(model.modelName + ' not found.');
           }
           res.json(data);
         });
@@ -133,6 +169,7 @@
         });
       });
     }
+
     return router;
   };
 

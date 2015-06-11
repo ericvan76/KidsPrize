@@ -16,20 +16,20 @@
     <tr>
       <th class="row-task text-center">
         <i class="fa fa-tasks"></i> Tasks
-        <a href="#" ng-click="editTasks()" ng-show="currentWeek.equals(thisWeek)">
-          <i class="fa fa-pencil"></i>
+        <a href="#" ng-click="editTasks()" ng-show="currentWeek.equals(thisWeek)" tooltip="Edit tasks">
+          <i class="fa fa-pencil "></i>
         </a>
       </th>
-      <th ng-repeat="d in dates" class="row-score text-center" ng-class="{info:d.isToday()}">
+      <th ng-repeat="d in dates " class="row-score text-center " ng-class="{info:d.isToday()} ">
         {{d|date:'EEE dd/M'}}
       </th>
     </tr>
   </thead>
   <tbody>
-    <tr ng-repeat="task in tasks">
-      <td class="text-center break-word">{{task}}</td>
-      <td class="text-center noselect" ng-repeat="d in dates" ng-click="toggleScore(d, task)">
-        <i class="fa fa-2x text-primary" ng-class="{'fa-star fa-spin':getScore(d, task)>0,'fa-star-o':getScore(d, task)===0}"></i>
+    <tr ng-repeat="task in tasks ">
+      <td class="text-center break-word ">{{task}}</td>
+      <td class="text-center noselect " ng-repeat="d in dates " ng-click="toggleScore(d, task) ">
+        <i class="fa fa-2x text-primary " ng-class="{ 'fa-star fa-spin':getScore(d, task)>0,'fa-star-o':getScore(d, task)===0}"></i>
       </td>
     </tr>
   </tbody>

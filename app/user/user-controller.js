@@ -32,41 +32,24 @@ exports.savePreference = function(id, preference, callback) {
 
 /**
  * Will be called when passport got authorised.
- * @param  {String}   provider [description]
- * @param  {Object}   profile  [description]
+ * @param  {Object}   user  [description]
  * @param  {Function} callback [description]
  */
-exports.postAuth = function(provider, profile, callback) {
-  var u = normaliseUser(provider, profile);
-  if (u instanceof Error) {
-    return callback(u);
-  }
-
-  var updateSet = {
-    displayName: u.displayName,
-    name: u.name
-  };
-  updateSet[provider] = profile;
-
+exports.resolveUser = function(user, callback) {
   User.findOneAndUpdate({
-    email: {
-      $regex: new RegExp(u.email, "i")
-    }
-  }, {
-    $set: updateSet,
-    $setOnInsert: {
-      email: u.email,
-      preference: {}
-    }
-  }, {
-    new: true,
-    upsert: true
-  }, function(err, user) {
-    if (err) {
-      return callback(err);
-    }
-    return callback(null, user);
-  });
+      email: {
+        $regex: new RegExp(user.email, "i")
+      }
+    }, user, {
+      new: true,
+      upsert: true
+    },
+    function(err, u) {
+      if (err) {
+        return callback(err);
+      }
+      return callback(null, u);
+    });
 };
 
 /**
@@ -75,7 +58,7 @@ exports.postAuth = function(provider, profile, callback) {
  * @param  {Object} profile  [description]
  * @return {Object} normalised user
  */
-function normaliseUser(provider, profile) {
+exports.normaliseUser = function(provider, profile) {
   switch (provider) {
     case 'facebook':
       return {
@@ -84,7 +67,8 @@ function normaliseUser(provider, profile) {
         name: {
           familyName: profile.name.familyName,
           givenName: profile.name.givenName,
-        }
+        },
+        facebook: profile
       };
     case 'google':
       return {
@@ -95,8 +79,9 @@ function normaliseUser(provider, profile) {
         name: {
           familyName: profile.name.familyName,
           givenName: profile.name.givenName,
-        }
+        },
+        google: profile
       };
   }
   return new Error('Invalid autheticate provider.');
-}
+};

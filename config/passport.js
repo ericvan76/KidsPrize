@@ -23,14 +23,17 @@
   // Strategies
   passport.use(new FacebookStrategy(config.facebook,
     function(accessToken, refreshToken, profile, done) {
-      userCtrl.postAuth('facebook', profile, function(err, user) {
+      console.log(profile);
+      var normUser = userCtrl.normaliseUser('facebook', profile);
+      userCtrl.resolveUser(normUser, function(err, user) {
         done(err, user);
       });
     }));
 
   passport.use(new GoogleStrategy(config.google,
     function(accessToken, refreshToken, profile, done) {
-      userCtrl.postAuth('google', profile, function(err, user) {
+      var normUser = userCtrl.normaliseUser('google', profile);
+      userCtrl.resolveUser(normUser, function(err, user) {
         done(err, user);
       });
     }));
