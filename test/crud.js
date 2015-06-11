@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('assert'),
-  config = require('../config/env/test'),
+  config = require('./config'),
   mongoose = require('mongoose'),
   Schema = mongoose.Schema,
   router = require('express').Router(),
