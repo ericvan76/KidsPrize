@@ -70,11 +70,12 @@ describe('User', function() {
         'testField': 'A'
       }
     };
+    var userId = null;
     it('new user', function(done) {
       UserCtrl.resolveUser(user, function(err, u) {
         assert.ifError(err);
         assert(u._id);
-        user._id = u._id;
+        userId = u._id;
         assert.equal(u.email, user.email);
         assert.equal(u.displayName, user.displayName);
         assert.equal(u.name.familyName, user.name.familyName);
@@ -90,7 +91,7 @@ describe('User', function() {
       UserCtrl.resolveUser(user, function(err, u) {
         assert.ifError(err);
         assert(u._id);
-        assert.equal(u._id.toString(), user._id.toString());
+        assert.equal(u._id.toString(), userId.toString());
         assert.equal(u.email, user.email);
         assert.equal(u.displayName, user.displayName);
         assert.equal(u.name.familyName, user.name.familyName);
