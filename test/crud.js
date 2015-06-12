@@ -35,7 +35,7 @@ crud(router, TestModel, {
 
 var Ctrl = router.__crud_controller;
 
-describe('Crud', function() {
+describe('CrudController', function() {
 
   var user = null;
   var user2 = null;
@@ -56,16 +56,16 @@ describe('Crud', function() {
   };
 
   before(function(done) {
-    if (!mongoose.connection.readyState) {
-      mongoose.connect(config.mongoose.dbURL);
-    }
+    config.db.connect();
     UserCtrl.resolveUser({
       email: 'test-user@domain.com'
     }, function(err, u) {
+      assert.ifError(err);
       user = u;
       UserCtrl.resolveUser({
         email: 'test-user2@domain.com'
       }, function(err, u2) {
+        assert.ifError(err);
         user2 = u2;
         done();
       });
@@ -73,14 +73,13 @@ describe('Crud', function() {
   });
 
   after(function() {
-    mongoose.connection.db.dropDatabase();
+    config.db.clean();
   });
 
   beforeEach(function() {});
   afterEach(function() {});
 
-
-  describe('#create()', function() {
+  describe('create()', function() {
     it('create test model', function(done) {
       Ctrl.create(user._id, testModel, function(err, d) {
         assert.ifError(err);
@@ -93,7 +92,7 @@ describe('Crud', function() {
     });
   });
 
-  describe('#read()', function() {
+  describe('read()', function() {
     it('read test model', function(done) {
       Ctrl.read(user._id, created.id, function(err, d) {
         assert.ifError(err);
@@ -108,25 +107,24 @@ describe('Crud', function() {
       });
     });
 
-    it('read test model as someone else should return 404', function(done) {
+    it('read test model as someone else should return null', function(done) {
       Ctrl.read(user2._id, created.id, function(err, d) {
-        assert(err);
-        assert.equal(err.status, 404);
+        assert.ifError(err);
+        assert.equal(d, null);
         done();
       });
     });
 
-    it('read test model as no one should return 401', function(done) {
+    it('read test model as no one should return error', function(done) {
       Ctrl.read(null, created.id, function(err, d) {
         assert(err);
-        assert.equal(err.status, 401);
         done();
       });
     });
   });
 
-  describe('#patch()', function() {
-    it('patch test model', function(done) {
+  describe('update()', function() {
+    it('update test model', function(done) {
       var m = {
         _id: created.id,
         strField: 'cde',
@@ -137,7 +135,7 @@ describe('Crud', function() {
         },
         arrField: [1, 2]
       };
-      Ctrl.patch(user.id, created.id, m, function(err, d) {
+      Ctrl.update(user.id, created.id, m, function(err, d) {
         assert.ifError(err);
         updated = d;
         assert.equal(d.id, created.id);
@@ -153,29 +151,28 @@ describe('Crud', function() {
       });
     });
 
-    it('patch test model as someone else should return 404', function(done) {
-      Ctrl.patch(user2._id, created.id, {}, function(err, d) {
-        assert(err);
-        assert.equal(err.status, 404);
+    it('update test model as someone else should return null', function(done) {
+      Ctrl.update(user2._id, created.id, {}, function(err, d) {
+        assert.ifError(err);
+        assert.equal(d, null);
         done();
       });
     });
 
-    it('patch test model as no one should return 401', function(done) {
-      Ctrl.patch(null, created.id, {}, function(err, d) {
+    it('update test model as no one should return error', function(done) {
+      Ctrl.update(null, created.id, {}, function(err, d) {
         assert(err);
-        assert.equal(err.status, 401);
         done();
       });
     });
   });
 
-  describe('#query()', function() {
+  describe('query()', function() {
     it('query test model', function(done) {
       Ctrl.query(user._id, {}, function(err, d) {
         assert.ifError(err);
         assert(d.length > 0);
-        assert.equal(d[0].id, created.id);
+        assert.equal(d[0].id, updated.id);
         done();
       });
     });
@@ -189,41 +186,39 @@ describe('Crud', function() {
       });
     });
 
-    it('query test model as no one should return 401', function(done) {
+    it('query test model as no one should return error', function(done) {
       Ctrl.query(null, {}, function(err, d) {
         assert(err);
-        assert.equal(err.status, 401);
         done();
       });
     });
   });
 
-  describe('#delete()', function() {
+  describe('delete()', function() {
     it('delete test model', function(done) {
-      Ctrl.delete(user._id, created.id, function(err, d) {
+      Ctrl.delete(user._id, updated.id, function(err, d) {
         assert.ifError(err);
-        assert.equal(d.id, created.id);
+        assert.equal(d.id, updated.id);
         assert.equal(d._user, user.id);
-        Ctrl.read(user._id, created.id, function(err, d) {
-          assert(err);
-          assert.equal(err.status, 404);
+        Ctrl.read(user._id, updated.id, function(err, d) {
+          assert.ifError(err);
+          assert.equal(d, null);
           done();
         });
       });
     });
 
-    it('delete test model as someone else should return 404', function(done) {
-      Ctrl.delete(user2._id, created.id, function(err, d) {
-        assert(err);
-        assert.equal(err.status, 404);
+    it('delete test model as someone else should return null', function(done) {
+      Ctrl.delete(user2._id, updated.id, function(err, d) {
+        assert.ifError(err);
+        assert.equal(d, null);
         done();
       });
     });
 
-    it('delete test model as no one should return 401', function(done) {
-      Ctrl.delete(null, created.id, function(err, d) {
+    it('delete test model as no one should return error', function(done) {
+      Ctrl.delete(null, updated.id, function(err, d) {
         assert(err);
-        assert.equal(err.status, 401);
         done();
       });
     });

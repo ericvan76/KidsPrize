@@ -9,23 +9,23 @@ var router = require('express').Router(),
   Score = require('./score-model'),
   ScoreCtrl = require('./score-controller'),
   Payment = require('./payment-model'),
-  PaymentCtrl = require('./payment-controller');
+  PaymentCtrl = require('./payment-controller'),
+  HttpError = require('../util/http-error');
 
 // Scores
-crud(router, Score, {
-  userRestrict: true,
-  path: '/score',
-  include: ['create', 'read', 'patch', 'delete', 'query']
-});
+crud(router, Score);
 
 
 router.get('/score/total/:childId', function(req, res, next) {
   if (!req.params.childId) {
-    return res.status(400).end();
+    return next(new HttpError(400, 'Missing url parameter - childId'));
   }
   ScoreCtrl.total(req.user._id, req.params.childId, function(err, data) {
     if (err) {
       return next(err);
+    }
+    if (!data) {
+      return next(new HttpError(404, 'Child not found.'));
     }
     return res.json(data);
   });
@@ -33,11 +33,14 @@ router.get('/score/total/:childId', function(req, res, next) {
 
 router.post('/score/cleanup', function(req, res, next) {
   if (!req.body.childId || !req.body.from) {
-    return res.status(400).end();
+    return next(new HttpError(400, 'Bad request.'));
   }
-  ScoreCtrl.cleanup(req.user._id, req.body.childId, req.body.from, function(err) {
+  ScoreCtrl.cleanup(req.user._id, req.body.childId, req.body.from, function(err, data) {
     if (err) {
       return next(err);
+    }
+    if (!data) {
+      return next(new HttpError(404, 'Child not found.'));
     }
     return res.status(200).end();
   });
@@ -45,19 +48,18 @@ router.post('/score/cleanup', function(req, res, next) {
 
 
 // Payments
-crud(router, Payment, {
-  userRestrict: true,
-  path: '/payment',
-  include: ['create', 'read', 'patch', 'delete', 'query']
-});
+crud(router, Payment);
 
 router.get('/payment/total/:childId', function(req, res, next) {
   if (!req.params.childId) {
-    return res.status(400).end();
+    return next(new HttpError(400, 'Missing url parameter - childId'));
   }
   PaymentCtrl.total(req.user._id, req.params.childId, function(err, data) {
     if (err) {
       return next(err);
+    }
+    if (!data) {
+      return next(new HttpError(404, 'Child not found.'));
     }
     return res.json(data);
   });

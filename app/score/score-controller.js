@@ -1,8 +1,7 @@
 'use strict';
 
 var Score = require('./score-model'),
-  Child = require('../child/child-model'),
-  HttpError = require('../util/http-error');
+  Child = require('../child/child-model');
 
 /**
  * Gets total scores of given child
@@ -11,6 +10,9 @@ var Score = require('./score-model'),
  * @param  {Function} callback
  */
 exports.total = function(userId, childId, callback) {
+  if (userId === null) {
+    return callback(new Error('Unauthorised.'));
+  }
   Child.findOne({
     _user: userId,
     _id: childId
@@ -19,7 +21,7 @@ exports.total = function(userId, childId, callback) {
       return callback(err);
     }
     if (!child) {
-      return callback(new HttpError(404, 'Child not found.'));
+      return callback(null, false);
     }
     Score.aggregate([{
       $match: {
@@ -66,7 +68,7 @@ exports.cleanup = function(userId, childId, from, callback) {
       return callback(err);
     }
     if (!child) {
-      return callback(new HttpError(404, 'Child not found.'));
+      return callback(null, false);
     }
     Score.remove({
       _user: userId,
@@ -81,7 +83,7 @@ exports.cleanup = function(userId, childId, from, callback) {
       if (err) {
         return callback(err);
       }
-      return callback(null);
+      return callback(null, true);
     });
   });
 };

@@ -13,8 +13,8 @@
         create: {
           method: 'POST'
         },
-        patch: {
-          method: 'PATCH'
+        update: {
+          method: 'PUT'
         }
       };
       methods = angular.extend(defaults, methods);
@@ -24,7 +24,7 @@
         if (!this._id) {
           return this.$create.apply(this, arguments);
         } else {
-          return this.$patch.apply(this, arguments);
+          return this.$update.apply(this, arguments);
         }
       };
       // override query

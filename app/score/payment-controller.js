@@ -1,8 +1,7 @@
 'use strict';
 
 var Payment = require('./payment-model'),
-  Child = require('../child/child-model'),
-  HttpError = require('../util/http-error');
+  Child = require('../child/child-model');
 
 /**
  * Gets total payments of given child
@@ -11,6 +10,9 @@ var Payment = require('./payment-model'),
  * @param  {Function} callback
  */
 exports.total = function(userId, childId, callback) {
+  if (userId === null) {
+    return callback(new Error('Unauthorised.'));
+  }
   Child.findOne({
     _user: userId,
     _id: childId
@@ -19,7 +21,7 @@ exports.total = function(userId, childId, callback) {
       return callback(err);
     }
     if (!child) {
-      return callback(new HttpError(404, 'Child not found.'));
+      return callback(null, false);
     }
     Payment.aggregate([{
       $match: {

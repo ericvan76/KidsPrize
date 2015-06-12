@@ -38,7 +38,7 @@ exports.savePreference = function(id, preference, callback) {
 exports.resolveUser = function(user, callback) {
   User.findOneAndUpdate({
       email: {
-        $regex: new RegExp(user.email, "i")
+        $regex: new RegExp(user.email, 'i')
       }
     }, user, {
       new: true,

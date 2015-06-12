@@ -2,23 +2,20 @@
 
 var assert = require('assert'),
   config = require('./config'),
-  mongoose = require('mongoose'),
   User = require('../app/user/user-model'),
   UserCtrl = require('../app/user/user-controller');
 
-describe('User', function() {
+describe('UserController', function() {
   before(function() {
-    if (!mongoose.connection.readyState) {
-      mongoose.connect(config.mongoose.dbURL);
-    }
+    config.db.connect();
   });
   after(function() {
-    mongoose.connection.db.dropDatabase();
+    config.db.clean();
   });
   beforeEach(function() {});
   afterEach(function() {});
 
-  describe('#normaliseUser()', function() {
+  describe('normaliseUser()', function() {
     it('normalise facebook profile', function() {
       var profile = {
         emails: [{
@@ -58,7 +55,7 @@ describe('User', function() {
     });
   });
 
-  describe('#resolveUser()', function() {
+  describe('resolveUser()', function() {
     var user = {
       email: 'test-user@domain.com',
       name: {
@@ -102,7 +99,7 @@ describe('User', function() {
     });
   });
 
-  describe('#savePreference()', function() {
+  describe('savePreference()', function() {
     var user = {
       email: 'test-user3@domain.com'
     };
