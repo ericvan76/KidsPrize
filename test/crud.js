@@ -126,7 +126,6 @@ describe('CrudController', function() {
   describe('update()', function() {
     it('update test model', function(done) {
       var m = {
-        _id: created.id,
         strField: 'cde',
         numField: 2,
         objField: {

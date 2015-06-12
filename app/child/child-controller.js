@@ -38,7 +38,7 @@ exports.deleteChild = function(userId, childId, callback) {
         if (err) {
           return callback(err);
         }
-        return callback(null, true);
+        return callback(null, child);
       });
     });
   });
