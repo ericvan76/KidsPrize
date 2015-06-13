@@ -1,47 +1,33 @@
 (function() {
   'use strict';
 
-  var HttpError = require('./http-error');
-
   /**
-   * Generates CURD routes
-   * @param  {express.Router} router    [description]
+   * Generates CURD controller
    * @param  {mongoose.Model} model     [description]
-   * @param  {Object}         [option]  [description]
    * @return {express.Router}           [description]
    */
-  module.exports = function(router, model, option) {
+  function createController(model) {
 
-    var base64 = require('js-base64').Base64;
-
-    var opt = option || {};
-    var userRestrict = opt.userRestrict !== false; // default=true
-    var path = opt.path || '/' + model.modelName.toLowerCase();
-    var include = opt.include || ['create', 'read', 'update', 'delete', 'query'];
-
-    var controller = {};
-    router.__crud_controller = controller;
+    var controller = {
+      _model: model
+    };
 
     controller.create = function(uid, o, cb) {
-      if (userRestrict) {
-        if (uid === null) {
-          return cb(new Error('Unauthorised.'));
-        }
-        o._user = uid;
+
+      if (uid === null) {
+        return cb(new Error('Unauthorised.'));
       }
+      o._user = uid;
       model.create(o, cb);
     };
     controller.read = function(uid, id, cb) {
-      var q = {
-        _id: id
-      };
-      if (userRestrict) {
-        if (uid === null) {
-          return cb(new Error('Unauthorised.'));
-        }
-        q._user = uid;
+      if (uid === null) {
+        return cb(new Error('Unauthorised.'));
       }
-      model.findOne(q, function(err, r) {
+      model.findOne({
+        _user: uid,
+        _id: id
+      }, function(err, r) {
         if (err) {
           return cb(err);
         }
@@ -49,20 +35,17 @@
       });
     };
     controller.update = function(uid, id, o, cb) {
-      var q = {
-        _id: id
-      };
-      if (userRestrict) {
-        if (uid === null) {
-          return cb(new Error('Unauthorised.'));
-        }
-        q._user = uid;
+      if (uid === null) {
+        return cb(new Error('Unauthorised.'));
       }
       if (model.schema.path('update_at').instance === 'Date' &&
         model.schema.pathType('update_at') === 'real') {
         o.update_at = Date.now();
       }
-      model.findOneAndUpdate(q, o, {
+      model.findOneAndUpdate({
+        _user: uid,
+        _id: id
+      }, o, {
         new: true,
         upsert: false,
         overwrite: false // we will never overwrite a document, it won't be true
@@ -74,16 +57,13 @@
       });
     };
     controller.delete = function(uid, id, cb) {
-      var q = {
-        _id: id
-      };
-      if (userRestrict) {
-        if (uid === null) {
-          return cb(new Error('Unauthorised.'));
-        }
-        q._user = uid;
+      if (uid === null) {
+        return cb(new Error('Unauthorised.'));
       }
-      model.findOneAndRemove(q, function(err, r) {
+      model.findOneAndRemove({
+        _user: uid,
+        _id: id
+      }, function(err, r) {
         if (err) {
           return cb(err);
         }
@@ -91,14 +71,34 @@
       });
     };
     controller.query = function(uid, q, cb) {
-      if (userRestrict) {
-        if (uid === null) {
-          return cb(new Error('Unauthorised.'));
-        }
-        q._user = uid;
+      if (uid === null) {
+        return cb(new Error('Unauthorised.'));
       }
+      q._user = uid;
       model.find(q, cb);
     };
+
+    return controller;
+  }
+
+
+  /**
+   * Generates CURD routes
+   * @param  {Object}         controller  [description]
+   * @param  {Object}         [option]    [description]
+   * @return {express.Router}             [description]
+   */
+  function createRouter(controller, option) {
+
+    if (!controller._model) {
+      throw new Error('Invalid curd controller.');
+    }
+    var router = require('express').Router();
+    var modelName = controller._model.modelName;
+    var base64 = require('js-base64').Base64;
+    var opt = option || {};
+    var path = opt.path || '/' + modelName.toLowerCase();
+    var include = opt.include || ['create', 'read', 'update', 'delete', 'query'];
 
     if (include.indexOf('create') !== -1) {
       // create
@@ -114,7 +114,7 @@
             return next(err);
           }
           if (!data) {
-            return next(new HttpError(500, 'Failed to create ' + model.modelName));
+            return next(new HttpError(500, 'Failed to create ' + modelName));
           }
           res.json(data);
         });
@@ -134,7 +134,7 @@
             return next(err);
           }
           if (!data) {
-            return next(new HttpError(404, model.modelName + ' Not found.'));
+            return next(new HttpError(404, modelName + ' Not found.'));
           }
           res.json(data);
         });
@@ -158,7 +158,7 @@
             return next(err);
           }
           if (!data) {
-            return next(new HttpError(404, model.modelName + ' Not found.'));
+            return next(new HttpError(404, modelName + ' Not found.'));
           }
           res.json(data);
         });
@@ -178,7 +178,7 @@
             return next(err);
           }
           if (!data) {
-            return next(new HttpError(404, model.modelName + ' Not found.'));
+            return next(new HttpError(404, modelName + ' Not found.'));
           }
           res.status(200).send('OK');
         });
@@ -205,6 +205,11 @@
     }
 
     return router;
+  }
+
+  module.exports = {
+    Controller: createController,
+    Router: createRouter
   };
 
 })();

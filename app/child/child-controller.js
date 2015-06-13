@@ -2,7 +2,8 @@
 
 var Child = require('./child-model'),
   Score = require('../score/score-model'),
-  Payment = require('../score/payment-model');
+  Payment = require('../score/payment-model'),
+  controller = require('../util/crud').Controller(Child);
 
 /**
  * delete a child and its records
@@ -10,7 +11,7 @@ var Child = require('./child-model'),
  * @param  {ObjectId}   childId  [description]
  * @param  {Function} callback [description]
  */
-exports.deleteChild = function(userId, childId, callback) {
+controller.delete = function(userId, childId, callback) {
   if (userId === null) {
     return callback(new Error('Unauthorised.'));
   }
@@ -51,7 +52,7 @@ exports.deleteChild = function(userId, childId, callback) {
  * @param  {Array}   tasks    [description]
  * @param  {Function} callback [description]
  */
-exports.updateTasks = function(userId, childId, tasks, callback) {
+controller.updateTasks = function(userId, childId, tasks, callback) {
   if (userId === null) {
     return callback(new Error('Unauthorised.'));
   }
@@ -78,3 +79,5 @@ exports.updateTasks = function(userId, childId, tasks, callback) {
     return callback(null, child.tasks);
   });
 };
+
+module.exports = controller;

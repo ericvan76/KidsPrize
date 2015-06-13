@@ -1,7 +1,8 @@
 'use strict';
 
-var Payment = require('./payment-model'),
-  Child = require('../child/child-model');
+var Child = require('../child/child-model'),
+  Payment = require('./payment-model'),
+  controller = require('../util/crud').Controller(Payment);
 
 /**
  * Gets total payments of given child
@@ -9,7 +10,7 @@ var Payment = require('./payment-model'),
  * @param  {ObjectId} childId
  * @param  {Function} callback
  */
-exports.total = function(userId, childId, callback) {
+controller.total = function(userId, childId, callback) {
   if (userId === null) {
     return callback(new Error('Unauthorised.'));
   }
@@ -50,3 +51,5 @@ exports.total = function(userId, childId, callback) {
     });
   });
 };
+
+module.exports = controller;

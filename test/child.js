@@ -91,9 +91,9 @@ describe('ChildController', function() {
     }
   });
 
-  describe('deleteChild', function() {
-    it('deleteChild', function(done) {
-      ChildCtrl.deleteChild(user._id, child.id, function(err, r) {
+  describe('delete', function() {
+    it('delete child', function(done) {
+      ChildCtrl.delete(user._id, child.id, function(err, r) {
         assert.ifError(err);
         assert.equal(r.id, child.id);
         assert.equal(r._user, user.id);

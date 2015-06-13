@@ -1,7 +1,8 @@
 'use strict';
 
-var Score = require('./score-model'),
-  Child = require('../child/child-model');
+var Child = require('../child/child-model'),
+  Score = require('./score-model'),
+  controller = require('../util/crud').Controller(Score);
 
 /**
  * Gets total scores of given child
@@ -9,7 +10,7 @@ var Score = require('./score-model'),
  * @param  {ObjectId} childId
  * @param  {Function} callback
  */
-exports.total = function(userId, childId, callback) {
+controller.total = function(userId, childId, callback) {
   if (userId === null) {
     return callback(new Error('Unauthorised.'));
   }
@@ -59,7 +60,7 @@ exports.total = function(userId, childId, callback) {
  * @param  {Date}   from     [description]
  * @param  {Function} callback [description]
  */
-exports.cleanup = function(userId, childId, from, callback) {
+controller.cleanup = function(userId, childId, from, callback) {
   Child.findOne({
     _user: userId,
     _id: childId
@@ -86,4 +87,7 @@ exports.cleanup = function(userId, childId, from, callback) {
       return callback(null, true);
     });
   });
+
 };
+
+module.exports = controller;

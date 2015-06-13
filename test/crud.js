@@ -4,9 +4,8 @@ var assert = require('assert'),
   config = require('./config'),
   mongoose = require('mongoose'),
   Schema = mongoose.Schema,
-  router = require('express').Router(),
-  crud = require('../app/util/crud'),
-  UserCtrl = require('../app/user/user-controller');
+  UserCtrl = require('../app/user/user-controller'),
+  crud = require('../app/util/crud');
 
 var TestModel = mongoose.model('TestModel', new Schema({
   _user: {
@@ -27,13 +26,7 @@ var TestModel = mongoose.model('TestModel', new Schema({
   }
 }));
 
-crud(router, TestModel, {
-  userRestrict: true,
-  path: '/test-model',
-  include: ['create', 'read', 'patch', 'delete', 'query']
-});
-
-var Ctrl = router.__crud_controller;
+var ctrl = crud.Controller(TestModel);
 
 describe('CrudController', function() {
 
@@ -81,7 +74,7 @@ describe('CrudController', function() {
 
   describe('create()', function() {
     it('create test model', function(done) {
-      Ctrl.create(user._id, testModel, function(err, d) {
+      ctrl.create(user._id, testModel, function(err, d) {
         assert.ifError(err);
         created = d;
         assert(d._id);
@@ -94,7 +87,7 @@ describe('CrudController', function() {
 
   describe('read()', function() {
     it('read test model', function(done) {
-      Ctrl.read(user._id, created.id, function(err, d) {
+      ctrl.read(user._id, created.id, function(err, d) {
         assert.ifError(err);
         assert.equal(d.id, created.id);
         assert.equal(d._user, user.id);
@@ -108,7 +101,7 @@ describe('CrudController', function() {
     });
 
     it('read test model as someone else should return null', function(done) {
-      Ctrl.read(user2._id, created.id, function(err, d) {
+      ctrl.read(user2._id, created.id, function(err, d) {
         assert.ifError(err);
         assert.equal(d, null);
         done();
@@ -116,7 +109,7 @@ describe('CrudController', function() {
     });
 
     it('read test model as no one should return error', function(done) {
-      Ctrl.read(null, created.id, function(err, d) {
+      ctrl.read(null, created.id, function(err, d) {
         assert(err);
         done();
       });
@@ -134,7 +127,7 @@ describe('CrudController', function() {
         },
         arrField: [1, 2]
       };
-      Ctrl.update(user.id, created.id, m, function(err, d) {
+      ctrl.update(user.id, created.id, m, function(err, d) {
         assert.ifError(err);
         updated = d;
         assert.equal(d.id, created.id);
@@ -151,7 +144,7 @@ describe('CrudController', function() {
     });
 
     it('update test model as someone else should return null', function(done) {
-      Ctrl.update(user2._id, created.id, {}, function(err, d) {
+      ctrl.update(user2._id, created.id, {}, function(err, d) {
         assert.ifError(err);
         assert.equal(d, null);
         done();
@@ -159,7 +152,7 @@ describe('CrudController', function() {
     });
 
     it('update test model as no one should return error', function(done) {
-      Ctrl.update(null, created.id, {}, function(err, d) {
+      ctrl.update(null, created.id, {}, function(err, d) {
         assert(err);
         done();
       });
@@ -168,7 +161,7 @@ describe('CrudController', function() {
 
   describe('query()', function() {
     it('query test model', function(done) {
-      Ctrl.query(user._id, {}, function(err, d) {
+      ctrl.query(user._id, {}, function(err, d) {
         assert.ifError(err);
         assert(d.length > 0);
         assert.equal(d[0].id, updated.id);
@@ -177,7 +170,7 @@ describe('CrudController', function() {
     });
 
     it('query test model as someone else should return []', function(done) {
-      Ctrl.query(user2._id, {}, function(err, d) {
+      ctrl.query(user2._id, {}, function(err, d) {
         assert.ifError(err);
         assert(d);
         assert.equal(d.length, 0);
@@ -186,7 +179,7 @@ describe('CrudController', function() {
     });
 
     it('query test model as no one should return error', function(done) {
-      Ctrl.query(null, {}, function(err, d) {
+      ctrl.query(null, {}, function(err, d) {
         assert(err);
         done();
       });
@@ -195,11 +188,11 @@ describe('CrudController', function() {
 
   describe('delete()', function() {
     it('delete test model', function(done) {
-      Ctrl.delete(user._id, updated.id, function(err, d) {
+      ctrl.delete(user._id, updated.id, function(err, d) {
         assert.ifError(err);
         assert.equal(d.id, updated.id);
         assert.equal(d._user, user.id);
-        Ctrl.read(user._id, updated.id, function(err, d) {
+        ctrl.read(user._id, updated.id, function(err, d) {
           assert.ifError(err);
           assert.equal(d, null);
           done();
@@ -208,7 +201,7 @@ describe('CrudController', function() {
     });
 
     it('delete test model as someone else should return null', function(done) {
-      Ctrl.delete(user2._id, updated.id, function(err, d) {
+      ctrl.delete(user2._id, updated.id, function(err, d) {
         assert.ifError(err);
         assert.equal(d, null);
         done();
@@ -216,7 +209,7 @@ describe('CrudController', function() {
     });
 
     it('delete test model as no one should return error', function(done) {
-      Ctrl.delete(null, updated.id, function(err, d) {
+      ctrl.delete(null, updated.id, function(err, d) {
         assert(err);
         done();
       });
