@@ -68,7 +68,7 @@ describe('UserController', function() {
       }
     };
     var userId = null;
-    it('new user', function(done) {
+    it('create new user', function(done) {
       UserCtrl.resolveUser(user, function(err, u) {
         assert.ifError(err);
         assert(u._id);
@@ -81,7 +81,7 @@ describe('UserController', function() {
         done();
       });
     });
-    it('existing user', function(done) {
+    it('resolve existing user and update some fields', function(done) {
       user.name.givenName = 'User2';
       user.displayName = 'Test User2';
       user.facebook.testField = 'B';
