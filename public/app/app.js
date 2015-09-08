@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   angular.module('app.auth', []);
@@ -19,17 +19,17 @@
   ]);
 
   // Configurations
-  app.config(['$routeProvider', function($routeProvider) {
+  app.config(['$routeProvider', function ($routeProvider) {
     // client routes
     $routeProvider
       .when('/', {
         controller: 'HomeCtrl',
         templateUrl: 'home.html',
         resolve: {
-          user: ['Auth', function(Auth) {
+          user: ['Auth', function (Auth) {
             return Auth.loginUser();
           }],
-          themes: ['Themes', function(Themes) {
+          themes: ['Themes', function (Themes) {
             return Themes.loadThemes();
           }]
         }
@@ -40,10 +40,10 @@
       .when('/logout', {
         redirectTo: '/login',
         resolve: {
-          revoke: ['Auth', function(Auth) {
+          revoke: ['Auth', function (Auth) {
             return Auth.revokeToken();
           }],
-          logout: ['Auth', function(Auth) {
+          logout: ['Auth', function (Auth) {
             return Auth.logout();
           }]
         }
@@ -53,11 +53,11 @@
       });
   }]);
 
-  app.config(['$httpProvider', function($httpProvider) {
+  app.config(['$httpProvider', function ($httpProvider) {
 
     $httpProvider.interceptors.push(['$q', '$location', '$injector', '$rootScope', '$timeout',
 
-      function($q, $location, $injector, $rootScope, $timeout) {
+      function ($q, $location, $injector, $rootScope, $timeout) {
 
         function isApi(url) {
           if (/^\/api\//i.test(url)) {
@@ -67,7 +67,7 @@
         }
 
         return {
-          request: function(config) {
+          request: function (config) {
             $rootScope.loading = true;
             config.timeout = 30000; // timeout 30 sec
             // add Authorization header for all calls startswith '/api/'
@@ -79,7 +79,7 @@
               } else {
                 var d = $q.defer();
                 var promise = Auth.requestToken();
-                promise.then(function() {
+                promise.then(function () {
                   config.headers.Authorization = 'Bearer ' + Auth.token.access_token;
                   d.resolve(config);
                 });
@@ -89,13 +89,13 @@
               return config;
             }
           },
-          response: function(response) {
-            return $timeout(function() {
+          response: function (response) {
+            return $timeout(function () {
               $rootScope.loading = false;
               return response;
             }, 0);
           },
-          responseError: function(response) {
+          responseError: function (response) {
             $rootScope.loading = false;
             if (response.status === 401) {
               $location.url('/login');
@@ -115,7 +115,7 @@
                     response.config.method + ' ' + response.config.url
                   ]
                 });
-                modalInstance.result.then(function(result) {
+                modalInstance.result.then(function (result) {
                   // TODO: refresh page?
                 });
               }
@@ -127,22 +127,22 @@
     ]);
   }]);
 
-  app.config(['$locationProvider', function($locationProvider) {
+  app.config(['$locationProvider', function ($locationProvider) {
     // html5 mode on
     $locationProvider.html5Mode(true);
   }]);
 
-  app.config(['$resourceProvider', function($resourceProvider) {
+  app.config(['$resourceProvider', function ($resourceProvider) {
     // Strip trailing slashes from calculated URLs
     $resourceProvider.defaults.stripTrailingSlashes = true;
   }]);
 
-  app.config(['$logProvider', function($logProvider) {
+  app.config(['$logProvider', function ($logProvider) {
     $logProvider.debugEnabled(true);
   }]);
 
   // Run block
-  app.run(['$injector', function($injector) {
+  app.run(['$injector', function ($injector) {
 
   }]);
 

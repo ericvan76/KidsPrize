@@ -4,8 +4,8 @@ var HttpError = require('../util/http-error'),
   ChildCtrl = require('./child-controller'),
   router = require('../util/crud').Router(ChildCtrl);
 
-router.post('/child/:id/tasks', function(req, res, next) {
-  ChildCtrl.updateTasks(req.user._id, req.params.id, req.body, function(err, data) {
+router.post('/child/:id/tasks', function (req, res, next) {
+  ChildCtrl.updateTasks(req.user._id, req.params.id, req.body, function (err, data) {
     if (err) {
       return next(err);
     }

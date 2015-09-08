@@ -11,14 +11,14 @@ var Child = require('./child-model'),
  * @param  {ObjectId}   childId  [description]
  * @param  {Function} callback [description]
  */
-controller.delete = function(userId, childId, callback) {
+controller.delete = function (userId, childId, callback) {
   if (userId === null) {
     return callback(new Error('Unauthorised.'));
   }
   Child.findOneAndRemove({
     _user: userId,
     _id: childId
-  }, function(err, child) {
+  }, function (err, child) {
     if (err) {
       return callback(err);
     }
@@ -28,14 +28,14 @@ controller.delete = function(userId, childId, callback) {
     Score.remove({
       _user: userId,
       _child: childId
-    }, function(err) {
+    }, function (err) {
       if (err) {
         return callback(err);
       }
       Payment.remove({
         _user: userId,
         _child: childId
-      }, function(err) {
+      }, function (err) {
         if (err) {
           return callback(err);
         }
@@ -52,32 +52,32 @@ controller.delete = function(userId, childId, callback) {
  * @param  {Array}   tasks    [description]
  * @param  {Function} callback [description]
  */
-controller.updateTasks = function(userId, childId, tasks, callback) {
+controller.updateTasks = function (userId, childId, tasks, callback) {
   if (userId === null) {
     return callback(new Error('Unauthorised.'));
   }
-  var uniqueTasks = tasks.filter(function(item, pos) {
+  var uniqueTasks = tasks.filter(function (item, pos) {
     return tasks.indexOf(item) === pos;
   });
   Child.findOneAndUpdate({
     _user: userId,
     _id: childId
   }, {
-    $set: {
-      tasks: uniqueTasks
-    }
-  }, {
-    new: true,
-    upsert: false
-  }, function(err, child) {
-    if (err) {
-      return callback(err);
-    }
-    if (!child) {
-      return callback(null, false);
-    }
-    return callback(null, child.tasks);
-  });
+      $set: {
+        tasks: uniqueTasks
+      }
+    }, {
+      new: true,
+      upsert: false
+    }, function (err, child) {
+      if (err) {
+        return callback(err);
+      }
+      if (!child) {
+        return callback(null, false);
+      }
+      return callback(null, child.tasks);
+    });
 };
 
 module.exports = controller;

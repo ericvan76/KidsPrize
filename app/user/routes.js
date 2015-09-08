@@ -3,12 +3,12 @@
 var router = require('express').Router(),
   ctrl = require('./user-controller');
 
-router.get('/user', function(req, res, next) {
+router.get('/user', function (req, res, next) {
   return res.json(req.user);
 });
 
-router.post('/user/preference', function(req, res, next) {
-  return ctrl.savePreference(req.user._id, req.body, function(err, user) {
+router.post('/user/preference', function (req, res, next) {
+  return ctrl.savePreference(req.user._id, req.body, function (err, user) {
     if (err) {
       return next(err);
     }

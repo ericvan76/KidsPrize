@@ -15,7 +15,7 @@ if (numCPUs > 1 && cluster.isMaster) {
     cluster.fork();
   }
 
-  cluster.on('exit', function(worker, code, signal) {
+  cluster.on('exit', function (worker, code, signal) {
     console.log('worker %d died (%s). restarting...',
       worker.process.pid, signal || code);
     cluster.fork();
@@ -32,7 +32,7 @@ if (numCPUs > 1 && cluster.isMaster) {
   express.set('port', port);
 
   var server = require('http').createServer(express);
-  server.on('listening', function() {
+  server.on('listening', function () {
     console.log('Listening on ' + port);
   });
   // listen

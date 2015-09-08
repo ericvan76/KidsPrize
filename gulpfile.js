@@ -17,41 +17,40 @@ var gulp = require('gulp'),
   merge = require('merge-stream');
 
 // styles
-gulp.task('styles', function() {
+gulp.task('styles', function () {
 
   del.sync('public/dist/css/**/*');
 
   return merge(
     // concat vendors
     gulp.src([
-      'bower_components/bootstrap-social/bootstrap-social.css'
-    ])
-    .pipe(sourcemaps.init())
-    .pipe(concat('vender.css'))
-    .pipe(minifyCss())
-    .pipe(sourcemaps.write('./'))
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(gulp.dest('public/dist/css')),
+      'bower_components/bootstrap-social/bootstrap-social.css'])
+      .pipe(sourcemaps.init())
+      .pipe(concat('vender.css'))
+      .pipe(minifyCss())
+      .pipe(sourcemaps.write('./'))
+      .pipe(rename({
+        suffix: '.min'
+      }))
+      .pipe(gulp.dest('public/dist/css')),
 
     // self
     gulp.src('public/css/style.scss')
-    .pipe(sourcemaps.init())
-    .pipe(sass.sync().on('error', sass.logError))
-    .pipe(minifyCss())
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('public/dist/css'))
-  );
+      .pipe(sourcemaps.init())
+      .pipe(sass.sync().on('error', sass.logError))
+      .pipe(minifyCss())
+      .pipe(rename({
+        suffix: '.min'
+      }))
+      .pipe(sourcemaps.write('./'))
+      .pipe(gulp.dest('public/dist/css'))
+    );
 
 });
 
 
 // scripts
-gulp.task('scripts', function() {
+gulp.task('scripts', function () {
 
   del.sync('public/dist/js/**/*');
 
@@ -65,47 +64,47 @@ gulp.task('scripts', function() {
       'bower_components/date-utils/lib/date-utils.min.js',
       'bower_components/underscore/underscore.min.js'
     ])
-    .pipe(sourcemaps.init())
-    .pipe(concat('vender.js'))
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('public/dist/js')),
+      .pipe(sourcemaps.init())
+      .pipe(concat('vender.js'))
+      .pipe(rename({
+        suffix: '.min'
+      }))
+      .pipe(sourcemaps.write('./'))
+      .pipe(gulp.dest('public/dist/js')),
 
     merge(
       // ng templates
       gulp.src('public/app/**/*.html')
-      .pipe(minifyHTML({
-        conditionals: true,
-        spare: true
-      }))
-      .pipe(rename({
-        dirname: ''
-      }))
-      .pipe(ngTemplates('app.templates')),
+        .pipe(minifyHTML({
+          conditionals: true,
+          spare: true
+        }))
+        .pipe(rename({
+          dirname: ''
+        }))
+        .pipe(ngTemplates('app.templates')),
 
       // ng app
       gulp.src('public/app/**/*.js')
-    )
-    .pipe(sourcemaps.init())
-    .pipe(concat('app.js'))
-    .pipe(ngAnnotate())
-    .pipe(uglify({
-      mangle: false
-    }))
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('public/dist/js'))
+      )
+      .pipe(sourcemaps.init())
+      .pipe(concat('app.js'))
+      .pipe(ngAnnotate())
+      .pipe(uglify({
+        mangle: false
+      }))
+      .pipe(rename({
+        suffix: '.min'
+      }))
+      .pipe(sourcemaps.write('./'))
+      .pipe(gulp.dest('public/dist/js'))
 
-  );
+    );
 
 });
 
 // html & css/js injection
-gulp.task('injection', ['styles', 'scripts'], function() {
+gulp.task('injection', ['styles', 'scripts'], function () {
 
   del.sync('public/dist/index.html');
 
@@ -113,8 +112,8 @@ gulp.task('injection', ['styles', 'scripts'], function() {
     .pipe(inject(gulp.src(['public/dist/css/**/*.css', 'public/dist/js/**/*.js'], {
       read: false
     }), {
-      ignorePath: 'public/dist'
-    }))
+        ignorePath: 'public/dist'
+      }))
     .pipe(minifyHTML({
       conditionals: true,
       spare: true
@@ -124,7 +123,7 @@ gulp.task('injection', ['styles', 'scripts'], function() {
 });
 
 // images
-gulp.task('images', function() {
+gulp.task('images', function () {
 
   del.sync('public/dist/img/**/*');
 
@@ -137,13 +136,13 @@ gulp.task('images', function() {
 gulp.task('build', ['injection', 'images']);
 
 // watch
-gulp.task('watch', ['build'], function() {
+gulp.task('watch', ['build'], function () {
   gulp.watch(['public/app/**/*', 'public/css/**/*', 'public/index.html'], ['injection']);
   gulp.watch('public/img/**/*', ['images']);
 });
 
 // start server
-gulp.task('server', function() {
+gulp.task('server', function () {
   return nodemon({
     script: 'server.js',
     ext: 'js',

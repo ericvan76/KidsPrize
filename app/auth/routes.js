@@ -31,7 +31,7 @@ router.get('/auth/google/callback',
   }));
 
 // request token
-router.post('/auth/token', function(req, res, next) {
+router.post('/auth/token', function (req, res, next) {
   if (!req.isAuthenticated()) {
     res.status(401).send('Unauthorised.');
   } else {
@@ -41,7 +41,7 @@ router.post('/auth/token', function(req, res, next) {
     if (!req.query.client_id || req.query.client_id !== 'webapp') {
       return res.status(400).send('Invalid client_id.');
     }
-    tokenCtrl.issueToken(req.user._id, req.query.client_id, req.cookies['connect.sid'], req.query.state, function(err, token) {
+    tokenCtrl.issueToken(req.user._id, req.query.client_id, req.cookies['connect.sid'], req.query.state, function (err, token) {
       if (err || !token) {
         res.status(401).send('Unauthorised.');
       } else {
@@ -52,12 +52,12 @@ router.post('/auth/token', function(req, res, next) {
 });
 
 // revoke token
-router.post('/auth/token/revoke', function(req, res, next) {
+router.post('/auth/token/revoke', function (req, res, next) {
   var access_token = req.query.access_token;
   if (!access_token) {
     return res.status(400).send('Bad Request.');
   }
-  tokenCtrl.revokeToken(access_token, function(err) {
+  tokenCtrl.revokeToken(access_token, function (err) {
     if (err) {
       res.status(500).send('Unable to revoke token or token does not exists.');
     } else {
@@ -67,7 +67,7 @@ router.post('/auth/token/revoke', function(req, res, next) {
 });
 
 // logout
-router.get('/auth/logout', function(req, res, next) {
+router.get('/auth/logout', function (req, res, next) {
   req.logout();
   res.redirect('/login');
 });

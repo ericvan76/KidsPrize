@@ -10,14 +10,14 @@ var Child = require('../child/child-model'),
  * @param  {ObjectId} childId
  * @param  {Function} callback
  */
-controller.total = function(userId, childId, callback) {
+controller.total = function (userId, childId, callback) {
   if (userId === null) {
     return callback(new Error('Unauthorised.'));
   }
   Child.findOne({
     _user: userId,
     _id: childId
-  }, function(err, child) {
+  }, function (err, child) {
     if (err) {
       return callback(err);
     }
@@ -30,25 +30,25 @@ controller.total = function(userId, childId, callback) {
         _child: child._id
       }
     }, {
-      $group: {
-        _id: null,
-        total: {
-          $sum: '$value'
+        $group: {
+          _id: null,
+          total: {
+            $sum: '$value'
+          }
         }
-      }
-    }, {
-      $project: {
-        _id: 0,
-        total: 1
-      }
-    }], function(err, data) {
-      if (err) {
-        return callback(err);
-      }
-      return callback(null, data[0] || {
-        total: 0
+      }, {
+        $project: {
+          _id: 0,
+          total: 1
+        }
+      }], function (err, data) {
+        if (err) {
+          return callback(err);
+        }
+        return callback(null, data[0] || {
+          total: 0
+        });
       });
-    });
   });
 };
 
@@ -60,11 +60,11 @@ controller.total = function(userId, childId, callback) {
  * @param  {Date}   from     [description]
  * @param  {Function} callback [description]
  */
-controller.cleanup = function(userId, childId, from, callback) {
+controller.cleanup = function (userId, childId, from, callback) {
   Child.findOne({
     _user: userId,
     _id: childId
-  }, function(err, child) {
+  }, function (err, child) {
     if (err) {
       return callback(err);
     }
@@ -80,7 +80,7 @@ controller.cleanup = function(userId, childId, from, callback) {
       task: {
         $nin: child.tasks
       }
-    }, function(err) {
+    }, function (err) {
       if (err) {
         return callback(err);
       }

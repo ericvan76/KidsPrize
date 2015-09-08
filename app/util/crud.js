@@ -1,4 +1,5 @@
-(function() {
+/* global HttpError */
+(function () {
   'use strict';
 
   /**
@@ -12,7 +13,7 @@
       _model: model
     };
 
-    controller.create = function(uid, o, cb) {
+    controller.create = function (uid, o, cb) {
 
       if (uid === null) {
         return cb(new Error('Unauthorised.'));
@@ -20,21 +21,21 @@
       o._user = uid;
       model.create(o, cb);
     };
-    controller.read = function(uid, id, cb) {
+    controller.read = function (uid, id, cb) {
       if (uid === null) {
         return cb(new Error('Unauthorised.'));
       }
       model.findOne({
         _user: uid,
         _id: id
-      }, function(err, r) {
+      }, function (err, r) {
         if (err) {
           return cb(err);
         }
         return cb(null, r);
       });
     };
-    controller.update = function(uid, id, o, cb) {
+    controller.update = function (uid, id, o, cb) {
       if (uid === null) {
         return cb(new Error('Unauthorised.'));
       }
@@ -46,31 +47,31 @@
         _user: uid,
         _id: id
       }, o, {
-        new: true,
-        upsert: false,
-        overwrite: false // we will never overwrite a document, it won't be true
-      }, function(err, r) {
-        if (err) {
-          return cb(err);
-        }
-        return cb(null, r);
-      });
+          new: true,
+          upsert: false,
+          overwrite: false // we will never overwrite a document, it won't be true
+        }, function (err, r) {
+          if (err) {
+            return cb(err);
+          }
+          return cb(null, r);
+        });
     };
-    controller.delete = function(uid, id, cb) {
+    controller.delete = function (uid, id, cb) {
       if (uid === null) {
         return cb(new Error('Unauthorised.'));
       }
       model.findOneAndRemove({
         _user: uid,
         _id: id
-      }, function(err, r) {
+      }, function (err, r) {
         if (err) {
           return cb(err);
         }
         return cb(null, r);
       });
     };
-    controller.query = function(uid, q, cb) {
+    controller.query = function (uid, q, cb) {
       if (uid === null) {
         return cb(new Error('Unauthorised.'));
       }
@@ -102,14 +103,14 @@
 
     if (include.indexOf('create') !== -1) {
       // create
-      router.post(path, function(req, res, next) {
+      router.post(path, function (req, res, next) {
         if (!req.user._id) {
           return next(new HttpError(401, 'Unauthorised.'));
         }
         if (req.body._id !== undefined) {
           return next(new HttpError(400, 'Field _id must not be set.'));
         }
-        controller.create(req.user._id, req.body, function(err, data) {
+        controller.create(req.user._id, req.body, function (err, data) {
           if (err) {
             return next(err);
           }
@@ -122,14 +123,14 @@
     }
     if (include.indexOf('read') !== -1) {
       // read
-      router.get(path + '/:id', function(req, res, next) {
+      router.get(path + '/:id', function (req, res, next) {
         if (!req.user._id) {
           return next(new HttpError(401, 'Unauthorised.'));
         }
         if (!req.params.id) {
           return next(new HttpError(400, 'Missing url parameter - id.'));
         }
-        controller.read(req.user._id, req.params.id, function(err, data) {
+        controller.read(req.user._id, req.params.id, function (err, data) {
           if (err) {
             return next(err);
           }
@@ -142,7 +143,7 @@
     }
     if (include.indexOf('update') !== -1) {
       // update
-      router.put(path + '/:id', function(req, res, next) {
+      router.put(path + '/:id', function (req, res, next) {
         if (!req.user._id) {
           return next(new HttpError(401, 'Unauthorised.'));
         }
@@ -153,7 +154,7 @@
             delete req.body._id;
           }
         }
-        controller.update(req.user._id, req.params.id, req.body, function(err, data) {
+        controller.update(req.user._id, req.params.id, req.body, function (err, data) {
           if (err) {
             return next(err);
           }
@@ -166,14 +167,14 @@
     }
     if (include.indexOf('delete') !== -1) {
       // delete
-      router.delete(path + '/:id', function(req, res, next) {
+      router.delete(path + '/:id', function (req, res, next) {
         if (!req.user._id) {
           return next(new HttpError(401, 'Unauthorised.'));
         }
         if (!req.params.id) {
           return next(new HttpError(400, 'Missing url parameter - id.'));
         }
-        controller.delete(req.user._id, req.params.id, function(err, data) {
+        controller.delete(req.user._id, req.params.id, function (err, data) {
           if (err) {
             return next(err);
           }
@@ -186,7 +187,7 @@
     }
     if (include.indexOf('query') !== -1) {
       // query
-      router.get(path, function(req, res, next) {
+      router.get(path, function (req, res, next) {
         if (!req.user._id) {
           return next(new HttpError(401, 'Unauthorised.'));
         }
@@ -195,7 +196,7 @@
           q = JSON.parse(base64.decode(req.query.q));
         }
         console.log('Decoded query: ' + JSON.stringify(q));
-        controller.query(req.user._id, q, function(err, data) {
+        controller.query(req.user._id, q, function (err, data) {
           if (err) {
             return next(err);
           }

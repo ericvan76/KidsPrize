@@ -7,7 +7,7 @@ var User = require('./user-model');
  * @param  {ObjectId} id
  * @param  {Function} callback
  */
-exports.read = function(id, callback) {
+exports.read = function (id, callback) {
   User.findById(id, callback);
 };
 
@@ -17,7 +17,7 @@ exports.read = function(id, callback) {
  * @param  {Object}   preference
  * @param  {Function} callback
  */
-exports.savePreference = function(id, preference, callback) {
+exports.savePreference = function (id, preference, callback) {
   var update = {};
   for (var prop in preference) {
     update['preference.' + prop] = preference[prop];
@@ -25,9 +25,9 @@ exports.savePreference = function(id, preference, callback) {
   User.findByIdAndUpdate(id, {
     $set: update
   }, {
-    new: true,
-    upsert: false
-  }, callback);
+      new: true,
+      upsert: false
+    }, callback);
 };
 
 /**
@@ -35,16 +35,16 @@ exports.savePreference = function(id, preference, callback) {
  * @param  {Object}   user  [description]
  * @param  {Function} callback [description]
  */
-exports.resolveUser = function(user, callback) {
+exports.resolveUser = function (user, callback) {
   User.findOneAndUpdate({
-      email: {
-        $regex: new RegExp(user.email, 'i')
-      }
-    }, user, {
+    email: {
+      $regex: new RegExp(user.email, 'i')
+    }
+  }, user, {
       new: true,
       upsert: true
     },
-    function(err, u) {
+    function (err, u) {
       if (err) {
         return callback(err);
       }
@@ -58,7 +58,7 @@ exports.resolveUser = function(user, callback) {
  * @param  {Object} profile  [description]
  * @return {Object} normalised user
  */
-exports.normaliseUser = function(provider, profile) {
+exports.normaliseUser = function (provider, profile) {
   switch (provider) {
     case 'facebook':
       return {
@@ -72,7 +72,7 @@ exports.normaliseUser = function(provider, profile) {
       };
     case 'google':
       return {
-        email: profile.emails.filter(function(e) {
+        email: profile.emails.filter(function (e) {
           return e.type === 'account';
         }).pop().value.toLowerCase(),
         displayName: profile.displayName,
