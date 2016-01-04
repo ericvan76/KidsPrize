@@ -29,7 +29,7 @@
     "test": "mocha test"
   },
   "license": "GPL2",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "devDependencies": {
     "del": "^1.1.1",
     "gulp": "^3.9.0",
