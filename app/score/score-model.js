@@ -42,8 +42,8 @@ ScoreSchema.index({
   date: 1,
   task: 1
 }, {
-  unique: true
-});
+    unique: true
+  });
 
 // exports
 module.exports = mongoose.model('Score', ScoreSchema);

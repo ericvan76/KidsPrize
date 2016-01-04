@@ -13,7 +13,7 @@ var Token = require('./token-model'),
  * @param  {String}   state
  * @param  {Function} callback
  */
-exports.issueToken = function(userId, clientId, session, state, callback) {
+exports.issueToken = function (userId, clientId, session, state, callback) {
   if (clientId === 'webapp' && (session === undefined || session === null)) {
     return callback(new Error('Unauthorised.'));
   }
@@ -28,35 +28,35 @@ exports.issueToken = function(userId, clientId, session, state, callback) {
     client_id: clientId,
     session: session
   }, {
-    $set: {
-      access_token: access_token,
-      expire_at: expire_at,
-      refresh_at: now
-    },
-    $setOnInsert: {
-      _user: userId,
-      client_id: clientId,
-      session: session,
-      token_type: 'bearer',
-      open_at: now
-    }
-  }, {
-    new: true,
-    upsert: true
-  }, function(err, t) {
-    if (err) {
-      return callback(err);
-    }
-    if (!t) {
-      return callback(null, false);
-    }
-    return callback(null, {
-      token_type: t.token_type,
-      access_token: t.access_token,
-      expires_in: expires_in_hours * 3600,
-      state: state
+      $set: {
+        access_token: access_token,
+        expire_at: expire_at,
+        refresh_at: now
+      },
+      $setOnInsert: {
+        _user: userId,
+        client_id: clientId,
+        session: session,
+        token_type: 'bearer',
+        open_at: now
+      }
+    }, {
+      new: true,
+      upsert: true
+    }, function (err, t) {
+      if (err) {
+        return callback(err);
+      }
+      if (!t) {
+        return callback(null, false);
+      }
+      return callback(null, {
+        token_type: t.token_type,
+        access_token: t.access_token,
+        expires_in: expires_in_hours * 3600,
+        state: state
+      });
     });
-  });
 };
 
 /**
@@ -64,20 +64,20 @@ exports.issueToken = function(userId, clientId, session, state, callback) {
  * @param  {String}   token
  * @param  {Function} callback
  */
-exports.validateToken = function(token, callback) {
+exports.validateToken = function (token, callback) {
   Token.findOne({
     access_token: token,
     expire_at: {
       $gt: new Date()
     }
-  }, function(err, t) {
+  }, function (err, t) {
     if (err) {
       return callback(err);
     }
     if (!t) {
       return callback(null, false);
     }
-    t.populate('_user', function(err, t) {
+    t.populate('_user', function (err, t) {
       if (err) {
         return callback(err);
       }
@@ -94,7 +94,7 @@ exports.validateToken = function(token, callback) {
  * @param  {String}   token
  * @param  {Function} callback
  */
-exports.revokeToken = function(token, callback) {
+exports.revokeToken = function (token, callback) {
   Token.remove({
     access_token: token
   }, callback);

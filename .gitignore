@@ -1,7 +1,7 @@
-.settings/
 node_modules/
 bower_components/
 public/dist/
-config/env/development.js
-config/env/production.js
 logs
+config/env/*.js
+!config/env/default.js
+*.pem

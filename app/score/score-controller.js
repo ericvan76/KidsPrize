@@ -1,8 +1,8 @@
 'use strict';
 
-var Score = require('./score-model'),
-  Child = require('../child/child-model'),
-  HttpError = require('../util/http-error');
+var Child = require('../child/child-model'),
+  Score = require('./score-model'),
+  controller = require('../util/crud').Controller(Score);
 
 /**
  * Gets total scores of given child
@@ -10,16 +10,19 @@ var Score = require('./score-model'),
  * @param  {ObjectId} childId
  * @param  {Function} callback
  */
-exports.total = function(userId, childId, callback) {
+controller.total = function (userId, childId, callback) {
+  if (userId === null) {
+    return callback(new Error('Unauthorised.'));
+  }
   Child.findOne({
     _user: userId,
     _id: childId
-  }, function(err, child) {
+  }, function (err, child) {
     if (err) {
       return callback(err);
     }
     if (!child) {
-      return callback(new HttpError(404, 'Child not found.'));
+      return callback(null, false);
     }
     Score.aggregate([{
       $match: {
@@ -27,25 +30,25 @@ exports.total = function(userId, childId, callback) {
         _child: child._id
       }
     }, {
-      $group: {
-        _id: null,
-        total: {
-          $sum: '$value'
+        $group: {
+          _id: null,
+          total: {
+            $sum: '$value'
+          }
         }
-      }
-    }, {
-      $project: {
-        _id: 0,
-        total: 1
-      }
-    }], function(err, data) {
-      if (err) {
-        return callback(err);
-      }
-      return callback(null, data[0] || {
-        total: 0
+      }, {
+        $project: {
+          _id: 0,
+          total: 1
+        }
+      }], function (err, data) {
+        if (err) {
+          return callback(err);
+        }
+        return callback(null, data[0] || {
+          total: 0
+        });
       });
-    });
   });
 };
 
@@ -57,16 +60,16 @@ exports.total = function(userId, childId, callback) {
  * @param  {Date}   from     [description]
  * @param  {Function} callback [description]
  */
-exports.cleanup = function(userId, childId, from, callback) {
+controller.cleanup = function (userId, childId, from, callback) {
   Child.findOne({
     _user: userId,
     _id: childId
-  }, function(err, child) {
+  }, function (err, child) {
     if (err) {
       return callback(err);
     }
     if (!child) {
-      return callback(new HttpError(404, 'Child not found.'));
+      return callback(null, false);
     }
     Score.remove({
       _user: userId,
@@ -77,11 +80,14 @@ exports.cleanup = function(userId, childId, from, callback) {
       task: {
         $nin: child.tasks
       }
-    }, function(err) {
+    }, function (err) {
       if (err) {
         return callback(err);
       }
-      return callback(null);
+      return callback(null, true);
     });
   });
+
 };
+
+module.exports = controller;

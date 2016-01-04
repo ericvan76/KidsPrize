@@ -68,18 +68,18 @@ app.use('/api', requiresToken, require('./score/routes'));
 
 
 // api: catch 404 and forward to error handler
-app.use(['/api/*', '/auth/*'], function(req, res, next) {
+app.use(['/api/*', '/auth/*'], function (req, res, next) {
   res.status(404).send('Not Found');
 });
 
 // api: error handlers
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   console.error(err.stack);
   res.status(err.status || 500).send(err.message);
 });
 
 // Client app: angular catch-all
-app.get('*', function(req, res) {
+app.get('*', function (req, res) {
   res.sendFile(path.join(__dirname, publicFolder, 'index.html'));
 });
 

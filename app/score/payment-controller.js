@@ -1,8 +1,8 @@
 'use strict';
 
-var Payment = require('./payment-model'),
-  Child = require('../child/child-model'),
-  HttpError = require('../util/http-error');
+var Child = require('../child/child-model'),
+  Payment = require('./payment-model'),
+  controller = require('../util/crud').Controller(Payment);
 
 /**
  * Gets total payments of given child
@@ -10,16 +10,19 @@ var Payment = require('./payment-model'),
  * @param  {ObjectId} childId
  * @param  {Function} callback
  */
-exports.total = function(userId, childId, callback) {
+controller.total = function (userId, childId, callback) {
+  if (userId === null) {
+    return callback(new Error('Unauthorised.'));
+  }
   Child.findOne({
     _user: userId,
     _id: childId
-  }, function(err, child) {
+  }, function (err, child) {
     if (err) {
       return callback(err);
     }
     if (!child) {
-      return callback(new HttpError(404, 'Child not found.'));
+      return callback(null, false);
     }
     Payment.aggregate([{
       $match: {
@@ -27,24 +30,26 @@ exports.total = function(userId, childId, callback) {
         _child: child._id
       }
     }, {
-      $group: {
-        _id: null,
-        total: {
-          $sum: '$amount'
+        $group: {
+          _id: null,
+          total: {
+            $sum: '$amount'
+          }
         }
-      }
-    }, {
-      $project: {
-        _id: 0,
-        total: 1
-      }
-    }], function(err, data) {
-      if (err) {
-        return callback(err);
-      }
-      return callback(null, data[0] || {
-        total: 0
+      }, {
+        $project: {
+          _id: 0,
+          total: 1
+        }
+      }], function (err, data) {
+        if (err) {
+          return callback(err);
+        }
+        return callback(null, data[0] || {
+          total: 0
+        });
       });
-    });
   });
 };
+
+module.exports = controller;

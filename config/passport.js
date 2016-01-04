@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   var passport = require('passport'),
@@ -10,34 +10,37 @@
     config = require('../config');
 
   // Serialize and deserialize
-  passport.serializeUser(function(user, done) {
+  passport.serializeUser(function (user, done) {
     done(null, user.id);
   });
 
-  passport.deserializeUser(function(id, done) {
-    userCtrl.read(id, function(err, user) {
+  passport.deserializeUser(function (id, done) {
+    userCtrl.read(id, function (err, user) {
       done(err, user);
     });
   });
 
   // Strategies
   passport.use(new FacebookStrategy(config.facebook,
-    function(accessToken, refreshToken, profile, done) {
-      userCtrl.postAuth('facebook', profile, function(err, user) {
+    function (accessToken, refreshToken, profile, done) {
+      console.log(profile);
+      var normUser = userCtrl.normaliseUser('facebook', profile);
+      userCtrl.resolveUser(normUser, function (err, user) {
         done(err, user);
       });
     }));
 
   passport.use(new GoogleStrategy(config.google,
-    function(accessToken, refreshToken, profile, done) {
-      userCtrl.postAuth('google', profile, function(err, user) {
+    function (accessToken, refreshToken, profile, done) {
+      var normUser = userCtrl.normaliseUser('google', profile);
+      userCtrl.resolveUser(normUser, function (err, user) {
         done(err, user);
       });
     }));
 
   passport.use(new BearerStrategy({},
-    function(token, done) {
-      tokenCtrl.validateToken(token, function(err, user) {
+    function (token, done) {
+      tokenCtrl.validateToken(token, function (err, user) {
         done(err, user);
       });
     }));
