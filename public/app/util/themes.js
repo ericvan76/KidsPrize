@@ -19,7 +19,7 @@
             name: 'Default',
             cssCdn: bootstrapElem().href
           }];
-          $http.get('http://api.bootswatch.com/3/')
+          $http.get('http://bootswatch.com/api/3.json')
             .success(function (data) {
               themes = themes.concat(data.themes);
               deferred.resolve(themes);
