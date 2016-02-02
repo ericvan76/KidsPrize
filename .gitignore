@@ -5,3 +5,4 @@ logs
 config/env/*.js
 !config/env/default.js
 *.pem
+typings/
