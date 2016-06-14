@@ -1,7 +1,0 @@
-// Place your settings in this file to overwrite default and user settings.
-{
-	"editor.formatOnType": true,
-	"files.trimTrailingWhitespace": true,
-	"javascript.validate.lint.comparisonOperatorsNotStrict": "warning",
-	"javascript.validate.lint.missingSemicolon": "warning"
-}

@@ -1,8 +1,2 @@
-node_modules/
-bower_components/
-public/dist/
-logs
-config/env/*.js
-!config/env/default.js
-*.pem
-typings/
+bin/
+obj/
