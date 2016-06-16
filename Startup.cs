@@ -6,6 +6,7 @@ using KidsPrize.Models;
 using KidsPrize.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -24,16 +25,11 @@ namespace KidsPrize.Http
         public Startup(IHostingEnvironment env)
         {
             // Setup configuration sources.
-
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-            if (env.IsDevelopment())
-            {
-                //  builder.AddUserSecrets();
-            }
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
 
@@ -44,8 +40,12 @@ namespace KidsPrize.Http
         public IConfigurationRoot Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+
+            services.AddIdentityServer();
+
             services.AddMvc()
-             .AddMvcOptions(opts =>
+                .AddMvcOptions(opts =>
                 {
                     opts.Filters.Add(new ModelStateValidActionFilter());
                 })
@@ -70,8 +70,9 @@ namespace KidsPrize.Http
 
             // Add services
             services.AddScoped<IChildService, ChildService>();
+            services.AddScoped<IUserService, UserService>();
 
-            services.AddSwaggerGen( opts =>
+            services.AddSwaggerGen(opts =>
             {
                 opts.SingleApiVersion(new Info()
                 {
@@ -89,31 +90,60 @@ namespace KidsPrize.Http
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             app.UseStaticFiles();
 
-            // // Authentication
-            // app.UseJwtBearerAuthentication();
+            // Authentication
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+            {
+                Authority = "/",
+                RequireHttpsMetadata = false,
+                ScopeName = "api1",
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
+            });
 
-            // app.UseGoogleAuthentication(new GoogleOptions
-            // {
-            //     AuthenticationScheme = "Google",
-            //     SignInScheme = "Temp",
-            //     ClientId = "434483408261-55tc8n0cs4ff1fe21ea8df2o443v2iuc.apps.googleusercontent.com",
-            //     ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo"
-            // });
 
-            // app.UseIdentityServer();
+            // Identity Server
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "External",
+                AutomaticAuthenticate = false,
+                AutomaticChallenge = false
+            });
+
+            var googleOpts = Configuration.GetSection("IdentityServer:GoogleOptions");
+            app.UseGoogleAuthentication(new GoogleOptions
+            {
+                AuthenticationScheme = "Google",
+                SignInScheme = "External",
+                ClientId = googleOpts.GetValue<string>("ClientId"),
+                ClientSecret = googleOpts.GetValue<string>("ClientSecret"),
+                CallbackPath = new PathString("/connect/signin-google")
+            });
+
+            var facebookOpts = Configuration.GetSection("IdentityServer:FacebookOptions");
+            app.UseFacebookAuthentication(new FacebookOptions
+            {
+                AuthenticationScheme = "Facebook",
+                SignInScheme = "External",
+                ClientId = facebookOpts.GetValue<string>("ClientId"),
+                ClientSecret = facebookOpts.GetValue<string>("ClientSecret"),
+                CallbackPath = new PathString("/connect/signin-facebook")
+            });
+            app.UseIdentityServer();
 
             app.UseMvc();
 
             app.UseSwaggerGen();
             app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
         }
+
+
     }
 
     public class ModelStateValidActionFilter : IAsyncActionFilter

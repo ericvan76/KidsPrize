@@ -8,9 +8,10 @@ using KidsPrize.Models;
 namespace KidsPrize.Migrations
 {
     [DbContext(typeof(KidsPrizeDbContext))]
-    partial class KidsPrizeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160616045845_Identifier")]
+    partial class Identifier
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rc2-20901");

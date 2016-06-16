@@ -11,14 +11,13 @@ namespace KidsPrize.Models
     {
         private Day() : base()
         { }
-        public Day(int id, Child child, DateTime date,
-            IList<string> taskList, ICollection<Score> scores) : base()
+        public Day(int id, Child child, DateTime date, IList<string> taskList, IList<Score> scores) : base()
         {
             Id = id;
             Child = child;
             Date = date.Date;
-            TaskList = taskList ?? new List<string>();
-            Scores = scores ?? new HashSet<Score>();
+            TaskList = taskList;
+            Scores = scores;
         }
 
         [Key]
