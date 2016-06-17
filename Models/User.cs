@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Security.Claims;
+using IdentityModel;
 
 namespace KidsPrize.Models
 {
@@ -41,6 +43,22 @@ namespace KidsPrize.Models
         public ICollection<Identifier> Identifiers { get; private set; }
         public ICollection<Child> Children { get; private set; }
 
+        [NotMapped]
+        public IList<Claim> Claims
+        {
+            get
+            {
+                return new List<Claim>()
+                {
+                    new Claim (JwtClaimTypes.Subject, Uid.ToString()),
+                    new Claim (JwtClaimTypes.GivenName, GivenName),
+                    new Claim(JwtClaimTypes.FamilyName, FamilyName),
+                    new Claim(JwtClaimTypes.Name, DisplayName),
+                    new Claim(JwtClaimTypes.Email, Email)
+                };
+            }
+        }
+
         public void Update(string givenName, string familyName, string displayName)
         {
             GivenName = givenName ?? GivenName;
@@ -74,10 +92,10 @@ namespace KidsPrize.Models
     [Table(nameof(Identifier))]
     public class Identifier : Entity
     {
-        private Identifier():base()
+        private Identifier() : base()
         { }
 
-        public Identifier(int id, string issuer, string value):base()
+        public Identifier(int id, string issuer, string value) : base()
         {
             Id = id;
             Issuer = issuer;

@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using AutoMapper;
+using IdentityServer4.Services;
+using IdentityServer4.Services.InMemory;
+using KidsPrize.Configuration;
 using KidsPrize.Models;
 using KidsPrize.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +23,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.SwaggerGen.Generator;
 
-namespace KidsPrize.Http
+namespace KidsPrize
 {
     public class Startup
     {
-        private readonly MapperConfiguration mapperConfgiuration;
+        private readonly MapperConfiguration _mapperConfgiuration;
+        private readonly IHostingEnvironment _environment;
         public Startup(IHostingEnvironment env)
         {
             // Setup configuration sources.
@@ -33,16 +40,25 @@ namespace KidsPrize.Http
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
 
-            mapperConfgiuration = new MapperConfiguration(cfg =>
+            _mapperConfgiuration = new MapperConfiguration(cfg =>
                 cfg.AddProfile(new Resources.MappingProfile()));
+
+            _environment = env;
         }
 
         public IConfigurationRoot Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions();
+            var cert = new X509Certificate2(System.IO.Path.Combine(_environment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
 
-            services.AddIdentityServer();
+
+            services.AddIdentityServer()
+                .SetSigningCredentials(cert)
+                .AddInMemoryClients(Clients.Get())
+                .AddInMemoryScopes(Scopes.Get())
+                .AddInMemoryUsers(new List<InMemoryUser>());
+
+            services.AddOptions();
 
             services.AddMvc()
                 .AddMvcOptions(opts =>
@@ -66,11 +82,13 @@ namespace KidsPrize.Http
             );
 
             // AutoMapper
-            services.AddSingleton<IMapper>(s => mapperConfgiuration.CreateMapper());
+            services.AddSingleton<IMapper>(s => _mapperConfgiuration.CreateMapper());
 
             // Add services
-            services.AddScoped<IChildService, ChildService>();
+            services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IChildService, ChildService>();
+            services.AddScoped<ICorsPolicyService, CorsPolicyService>();
 
             services.AddSwaggerGen(opts =>
             {
@@ -94,21 +112,23 @@ namespace KidsPrize.Http
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseDeveloperExceptionPage();
+
             app.UseStaticFiles();
 
             // Authentication
+            var idsvrOptions = Configuration.GetSection("IdentityServer");
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+            app.UseJwtBearerAuthentication(new JwtBearerOptions
             {
-                Authority = "/",
-                RequireHttpsMetadata = false,
-                ScopeName = "api1",
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true
+                Authority = idsvrOptions.GetValue<string>("Authority"),
+                Audience = idsvrOptions.GetValue<string>("Audience"),
+                RequireHttpsMetadata = false
             });
 
-
             // Identity Server
+            app.UseIdentityServer();
+
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationScheme = "External",
@@ -116,34 +136,31 @@ namespace KidsPrize.Http
                 AutomaticChallenge = false
             });
 
-            var googleOpts = Configuration.GetSection("IdentityServer:GoogleOptions");
+            var googleOpts = Configuration.GetSection("GoogleOptions");
             app.UseGoogleAuthentication(new GoogleOptions
             {
                 AuthenticationScheme = "Google",
                 SignInScheme = "External",
                 ClientId = googleOpts.GetValue<string>("ClientId"),
                 ClientSecret = googleOpts.GetValue<string>("ClientSecret"),
-                CallbackPath = new PathString("/connect/signin-google")
+                CallbackPath = new PathString(googleOpts.GetValue<string>("CallbackPath"))
             });
 
-            var facebookOpts = Configuration.GetSection("IdentityServer:FacebookOptions");
+            var facebookOpts = Configuration.GetSection("FacebookOptions");
             app.UseFacebookAuthentication(new FacebookOptions
             {
                 AuthenticationScheme = "Facebook",
                 SignInScheme = "External",
                 ClientId = facebookOpts.GetValue<string>("ClientId"),
                 ClientSecret = facebookOpts.GetValue<string>("ClientSecret"),
-                CallbackPath = new PathString("/connect/signin-facebook")
+                CallbackPath = new PathString(facebookOpts.GetValue<string>("CallbackPath"))
             });
-            app.UseIdentityServer();
 
             app.UseMvc();
 
             app.UseSwaggerGen();
             app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
         }
-
-
     }
 
     public class ModelStateValidActionFilter : IAsyncActionFilter

@@ -11,40 +11,40 @@ namespace KidsPrize.Services
 {
     public interface IChildService
     {
-        Task<Child> GetChild(Guid childUid);
-        Task<IEnumerable<Child>> GetChildren();
+        Task<Child> GetChild(Guid userUid, Guid childUid);
+        Task<IEnumerable<Child>> GetChildren(Guid userUid);
     }
 
     public class ChildService : IChildService
     {
-        private readonly E.KidsPrizeDbContext dbContext;
-        private readonly IMapper mapper;
+        private readonly E.KidsPrizeDbContext _dbContext;
+        private readonly IMapper _mapper;
         public ChildService(E.KidsPrizeDbContext dbContext, IMapper mapper)
         {
-            this.dbContext = dbContext;
-            this.mapper = mapper;
+            this._dbContext = dbContext;
+            this._mapper = mapper;
         }
 
-        public async Task<Child> GetChild(Guid childUid)
+        public async Task<Child> GetChild(Guid userUid, Guid childUid)
         {
-            var q = await dbContext.Users.Include(i => i.Children).FirstOrDefaultAsync(i => i.Uid == Guid.Empty);
+            var q = await _dbContext.Users.Include(i => i.Children).FirstOrDefaultAsync(i => i.Uid == userUid);
             var child = q?.Children.FirstOrDefault(i => i.Uid == childUid);
             if (child != null)
             {
-                return mapper.Map<Child>(child);
+                return _mapper.Map<Child>(child);
             }
             return null;
         }
 
-        public async Task<IEnumerable<Child>> GetChildren()
+        public async Task<IEnumerable<Child>> GetChildren(Guid userUid)
         {
-            var q = await dbContext.Users.Include(i => i.Children).FirstOrDefaultAsync(i => i.Uid == Guid.Empty);
+            var q = await _dbContext.Users.Include(i => i.Children).FirstOrDefaultAsync(i => i.Uid == userUid);
             var result = new List<Child>();
             if (q != null)
             {
                 foreach (var item in q.Children)
                 {
-                    result.Add(mapper.Map<Child>(item));
+                    result.Add(_mapper.Map<Child>(item));
                 }
             }
             return result;

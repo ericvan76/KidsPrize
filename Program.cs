@@ -1,7 +1,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
-namespace KidsPrize.Http
+namespace KidsPrize
 {
     public class Program
     {
