@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace KidsPrize.Controllers
 {
     // NOTE: This is to support a missing feature from IdentityServer3 but not in IdentityServer4
-    [Route("[controller]")]
+    [Route("connect/external")]
     public class ExternalAuthController : Controller
     {
         private readonly IUserService _loginService;
@@ -48,7 +48,8 @@ namespace KidsPrize.Controllers
         }
 
         [HttpGet]
-        public IActionResult ExternalAuthorize([FromQuery] ExternalAuthRequest request)
+        [Route("[action]")]
+        public IActionResult Authorize([FromQuery] ExternalAuthRequest request)
         {
             var scopes = request.scope.Split(' ');
             if (!scopes.Contains("openid"))

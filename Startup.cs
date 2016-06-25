@@ -117,13 +117,16 @@ namespace KidsPrize
             app.UseStaticFiles();
 
             // Authentication
-            var idsvrOptions = Configuration.GetSection("IdentityServer");
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
+
+            var idsvrOptions = Configuration.GetSection("IdentityServer");
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions()
             {
                 Authority = idsvrOptions.GetValue<string>("Authority"),
-                Audience = idsvrOptions.GetValue<string>("Audience"),
-                RequireHttpsMetadata = false
+                RequireHttpsMetadata = !env.IsDevelopment(),
+                ScopeName = "api1",
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
             });
 
             // Identity Server
