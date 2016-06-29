@@ -1,52 +1,53 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using IdentityModel;
-using KidsPrize.Resources;
+using KidsPrize.Extensions;
 using KidsPrize.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.SwaggerGen.Annotations;
+//using Swashbuckle.SwaggerGen.Annotations;
 
 namespace KidsPrize.Controllers
 {
-    [Authorize]
     [Route("[controller]")]
     public class ChildrenController : Controller
     {
-        private readonly IChildService childService;
+        private readonly IBus _bus;
+        private readonly IChildService _childService;
 
-        public ChildrenController(IChildService childService)
+        public ChildrenController(IBus bus, IChildService childService)
         {
-            this.childService = childService;
+            this._bus = bus;
+            this._childService = childService;
         }
 
         [HttpGet]
-        [SwaggerResponseRemoveDefaults]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<Child>))]
+        //[SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<Child>))]
         public async Task<IActionResult> GetChildren()
         {
-            var userUid = Guid.Parse(User.Claims.First(c => c.Type == JwtClaimTypes.Subject).Value);
-            var result = await this.childService.GetChildren(userUid);
+            var result = await this._childService.GetChildren(User.UserUid());
             return Ok(result);
         }
 
         [HttpGet]
         [Route("{childUid:guid}")]
-        [SwaggerResponseRemoveDefaults]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(Child))]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
+        //[SwaggerResponse(HttpStatusCode.OK, Type = typeof(Child))]
+        //[SwaggerResponse(HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetChild([FromRoute] Guid childUid)
         {
-            var userUid = Guid.Parse(User.Claims.First(c => c.Type == JwtClaimTypes.Subject).Value);
-            var result = await this.childService.GetChild(userUid, childUid);
+            var result = await this._childService.GetChild(User.UserUid(), childUid);
             if (result == null)
             {
                 return NotFound();
             }
             return Ok(result);
+        }
+
+        [HttpPost]
+        //[SwaggerResponse(HttpStatusCode.Accepted)]
+        public async Task<IActionResult> AddChild([FromBody] AddChild command)
+        {
+            await this._bus.Send(command);
+            return StatusCode((int)HttpStatusCode.Accepted);
         }
     }
 }

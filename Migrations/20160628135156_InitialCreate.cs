@@ -14,10 +14,10 @@ namespace KidsPrize.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Autoincrement", true),
-                    DisplayName = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(nullable: false),
-                    FamilyName = table.Column<string>(nullable: true),
-                    GivenName = table.Column<string>(nullable: true),
+                    DisplayName = table.Column<string>(maxLength: 250, nullable: true),
+                    Email = table.Column<string>(maxLength: 250, nullable: false),
+                    FamilyName = table.Column<string>(maxLength: 250, nullable: true),
+                    GivenName = table.Column<string>(maxLength: 250, nullable: true),
                     Uid = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
@@ -31,8 +31,8 @@ namespace KidsPrize.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Autoincrement", true),
-                    Gender = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: false),
+                    Gender = table.Column<string>(maxLength: 50, nullable: true),
+                    Name = table.Column<string>(maxLength: 250, nullable: false),
                     TotalScore = table.Column<int>(nullable: false),
                     Uid = table.Column<Guid>(nullable: false),
                     UserId = table.Column<int>(nullable: true)
@@ -42,6 +42,27 @@ namespace KidsPrize.Migrations
                     table.PrimaryKey("PK_Child", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Child_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Identifier",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Autoincrement", true),
+                    Issuer = table.Column<string>(nullable: true),
+                    UserId = table.Column<int>(nullable: true),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Identifier", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Identifier_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
@@ -76,7 +97,7 @@ namespace KidsPrize.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Autoincrement", true),
                     DayId = table.Column<int>(nullable: true),
-                    Task = table.Column<string>(nullable: false),
+                    Task = table.Column<string>(maxLength: 250, nullable: false),
                     Value = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -101,6 +122,11 @@ namespace KidsPrize.Migrations
                 column: "ChildId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Identifier_UserId",
+                table: "Identifier",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Score_DayId",
                 table: "Score",
                 column: "DayId");
@@ -108,6 +134,9 @@ namespace KidsPrize.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Identifier");
+
             migrationBuilder.DropTable(
                 name: "Score");
 

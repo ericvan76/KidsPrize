@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using AutoMapper;
 using IdentityServer4.Services;
 using IdentityServer4.Services.InMemory;
 using KidsPrize.Configuration;
+using KidsPrize.Extensions;
 using KidsPrize.Models;
 using KidsPrize.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +24,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Swashbuckle.SwaggerGen.Generator;
+//using Swashbuckle.SwaggerGen.Generator;
 
 namespace KidsPrize
 {
@@ -51,9 +54,8 @@ namespace KidsPrize
         {
             var cert = new X509Certificate2(System.IO.Path.Combine(_environment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
 
-
             services.AddIdentityServer()
-                .SetSigningCredentials(cert)
+                .SetSigningCredential(cert)
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
                 .AddInMemoryUsers(new List<InMemoryUser>());
@@ -64,6 +66,10 @@ namespace KidsPrize
                 .AddMvcOptions(opts =>
                 {
                     opts.Filters.Add(new ModelStateValidActionFilter());
+                    var policyBuilder = new AuthorizationPolicyBuilder();
+                    policyBuilder.AddAuthenticationSchemes(new[] { "Bearer" });
+                    policyBuilder.RequireAuthenticatedUser();
+                    opts.Filters.Add(new AuthorizeFilter(policyBuilder.Build()));
                 })
                 .AddJsonOptions(opts =>
                 {
@@ -76,33 +82,34 @@ namespace KidsPrize
 
             // Add Entity Framework services to the services container.
             services.AddDbContext<KidsPrizeDbContext>(opts =>
-               {
-                   opts.UseSqlite("Filename=./kids-prize.db");
-               }
-            );
+            {
+                opts.UseSqlite("Filename=./kids-prize.db");
+            });
 
             // AutoMapper
             services.AddSingleton<IMapper>(s => _mapperConfgiuration.CreateMapper());
 
-            // Add services
-            services.AddScoped<IProfileService, ProfileService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IChildService, ChildService>();
-            services.AddScoped<ICorsPolicyService, CorsPolicyService>();
+            // Add IBus
+            services.AddSingleton<IBus, Bus>();
 
-            services.AddSwaggerGen(opts =>
-            {
-                opts.SingleApiVersion(new Info()
-                {
-                    Version = "v1",
-                    Title = "KidsPrize API",
-                    Description = "",
-                    TermsOfService = ""
-                });
-                opts.DescribeAllEnumsAsStrings();
-                opts.CustomSchemaIds(t => t.FullName);
-                opts.MapType<Guid>(() => new Schema() { Type = "string", Format = "uuid" });
-            });
+            // Add Services & Handlers
+
+            services.AddServices();
+            services.AddHandlers();
+
+            // services.AddSwaggerGen(opts =>
+            // {
+            //     opts.SingleApiVersion(new Info()
+            //     {
+            //         Version = "v1",
+            //         Title = "KidsPrize API",
+            //         Description = "",
+            //         TermsOfService = ""
+            //     });
+            //     opts.DescribeAllEnumsAsStrings();
+            //     opts.CustomSchemaIds(t => t.FullName);
+            //     opts.MapType<Guid>(() => new Schema() { Type = "string", Format = "uuid" });
+            // });
             services.AddLogging();
         }
 
@@ -161,8 +168,8 @@ namespace KidsPrize
 
             app.UseMvc();
 
-            app.UseSwaggerGen();
-            app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
+            //app.UseSwaggerGen();
+            //app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
         }
     }
 

@@ -13,11 +13,13 @@ using KidsPrize.Models;
 using System.ComponentModel.DataAnnotations;
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KidsPrize.Controllers
 {
     // NOTE: This is to support a missing feature from IdentityServer3 but not in IdentityServer4
     [Route("connect/external")]
+    [AllowAnonymous]
     public class ExternalAuthController : Controller
     {
         private readonly IUserService _loginService;
@@ -144,13 +146,7 @@ namespace KidsPrize.Controllers
 
         private async Task IssueCookie(User user, string authType)
         {
-            var claims = new Claim[] {
-                new Claim(JwtClaimTypes.Subject, user.Uid.ToString()),
-                new Claim(JwtClaimTypes.Name, user.DisplayName),
-                new Claim(JwtClaimTypes.IdentityProvider, "Local"),
-                new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString())
-            };
-            var ci = new ClaimsIdentity(claims, authType, JwtClaimTypes.Name, JwtClaimTypes.Role);
+            var ci = new ClaimsIdentity(user.Claims, authType, JwtClaimTypes.Name, JwtClaimTypes.Role);
             var cp = new ClaimsPrincipal(ci);
 
             await HttpContext.Authentication.SignInAsync(Constants.PrimaryAuthenticationType, cp);

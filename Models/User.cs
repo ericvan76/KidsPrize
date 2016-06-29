@@ -50,11 +50,13 @@ namespace KidsPrize.Models
             {
                 return new List<Claim>()
                 {
-                    new Claim (JwtClaimTypes.Subject, Uid.ToString()),
-                    new Claim (JwtClaimTypes.GivenName, GivenName),
-                    new Claim(JwtClaimTypes.FamilyName, FamilyName),
+                    new Claim(JwtClaimTypes.Subject, Uid.ToString()),
+                    new Claim(JwtClaimTypes.Email, Email),
                     new Claim(JwtClaimTypes.Name, DisplayName),
-                    new Claim(JwtClaimTypes.Email, Email)
+                    new Claim(JwtClaimTypes.GivenName, GivenName),
+                    new Claim(JwtClaimTypes.FamilyName, FamilyName),
+                    new Claim(JwtClaimTypes.IdentityProvider, "Local"),
+                    new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString())
                 };
             }
         }

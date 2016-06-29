@@ -8,13 +8,13 @@ using KidsPrize.Models;
 namespace KidsPrize.Migrations
 {
     [DbContext(typeof(KidsPrizeDbContext))]
-    [Migration("20160616045845_Identifier")]
-    partial class Identifier
+    [Migration("20160628135156_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901");
+                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
 
             modelBuilder.Entity("KidsPrize.Models.Child", b =>
                 {
@@ -126,13 +126,13 @@ namespace KidsPrize.Migrations
             modelBuilder.Entity("KidsPrize.Models.Child", b =>
                 {
                     b.HasOne("KidsPrize.Models.User")
-                        .WithMany()
+                        .WithMany("Children")
                         .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("KidsPrize.Models.Day", b =>
                 {
-                    b.HasOne("KidsPrize.Models.Child")
+                    b.HasOne("KidsPrize.Models.Child", "Child")
                         .WithMany()
                         .HasForeignKey("ChildId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -141,14 +141,14 @@ namespace KidsPrize.Migrations
             modelBuilder.Entity("KidsPrize.Models.Identifier", b =>
                 {
                     b.HasOne("KidsPrize.Models.User")
-                        .WithMany()
+                        .WithMany("Identifiers")
                         .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("KidsPrize.Models.Score", b =>
                 {
                     b.HasOne("KidsPrize.Models.Day")
-                        .WithMany()
+                        .WithMany("Scores")
                         .HasForeignKey("DayId");
                 });
         }
