@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using KidsPrize.Extensions;
+using KidsPrize.Resources;
 using KidsPrize.Services;
 using Microsoft.AspNetCore.Mvc;
-//using Swashbuckle.SwaggerGen.Annotations;
+using Swashbuckle.SwaggerGen.Annotations;
 
 namespace KidsPrize.Controllers
 {
@@ -21,7 +23,7 @@ namespace KidsPrize.Controllers
         }
 
         [HttpGet]
-        //[SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<Child>))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<Child>))]
         public async Task<IActionResult> GetChildren()
         {
             var result = await this._childService.GetChildren(User.UserUid());
@@ -30,8 +32,8 @@ namespace KidsPrize.Controllers
 
         [HttpGet]
         [Route("{childUid:guid}")]
-        //[SwaggerResponse(HttpStatusCode.OK, Type = typeof(Child))]
-        //[SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(Child))]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetChild([FromRoute] Guid childUid)
         {
             var result = await this._childService.GetChild(User.UserUid(), childUid);

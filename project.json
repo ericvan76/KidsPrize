@@ -28,7 +28,7 @@
     },
     "IdentityServer4": "1.0.0-beta4-update1",
     "IdentityServer4.AccessTokenValidation": "1.0.1-beta1",
-    "Swashbuckle": "6.0.0-beta9",
+    "Swashbuckle": "6.0.0-beta901",
     "AutoMapper": "5.0.0-beta-1"
   },
   "tools": {

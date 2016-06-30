@@ -20,6 +20,7 @@ namespace KidsPrize.Controllers
     // NOTE: This is to support a missing feature from IdentityServer3 but not in IdentityServer4
     [Route("connect/external")]
     [AllowAnonymous]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ExternalAuthController : Controller
     {
         private readonly IUserService _loginService;

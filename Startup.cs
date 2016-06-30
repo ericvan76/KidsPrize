@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using AutoMapper;
-using IdentityServer4.Services;
 using IdentityServer4.Services.InMemory;
 using KidsPrize.Configuration;
 using KidsPrize.Extensions;
 using KidsPrize.Models;
-using KidsPrize.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-//using Swashbuckle.SwaggerGen.Generator;
+using Swashbuckle.Swagger.Model;
 
 namespace KidsPrize
 {
@@ -93,23 +90,22 @@ namespace KidsPrize
             services.AddSingleton<IBus, Bus>();
 
             // Add Services & Handlers
-
             services.AddServices();
             services.AddHandlers();
 
-            // services.AddSwaggerGen(opts =>
-            // {
-            //     opts.SingleApiVersion(new Info()
-            //     {
-            //         Version = "v1",
-            //         Title = "KidsPrize API",
-            //         Description = "",
-            //         TermsOfService = ""
-            //     });
-            //     opts.DescribeAllEnumsAsStrings();
-            //     opts.CustomSchemaIds(t => t.FullName);
-            //     opts.MapType<Guid>(() => new Schema() { Type = "string", Format = "uuid" });
-            // });
+            services.AddSwaggerGen(opts =>
+            {
+                opts.SingleApiVersion(new Info()
+                {
+                    Version = "v1",
+                    Title = "KidsPrize API",
+                    Description = "",
+                    TermsOfService = ""
+                });
+                opts.DescribeAllEnumsAsStrings();
+                opts.CustomSchemaIds(t => t.FullName);
+                opts.MapType<Guid>(() => new Schema() { Type = "string", Format = "uuid" });
+            });
             services.AddLogging();
         }
 
@@ -132,8 +128,7 @@ namespace KidsPrize
                 Authority = idsvrOptions.GetValue<string>("Authority"),
                 RequireHttpsMetadata = !env.IsDevelopment(),
                 ScopeName = "api1",
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true
+                AutomaticAuthenticate = true
             });
 
             // Identity Server
@@ -168,8 +163,8 @@ namespace KidsPrize
 
             app.UseMvc();
 
-            //app.UseSwaggerGen();
-            //app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
+            app.UseSwagger();
+            app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
         }
     }
 
@@ -185,4 +180,5 @@ namespace KidsPrize
             return Task.CompletedTask;
         }
     }
+
 }
