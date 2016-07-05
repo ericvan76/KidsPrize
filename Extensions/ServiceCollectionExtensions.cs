@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Reflection;
+using KidsPrize.Bus;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KidsPrize.Extensions

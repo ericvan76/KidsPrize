@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using KidsPrize.Bus;
+using KidsPrize.Commands;
 using KidsPrize.Extensions;
 using KidsPrize.Resources;
 using KidsPrize.Services;
@@ -45,10 +47,19 @@ namespace KidsPrize.Controllers
         }
 
         [HttpPost]
-        //[SwaggerResponse(HttpStatusCode.Accepted)]
+        [SwaggerResponse(HttpStatusCode.Accepted)]
         public async Task<IActionResult> AddChild([FromBody] AddChild command)
         {
             await this._bus.Send(command);
+            return StatusCode((int)HttpStatusCode.Accepted);
+        }
+
+        [HttpDelete]
+        [Route("{childUid:guid}")]
+        [SwaggerResponse(HttpStatusCode.Accepted)]
+        public async Task<IActionResult> DeleteChild([FromRoute] Guid childUid)
+        {
+            await this._bus.Send(new DeleteChild() { ChildUid = childUid });
             return StatusCode((int)HttpStatusCode.Accepted);
         }
     }

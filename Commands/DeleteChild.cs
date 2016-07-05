@@ -9,31 +9,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Commands
 {
-    public class AddChild : Command
+    public class DeleteChild : Command
     {
         [Required]
         public Guid ChildUid { get; set; }
-        [Required]
-        public string Name { get; set; }
-        [Required]
-        [RegularExpression(@"^(Male|Female)$")]
-        public string Gender { get; set; }
     }
 
-    public class AddChildHandler : IHandleMessages<AddChild>, IHasUser
+    public class DeleteChildHandler : IHandleMessages<DeleteChild>, IHasUser
     {
         private readonly KidsPrizeDbContext _context;
         public ClaimsPrincipal User { get; set; }
-        public AddChildHandler(KidsPrizeDbContext context)
+
+        public DeleteChildHandler(KidsPrizeDbContext context)
         {
             this._context = context;
         }
-
-        public async Task Handle(AddChild command)
+        public async Task Handle(DeleteChild command)
         {
             var userUid = User.UserUid();
             var user = await _context.Users.Include(i => i.Children).FirstAsync(i => i.Uid == userUid);
-            user.AddChild(new Child(0, command.ChildUid, command.Name, command.Gender, 0));
+            user.RemoveChild(command.ChildUid);
             await _context.SaveChangesAsync();
         }
     }

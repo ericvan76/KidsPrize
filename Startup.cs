@@ -8,6 +8,7 @@ using IdentityServer4.Services.InMemory;
 using KidsPrize.Configuration;
 using KidsPrize.Extensions;
 using KidsPrize.Models;
+using KidsPrize.Bus;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -87,7 +88,7 @@ namespace KidsPrize
             services.AddSingleton<IMapper>(s => _mapperConfgiuration.CreateMapper());
 
             // Add IBus
-            services.AddSingleton<IBus, Bus>();
+            services.AddSingleton<IBus, SimpleBus>();
 
             // Add Services & Handlers
             services.AddServices();
