@@ -48,7 +48,16 @@ namespace KidsPrize.Controllers
 
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.Accepted)]
-        public async Task<IActionResult> AddChild([FromBody] AddChild command)
+        public async Task<IActionResult> CreateChild([FromBody] CreateChild command)
+        {
+            await this._bus.Send(command);
+            return StatusCode((int)HttpStatusCode.Accepted);
+        }
+
+        [HttpPut]
+        [Route("{childUid:guid}")]
+        [SwaggerResponse(HttpStatusCode.Accepted)]
+        public async Task<IActionResult> UpdateChild([FromBody] UpdateChild command)
         {
             await this._bus.Send(command);
             return StatusCode((int)HttpStatusCode.Accepted);
@@ -62,5 +71,7 @@ namespace KidsPrize.Controllers
             await this._bus.Send(new DeleteChild() { ChildUid = childUid });
             return StatusCode((int)HttpStatusCode.Accepted);
         }
+
+
     }
 }

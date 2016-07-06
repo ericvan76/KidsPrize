@@ -15,7 +15,7 @@ namespace KidsPrize.Commands
         public Guid ChildUid { get; set; }
     }
 
-    public class DeleteChildHandler : IHandleMessages<DeleteChild>, IHasUser
+    public class DeleteChildHandler : IHandleMessages<DeleteChild>
     {
         private readonly KidsPrizeDbContext _context;
         public ClaimsPrincipal User { get; set; }

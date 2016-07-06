@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Commands
 {
-    public class AddChild : Command
+    public class CreateChild : Command
     {
         [Required]
         public Guid ChildUid { get; set; }
@@ -20,16 +20,16 @@ namespace KidsPrize.Commands
         public string Gender { get; set; }
     }
 
-    public class AddChildHandler : IHandleMessages<AddChild>, IHasUser
+    public class CreateChildHandler : IHandleMessages<CreateChild>
     {
         private readonly KidsPrizeDbContext _context;
         public ClaimsPrincipal User { get; set; }
-        public AddChildHandler(KidsPrizeDbContext context)
+        public CreateChildHandler(KidsPrizeDbContext context)
         {
             this._context = context;
         }
 
-        public async Task Handle(AddChild command)
+        public async Task Handle(CreateChild command)
         {
             var userUid = User.UserUid();
             var user = await _context.Users.Include(i => i.Children).FirstAsync(i => i.Uid == userUid);

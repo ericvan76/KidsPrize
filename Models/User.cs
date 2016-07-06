@@ -90,25 +90,5 @@ namespace KidsPrize.Models
             }
         }
     }
-
-    [Table(nameof(Identifier))]
-    public class Identifier : Entity
-    {
-        private Identifier() : base()
-        { }
-
-        public Identifier(int id, string issuer, string value) : base()
-        {
-            Id = id;
-            Issuer = issuer;
-            Value = value;
-        }
-
-        public int Id { get; private set; }
-        public string Issuer { get; private set; }
-        public string Value { get; private set; }
-
-    }
-
 }
 

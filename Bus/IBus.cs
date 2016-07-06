@@ -36,11 +36,7 @@ namespace KidsPrize.Bus
             {
                 try
                 {
-                    var hasUser = handler as IHasUser;
-                    if (hasUser != null)
-                    {
-                        hasUser.User = _httpContextAccessor.HttpContext.User;
-                    }
+                    handler.User = _httpContextAccessor.HttpContext.User;
                     await handler.Handle(command).ConfigureAwait(false);
                 }
                 catch (Exception ex)

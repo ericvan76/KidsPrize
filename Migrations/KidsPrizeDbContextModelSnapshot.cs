@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using KidsPrize.Models;
 
-namespace KidsPrize.Migrations
+namespace kidsprize.Migrations
 {
     [DbContext(typeof(KidsPrizeDbContext))]
     partial class KidsPrizeDbContextModelSnapshot : ModelSnapshot
@@ -31,7 +31,8 @@ namespace KidsPrize.Migrations
 
                     b.Property<Guid>("Uid");
 
-                    b.Property<int?>("UserId");
+                    b.Property<int?>("UserId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -64,11 +65,14 @@ namespace KidsPrize.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Issuer");
+                    b.Property<string>("Issuer")
+                        .IsRequired();
 
-                    b.Property<int?>("UserId");
+                    b.Property<int?>("UserId")
+                        .IsRequired();
 
-                    b.Property<string>("Value");
+                    b.Property<string>("Value")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -82,7 +86,8 @@ namespace KidsPrize.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("DayId");
+                    b.Property<int?>("DayId")
+                        .IsRequired();
 
                     b.Property<string>("Task")
                         .IsRequired()
@@ -126,7 +131,8 @@ namespace KidsPrize.Migrations
                 {
                     b.HasOne("KidsPrize.Models.User")
                         .WithMany("Children")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("KidsPrize.Models.Day", b =>
@@ -141,14 +147,16 @@ namespace KidsPrize.Migrations
                 {
                     b.HasOne("KidsPrize.Models.User")
                         .WithMany("Identifiers")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("KidsPrize.Models.Score", b =>
                 {
                     b.HasOne("KidsPrize.Models.Day")
                         .WithMany("Scores")
-                        .HasForeignKey("DayId");
+                        .HasForeignKey("DayId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }

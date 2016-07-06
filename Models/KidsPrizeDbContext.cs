@@ -12,6 +12,22 @@ namespace KidsPrize.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u=>u.Children)
+                .WithOne()
+                .IsRequired();
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Identifiers)
+                .WithOne()
+                .IsRequired();
+            modelBuilder.Entity<Day>()
+                .HasOne(d => d.Child)
+                .WithMany();
+            modelBuilder.Entity<Day>()
+                .HasMany(d=>d.Scores)
+                .WithOne()
+                .IsRequired();
         }
     }
 }

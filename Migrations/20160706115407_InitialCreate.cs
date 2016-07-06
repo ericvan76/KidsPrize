@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace KidsPrize.Migrations
+namespace kidsprize.Migrations
 {
     public partial class InitialCreate : Migration
     {
@@ -35,7 +35,7 @@ namespace KidsPrize.Migrations
                     Name = table.Column<string>(maxLength: 250, nullable: false),
                     TotalScore = table.Column<int>(nullable: false),
                     Uid = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<int>(nullable: true)
+                    UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -45,7 +45,7 @@ namespace KidsPrize.Migrations
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -54,9 +54,9 @@ namespace KidsPrize.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Autoincrement", true),
-                    Issuer = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: true),
-                    Value = table.Column<string>(nullable: true)
+                    Issuer = table.Column<string>(nullable: false),
+                    UserId = table.Column<int>(nullable: false),
+                    Value = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -66,7 +66,7 @@ namespace KidsPrize.Migrations
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,7 +96,7 @@ namespace KidsPrize.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Autoincrement", true),
-                    DayId = table.Column<int>(nullable: true),
+                    DayId = table.Column<int>(nullable: false),
                     Task = table.Column<string>(maxLength: 250, nullable: false),
                     Value = table.Column<int>(nullable: false)
                 },
@@ -108,7 +108,7 @@ namespace KidsPrize.Migrations
                         column: x => x.DayId,
                         principalTable: "Day",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
