@@ -91,8 +91,7 @@ namespace KidsPrize.Http
             services.AddSingleton<IBus, Bus.SimpleBus>();
 
             // Add Services & Handlers
-            services.AddServices();
-            services.AddHandlers();
+            services.AutoRegistration();
 
             services.AddSwaggerGen(opts =>
             {
