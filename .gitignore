@@ -2,3 +2,4 @@ bin/
 obj/
 appsettings.*.json
 *.pfx
+!idsrv3test.pfx
