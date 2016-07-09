@@ -15,15 +15,15 @@ namespace KidsPrize.Services
 
     public class UserService : IUserService
     {
-        private readonly KidsPrizeDbContext _dbContext;
+        private readonly KidsPrizeDbContext _context;
 
-        public UserService(KidsPrizeDbContext dbContext)
+        public UserService(KidsPrizeDbContext context)
         {
-            this._dbContext = dbContext;
+            this._context = context;
         }
         public async Task<User> GetUser(Guid uid)
         {
-            return await _dbContext.Users
+            return await _context.Users
                 .Include(u => u.Identifiers)
                 .Include(u => u.Children)
                 .FirstOrDefaultAsync(u => u.Uid == uid);
@@ -32,20 +32,20 @@ namespace KidsPrize.Services
         public async Task<User> CreateOrUpdateUser(User user)
         {
             var identifier = user.Identifiers.First();
-            var existingUser = await _dbContext.Users.Include(u => u.Identifiers).FirstOrDefaultAsync(u => u.Identifiers.Any(i => i.Issuer == identifier.Issuer && i.Value == identifier.Value))
-                ?? await _dbContext.Users.Include(u => u.Identifiers).FirstOrDefaultAsync(u => u.Email == user.Email);
+            var existingUser = await _context.Users.Include(u => u.Identifiers).FirstOrDefaultAsync(u => u.Identifiers.Any(i => i.Issuer == identifier.Issuer && i.Value == identifier.Value))
+                ?? await _context.Users.Include(u => u.Identifiers).FirstOrDefaultAsync(u => u.Email == user.Email);
             if (existingUser == null)
             {
-                _dbContext.Users.Add(user);
-                await _dbContext.SaveChangesAsync();
-                return await _dbContext.Users.Include(u => u.Identifiers).FirstAsync(u => u.Uid == user.Uid);
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+                return await _context.Users.Include(u => u.Identifiers).FirstAsync(u => u.Uid == user.Uid);
             }
             else
             {
                 existingUser.TryAddIdentifier(identifier);
                 existingUser.Update(user.GivenName, user.FamilyName, user.DisplayName);
-                await _dbContext.SaveChangesAsync();
-                return await _dbContext.Users.Include(u => u.Identifiers).FirstAsync(u => u.Uid == existingUser.Uid);
+                await _context.SaveChangesAsync();
+                return await _context.Users.Include(u => u.Identifiers).FirstAsync(u => u.Uid == existingUser.Uid);
             }
 
         }

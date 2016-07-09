@@ -12,7 +12,7 @@ namespace KidsPrize.Tests.Common
         public static UserInfo CreateUser(KidsPrizeDbContext context)
         {
             var uid = Guid.NewGuid();
-            var u = new User(0, uid, "test@user.com", "Test", "User", "TestUser", new List<Identifier>() { new Identifier(0, "test-issuer", Guid.NewGuid().ToString()) }, new List<Child>());
+            var u = new User(0, uid, "test@user.com", "Test", "User", "TestUser", new HashSet<Identifier>() { new Identifier(0, "test-issuer", Guid.NewGuid().ToString()) }, new List<Child>());
             context.Users.Add(u);
             context.SaveChanges();
             return new UserInfo() { Uid = uid };

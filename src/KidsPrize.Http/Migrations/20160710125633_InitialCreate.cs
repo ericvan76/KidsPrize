@@ -76,12 +76,12 @@ namespace KidsPrize.Http.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Autoincrement", true),
                     ChildId = table.Column<int>(nullable: false),
-                    Date = table.Column<DateTime>(nullable: false),
-                    Tasks = table.Column<string>(nullable: true)
+                    Date = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Day", x => x.Id);
+                    table.UniqueConstraint("AK_Day_ChildId_Date", x => new { x.ChildId, x.Date });
                     table.ForeignKey(
                         name: "FK_Day_Child_ChildId",
                         column: x => x.ChildId,
@@ -97,12 +97,14 @@ namespace KidsPrize.Http.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Autoincrement", true),
                     DayId = table.Column<int>(nullable: false),
-                    Task = table.Column<string>(maxLength: 250, nullable: false),
+                    Position = table.Column<int>(nullable: false),
+                    Task = table.Column<string>(maxLength: 50, nullable: false),
                     Value = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Score", x => x.Id);
+                    table.UniqueConstraint("AK_Score_DayId_Task", x => new { x.DayId, x.Task });
                     table.ForeignKey(
                         name: "FK_Score_Day_DayId",
                         column: x => x.DayId,
@@ -128,12 +130,6 @@ namespace KidsPrize.Http.Migrations
                 column: "ChildId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Day_ChildId_Date",
-                table: "Day",
-                columns: new[] { "ChildId", "Date" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Identifier_UserId",
                 table: "Identifier",
                 column: "UserId");
@@ -148,12 +144,6 @@ namespace KidsPrize.Http.Migrations
                 name: "IX_Score_DayId",
                 table: "Score",
                 column: "DayId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Score_DayId_Task",
-                table: "Score",
-                columns: new[] { "DayId", "Task" },
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_Email",

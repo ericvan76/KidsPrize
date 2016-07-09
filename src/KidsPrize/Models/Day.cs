@@ -11,77 +11,63 @@ namespace KidsPrize.Models
     {
         private Day() : base()
         { }
-        public Day(int id, Child child, DateTime date, IList<string> taskList, IList<Score> scores) : base()
+        public Day(int id, Child child, DateTime date, string[] tasks) : base()
         {
             Id = id;
             Child = child;
             Date = date.Date;
-            TaskList = taskList;
-            Scores = scores;
+            int pos = 0;
+            Scores = new HashSet<Score>(tasks.Select(t => new Score(0, t, pos++, 0)));
         }
 
         [Key]
         public int Id { get; private set; }
         [Required]
-        public int ChildId{ get; private set; }
-        [Required]
         public Child Child { get; private set; }
         [Required]
+        [DataType(DataType.Date)]
         public DateTime Date { get; private set; }
-        [NotMapped]
-        public IList<string> TaskList { get; private set; }
-        public string Tasks
-        {
-            get
-            {
-                return TaskList.Count == 0
-                    ? null
-                    : string.Join("|", TaskList);
-            }
-            private set
-            {
-                TaskList = value == null
-                    ? new List<string>()
-                    : new List<string>(value.Split('|'));
-            }
-        }
         public ICollection<Score> Scores { get; private set; }
+        public int DayTotal => Scores.Sum(i => i.Value);
+        public IEnumerable<string> TaskList => Scores.Select(s => s.Task);
 
-        public void Modify(IList<string> taskList)
+        public void SetTasks(string[] tasks, Action<object> deleteAction)
         {
-            if (taskList != null)
-            {
-                var origTotal = TotalScore();
-                TaskList = taskList;
-                var toRemove = Scores.Where(i => !TaskList.Contains(i.Task, StringComparer.OrdinalIgnoreCase));
-                foreach (var item in toRemove)
+            var origTotal = DayTotal;
+            Scores.Where(s => !tasks.Contains(s.Task, StringComparer.OrdinalIgnoreCase)).ToList()
+                .ForEach(i =>
                 {
-                    Scores.Remove(item);
+                    Scores.Remove(i);
+                    deleteAction?.Invoke(i);
+                });
+            int pos = 0;
+            foreach (var task in tasks)
+            {
+                var existing = Scores.FirstOrDefault(s => s.Task.Equals(task, StringComparison.OrdinalIgnoreCase));
+                if (existing != null)
+                {
+                    existing.SetPosition(pos++);
                 }
-                var delta = TotalScore() - origTotal;
-                Child.Update(null, null, Child.TotalScore + delta);
+                else
+                {
+                    Scores.Add(new Score(0, task, pos++, 0));
+                }
             }
-        }
-
-        public void AddOrUpdateScore(Score score)
-        {
-            var origTotal = TotalScore();
-            var existing = Scores.FirstOrDefault(i => i.Task.Equals(score.Task, StringComparison.OrdinalIgnoreCase));
-            if (existing != null)
-            {
-                existing.Update(score.Value);
-            }
-            else
-            {
-                Scores.Add(score);
-            }
-            var delta = TotalScore() - origTotal;
+            var delta = DayTotal - origTotal;
             Child.Update(null, null, Child.TotalScore + delta);
         }
 
-        private int TotalScore()
+        public void SetScore(string task, int value)
         {
-            return Scores.Sum(i => i.Value);
+            var origTotal = DayTotal;
+            var score = Scores.FirstOrDefault(i => i.Task.Equals(task, StringComparison.OrdinalIgnoreCase));
+            if (score == null)
+            {
+                throw new ArgumentException($"Task '{task}' not found.");
+            }
+            score.Update(value);
+            var delta = DayTotal - origTotal;
+            Child.Update(null, null, Child.TotalScore + delta);
         }
     }
 }

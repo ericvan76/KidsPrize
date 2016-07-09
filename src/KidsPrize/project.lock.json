@@ -1790,7 +1790,7 @@
       ]
     },
     "runtime.native.System.Net.Http/4.0.1": {
-      "sha512": "TgEM2wkad16ARUziWLlkC44NPl5Ep5TNZ686MLR2KRsTKQZXnqnQ1ke7DxhB4jjEGsGDN6MbNcIwiqYdHSD3pg==",
+      "sha512": "3FVm2ez7z1aOwUiqglSSPumw1jbPvegUOue4FGyWY9HUP/2sPJi1MJbeebT42i14XR1ZHsfZJs+jkVRGJA1Gow==",
       "type": "package",
       "path": "runtime.native.System.Net.Http/4.0.1",
       "files": [
@@ -3678,7 +3678,7 @@
       ]
     },
     "System.Reflection.Emit.Lightweight/4.0.1": {
-      "sha512": "3oJ+F/oOsi6UQA5PiYJEoXITu9CMY/8YtoxN+HgPbGjMQcA5KqeINTAofOSIkPUyBSry8Q1348xKZut+x7kuww==",
+      "sha512": "WDTJ53NG5Giw05d8VIBnEZ3gur8QyxefPt3kWUsyvvaIZt1tIIP9Yys3qXBJmZAeKB0aMa1VnnEHw6Q9IzGHBQ==",
       "type": "package",
       "path": "System.Reflection.Emit.Lightweight/4.0.1",
       "files": [
@@ -4439,7 +4439,7 @@
       ]
     },
     "System.Security.Cryptography.OpenSsl/4.0.0": {
-      "sha512": "3cdLgG6yNE+BKstssZxuETv6MeUrtGbM4CZKygodCVgmDf3w9Va8sWUuHOfQRttu3HDfhrLAb887Je0539gOMA==",
+      "sha512": "ZltYrrfm2jq8u85UHaVcQ30sK+T19FbX2A+qI6OPQUqwwoeVJ4PbJzWZuvx7zirRXkQpBha9e52AYPvGxPy4iQ==",
       "type": "package",
       "path": "System.Security.Cryptography.OpenSsl/4.0.0",
       "files": [

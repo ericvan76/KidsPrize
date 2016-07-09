@@ -8,10 +8,11 @@ namespace KidsPrize.Models
     {
         private Score() : base()
         { }
-        public Score(int id, string task, int value) : base()
+        public Score(int id, string task, int position, int value) : base()
         {
             Id = id;
             Task = task;
+            Position = position;
             Value = value;
         }
 
@@ -21,13 +22,18 @@ namespace KidsPrize.Models
         [MaxLength(50)]
         public string Task { get; private set; }
         [Required]
-        public int Value { get; private set; }
+        public int Position { get; private set; }
         [Required]
-        public int DayId { get; private set; }
+        public int Value { get; private set; }
 
         public void Update(int? value)
         {
             Value = value ?? Value;
+        }
+
+        public void SetPosition(int pos)
+        {
+            Position = pos;
         }
     }
 }

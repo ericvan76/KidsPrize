@@ -8,7 +8,7 @@ using KidsPrize.Models;
 namespace KidsPrize.Http.Migrations
 {
     [DbContext(typeof(KidsPrizeDbContext))]
-    [Migration("20160707121841_InitialCreate")]
+    [Migration("20160710125633_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,18 +50,16 @@ namespace KidsPrize.Http.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ChildId");
+                    b.Property<int?>("ChildId")
+                        .IsRequired();
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<string>("Tasks");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ChildId");
+                    b.HasAlternateKey("ChildId", "Date");
 
-                    b.HasIndex("ChildId", "Date")
-                        .IsUnique();
+                    b.HasIndex("ChildId");
 
                     b.ToTable("Day");
                 });
@@ -97,20 +95,22 @@ namespace KidsPrize.Http.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("DayId");
+                    b.Property<int?>("DayId")
+                        .IsRequired();
+
+                    b.Property<int>("Position");
 
                     b.Property<string>("Task")
                         .IsRequired()
-                        .HasAnnotation("MaxLength", 250);
+                        .HasAnnotation("MaxLength", 50);
 
                     b.Property<int>("Value");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DayId");
+                    b.HasAlternateKey("DayId", "Task");
 
-                    b.HasIndex("DayId", "Task")
-                        .IsUnique();
+                    b.HasIndex("DayId");
 
                     b.ToTable("Score");
                 });

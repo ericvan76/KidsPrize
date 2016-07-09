@@ -12,7 +12,7 @@ namespace KidsPrize.Models
         private User() : base()
         { }
 
-        public User(int id, Guid uid, string email, string givenName, string familyName, string displayName, IList<Identifier> identifiers, IList<Child> children) : base()
+        public User(int id, Guid uid, string email, string givenName, string familyName, string displayName, ICollection<Identifier> identifiers, ICollection<Child> children) : base()
         {
             Id = id;
             Uid = uid;
@@ -37,7 +37,6 @@ namespace KidsPrize.Models
         public string FamilyName { get; private set; }
         [MaxLength(250)]
         public string DisplayName { get; private set; }
-
         public ICollection<Identifier> Identifiers { get; private set; }
         public ICollection<Child> Children { get; private set; }
 

@@ -23,6 +23,8 @@ using Newtonsoft.Json.Serialization;
 using Swashbuckle.Swagger.Model;
 using KidsPrize.Http.Extensions;
 using KidsPrize.Http.Configuration;
+using KidsPrize.Http.Bus;
+using KidsPrize.Services;
 
 namespace KidsPrize.Http
 {
@@ -60,6 +62,8 @@ namespace KidsPrize.Http
 
             services.AddOptions();
 
+            services.Configure<DefaultTasks>(Configuration.GetSection("DefaultTasks"));
+
             services.AddMvc()
                 .AddMvcOptions(opts =>
                 {
@@ -88,7 +92,7 @@ namespace KidsPrize.Http
             services.AddSingleton<IMapper>(s => _mapperConfgiuration.CreateMapper());
 
             // Add IBus
-            services.AddSingleton<IBus, Bus.SimpleBus>();
+            services.AddSingleton<IBus, SimpleBus>();
 
             // Add Services & Handlers
             services.AutoRegistration();
@@ -111,7 +115,6 @@ namespace KidsPrize.Http
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 

@@ -17,17 +17,17 @@ namespace KidsPrize.Services
 
     public class ChildService : IChildService
     {
-        private readonly E.KidsPrizeDbContext _dbContext;
+        private readonly E.KidsPrizeDbContext _context;
         private readonly IMapper _mapper;
-        public ChildService(E.KidsPrizeDbContext dbContext, IMapper mapper)
+        public ChildService(E.KidsPrizeDbContext context, IMapper mapper)
         {
-            this._dbContext = dbContext;
+            this._context = context;
             this._mapper = mapper;
         }
 
         public async Task<Child> GetChild(Guid userUid, Guid childUid)
         {
-            var q = await _dbContext.Users.Include(i => i.Children).FirstOrDefaultAsync(i => i.Uid == userUid);
+            var q = await _context.Users.Include(i => i.Children).FirstOrDefaultAsync(i => i.Uid == userUid);
             var child = q?.Children.FirstOrDefault(i => i.Uid == childUid);
             if (child != null)
             {
@@ -38,7 +38,7 @@ namespace KidsPrize.Services
 
         public async Task<IEnumerable<Child>> GetChildren(Guid userUid)
         {
-            var q = await _dbContext.Users.Include(i => i.Children).FirstOrDefaultAsync(i => i.Uid == userUid);
+            var q = await _context.Users.Include(i => i.Children).FirstOrDefaultAsync(i => i.Uid == userUid);
             var result = new List<Child>();
             if (q != null)
             {
