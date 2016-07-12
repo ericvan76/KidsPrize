@@ -9,7 +9,7 @@ namespace KidsPrize.Resources
     {
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
-        public IDictionary<string, int> Scores { get; set; }
+        public IEnumerable<Score> Scores { get; set; }
         public int DayTotal => Scores.Sum(s => s.Value);
     }
 }

@@ -63,11 +63,11 @@ namespace KidsPrize.Tests
             Assert.All(actual.DayScores, i =>
             {
                 Assert.Equal(3, i.Scores.Count());
-                Assert.Collection(i.Scores.Keys,
-                    s => Assert.Equal(defaultTasks[0], s),
-                    s => Assert.Equal(defaultTasks[1], s),
-                    s => Assert.Equal(defaultTasks[2], s));
-                Assert.All(i.Scores.Values, v => Assert.Equal(0, v));
+                Assert.Collection(i.Scores,
+                    s => Assert.Equal(defaultTasks[0], s.Task),
+                    s => Assert.Equal(defaultTasks[1], s.Task),
+                    s => Assert.Equal(defaultTasks[2], s.Task));
+                Assert.All(i.Scores, v => Assert.Equal(0, v.Value));
             });
         }
 

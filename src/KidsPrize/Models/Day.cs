@@ -29,28 +29,25 @@ namespace KidsPrize.Models
         public DateTime Date { get; private set; }
         public ICollection<Score> Scores { get; private set; }
         public int DayTotal => Scores.Sum(i => i.Value);
-        public IEnumerable<string> TaskList => Scores.Select(s => s.Task);
+        public IEnumerable<string> TaskList => Scores.OrderBy(s => s.Position).Select(s => s.Task);
 
-        public void SetTasks(string[] tasks, Action<object> deleteAction)
+        public void SetTasks(string[] tasks)
         {
             var origTotal = DayTotal;
             Scores.Where(s => !tasks.Contains(s.Task, StringComparer.OrdinalIgnoreCase)).ToList()
-                .ForEach(i =>
-                {
-                    Scores.Remove(i);
-                    deleteAction?.Invoke(i);
-                });
+                .ForEach(i => Scores.Remove(i));
             int pos = 0;
             foreach (var task in tasks)
             {
-                var existing = Scores.FirstOrDefault(s => s.Task.Equals(task, StringComparison.OrdinalIgnoreCase));
-                if (existing != null)
+                var score = Scores.FirstOrDefault(s => s.Task.Equals(task, StringComparison.OrdinalIgnoreCase));
+                if (score != null)
                 {
-                    existing.SetPosition(pos++);
+                    score.SetPosition(pos++);
                 }
                 else
                 {
-                    Scores.Add(new Score(0, task, pos++, 0));
+                    score = new Score(0, task, pos++, 0);
+                    Scores.Add(score);
                 }
             }
             var delta = DayTotal - origTotal;

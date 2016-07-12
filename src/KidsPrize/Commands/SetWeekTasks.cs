@@ -50,11 +50,12 @@ namespace KidsPrize.Commands
                     .FirstOrDefaultAsync(d => d.Child.Id == child.Id && d.Date == date);
                 if (day != null)
                 {
-                    day.SetTasks(command.Tasks, o => this._context.Remove(o));
+                    day.SetTasks(command.Tasks);
                 }
                 else
                 {
                     day = new Day(0, child, date, command.Tasks);
+                    this._context.Days.Add(day);
                 }
             }
             await this._context.SaveChangesAsync();

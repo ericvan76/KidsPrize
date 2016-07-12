@@ -9,7 +9,7 @@ namespace KidsPrize.Resources
         public Guid ChildUid { get; set; }
         public int ChildTotal { get; set; }
         public IEnumerable<DayScore> DayScores { get; set; }
-        public IEnumerable<string> Tasks => DayScores.SelectMany(ds => ds.Scores.Keys).Distinct(StringComparer.OrdinalIgnoreCase);
         public int WeekTotal => DayScores.Sum(s => s.DayTotal);
+        public IEnumerable<string> Tasks => DayScores.SelectMany(ds => ds.Scores).Select(s => s.Task).Distinct(StringComparer.OrdinalIgnoreCase);
     }
 }

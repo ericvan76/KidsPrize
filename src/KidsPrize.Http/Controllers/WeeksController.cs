@@ -33,7 +33,7 @@ namespace KidsPrize.Http.Controllers
         }
 
         [HttpGet]
-        [Route("{date:datetime}/Scores")]
+        [Route("{date:datetime}")]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(WeekScores))]
         public async Task<IActionResult> GetScores([FromRoute] Guid childUid, [FromRoute] DateTime date)
         {
