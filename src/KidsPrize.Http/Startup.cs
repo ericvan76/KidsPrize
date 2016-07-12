@@ -109,6 +109,7 @@ namespace KidsPrize.Http
                 opts.DescribeAllEnumsAsStrings();
                 opts.CustomSchemaIds(t => t.FullName);
                 opts.MapType<Guid>(() => new Schema() { Type = "string", Format = "uuid" });
+                opts.MapType<DateTime>(() => new Schema() { Type = "string", Format = "date" });
             });
             services.AddLogging();
         }

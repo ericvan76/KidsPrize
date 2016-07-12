@@ -13,11 +13,15 @@ namespace KidsPrize.Commands
 {
     public class SetScore : Command
     {
+        private DateTime _date;
         [Required]
         public Guid ChildUid { get; set; }
         [Required]
-        [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+        public DateTime Date
+        {
+            get { return _date; }
+            set { _date = value.Date; }
+        }
         [Required]
         [MaxLength(50)]
         public string Task { get; set; }

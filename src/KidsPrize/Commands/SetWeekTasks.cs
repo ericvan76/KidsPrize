@@ -11,11 +11,15 @@ namespace KidsPrize.Commands
 {
     public class SetWeekTasks : Command
     {
+        private DateTime _date;
         [Required]
         public Guid ChildUid { get; set; }
         [Required]
-        [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+        public DateTime Date
+        {
+            get { return _date; }
+            set { _date = value.Date; }
+        }
         [Required]
         public string[] Tasks { get; set; }
 

@@ -28,7 +28,7 @@ namespace KidsPrize.Http.Controllers
         [SwaggerResponse(HttpStatusCode.Accepted)]
         public async Task<IActionResult> SetTasks([FromRoute] Guid childUid, [FromRoute] DateTime date, [FromBody] string[] tasks)
         {
-            await this._bus.Send(new SetWeekTasks() { ChildUid = childUid, Date = date, Tasks = tasks });
+            await this._bus.Send(new SetWeekTasks() { ChildUid = childUid, Date = date.Date, Tasks = tasks });
             return StatusCode((int)HttpStatusCode.Accepted);
         }
 
@@ -37,7 +37,7 @@ namespace KidsPrize.Http.Controllers
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(WeekScores))]
         public async Task<IActionResult> GetScores([FromRoute] Guid childUid, [FromRoute] DateTime date)
         {
-            var result = await this._scoreService.GetWeekScores(User.GetUserInfo().Uid, childUid, date);
+            var result = await this._scoreService.GetWeekScores(User.GetUserInfo().Uid, childUid, date.Date);
             return Ok(result);
         }
     }

@@ -57,8 +57,12 @@ namespace KidsPrize.Http.Controllers
         [HttpPut]
         [Route("{childUid:guid}")]
         [SwaggerResponse(HttpStatusCode.Accepted)]
-        public async Task<IActionResult> UpdateChild([FromBody] UpdateChild command)
+        public async Task<IActionResult> UpdateChild([FromRoute] Guid childUid, [FromBody] UpdateChild command)
         {
+            if (childUid != command.ChildUid)
+            {
+                return BadRequest("Unmatched ChildUid in route and command.");
+            }
             await this._bus.Send(command);
             return StatusCode((int)HttpStatusCode.Accepted);
         }
