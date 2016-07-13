@@ -6,8 +6,8 @@
   "dependencies": {
     "Microsoft.EntityFrameworkCore.InMemory": "1.0.0",
     "System.Runtime.Serialization.Primitives": "4.1.1",
-    "xunit": "2.1.0",
-    "dotnet-test-xunit": "1.0.0-rc2-build10025",
+    "xunit": "2.2.0-beta2-build3300",
+    "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "KidsPrize": "1.0.0"
   },
   "testRunner": "xunit",
@@ -20,7 +20,7 @@
         }
       },
       "imports": [
-        "dotnet5.4",
+        "dotnet5.6",
         "portable-net451+win8"
       ]
     }

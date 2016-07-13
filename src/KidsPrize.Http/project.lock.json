@@ -3,29 +3,15 @@
   "version": 2,
   "targets": {
     ".NETCoreApp,Version=v1.0": {
-      "AutoMapper/5.0.0": {
+      "AutoMapper/5.0.2": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.0.1",
-          "System.Collections": "4.0.11",
-          "System.Collections.Concurrent": "4.0.12",
+          "NETStandard.Library": "1.6.0",
           "System.Collections.Specialized": "4.0.1",
           "System.ComponentModel.TypeConverter": "4.1.0",
-          "System.Diagnostics.Debug": "4.0.11",
           "System.Dynamic.Runtime": "4.0.11",
-          "System.Globalization": "4.0.11",
-          "System.Linq": "4.1.0",
-          "System.Linq.Expressions": "4.1.0",
-          "System.Linq.Queryable": "4.0.1",
-          "System.ObjectModel": "4.0.12",
-          "System.Reflection": "4.1.0",
-          "System.Reflection.Emit": "4.0.1",
-          "System.Reflection.Emit.ILGeneration": "4.0.1",
-          "System.Reflection.Extensions": "4.0.1",
-          "System.Reflection.Primitives": "4.0.1",
-          "System.Runtime": "4.1.0",
-          "System.Runtime.Extensions": "4.1.0",
-          "System.Text.RegularExpressions": "4.1.0"
+          "System.Linq.Queryable": "4.0.1"
         },
         "compile": {
           "lib/netstandard1.3/AutoMapper.dll": {}
@@ -78,7 +64,7 @@
           "lib/netstandard1.3/IdentityModel.AspNetCore.ScopeValidation.dll": {}
         }
       },
-      "IdentityServer4/1.0.0-beta4-update1": {
+      "IdentityServer4/1.0.0-beta4-update2": {
         "type": "package",
         "dependencies": {
           "IdentityModel": "2.0.0-beta4",
@@ -87,7 +73,6 @@
           "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "2.0.0",
-          "Newtonsoft.Json": "9.0.1",
           "System.Collections.Specialized": "4.0.1",
           "System.Diagnostics.Process": "4.1.0"
         },
@@ -3449,7 +3434,7 @@
           "System.Runtime": "4.1.0"
         },
         "compile": {
-          "ref/netstandard1.1/System.Reflection.Emit.dll": {}
+          "ref/netstandard1.1/_._": {}
         },
         "runtime": {
           "lib/netstandard1.3/System.Reflection.Emit.dll": {}
@@ -3463,7 +3448,7 @@
           "System.Runtime": "4.1.0"
         },
         "compile": {
-          "ref/netstandard1.0/System.Reflection.Emit.ILGeneration.dll": {}
+          "ref/netstandard1.0/_._": {}
         },
         "runtime": {
           "lib/netstandard1.3/System.Reflection.Emit.ILGeneration.dll": {}
@@ -4328,7 +4313,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
-          "AutoMapper": "5.0.0",
+          "AutoMapper": "5.0.2",
           "Microsoft.EntityFrameworkCore": "1.0.0",
           "NETStandard.Library": "1.6.0"
         }
@@ -4336,16 +4321,19 @@
     }
   },
   "libraries": {
-    "AutoMapper/5.0.0": {
-      "sha512": "yG2ZCQ+RxpE+qSdW8/M8bRkg00GZYMmjyve07YnNwI6m7ct9QkmUVfxmhPnKp6DcjElcrfjN/RJ/qCXfkChPuA==",
+    "AutoMapper/5.0.2": {
+      "sha512": "eHfVW+cn4X7c8iMUKqqR81PN7hOiT+WTSx5oW6cs+W8vlGrwkZp/SYLvalcUTxhbf5tF8VaW9s2gzWJTYj3DKA==",
       "type": "package",
-      "path": "AutoMapper/5.0.0",
+      "path": "AutoMapper/5.0.2",
       "files": [
-        "AutoMapper.5.0.0.nupkg.sha512",
+        "AutoMapper.5.0.2.nupkg.sha512",
         "AutoMapper.nuspec",
         "lib/net45/AutoMapper.dll",
+        "lib/net45/AutoMapper.xml",
         "lib/netstandard1.1/AutoMapper.dll",
-        "lib/netstandard1.3/AutoMapper.dll"
+        "lib/netstandard1.1/AutoMapper.xml",
+        "lib/netstandard1.3/AutoMapper.dll",
+        "lib/netstandard1.3/AutoMapper.xml"
       ]
     },
     "IdentityModel/2.0.0-beta4": {
@@ -4379,12 +4367,12 @@
         "lib/netstandard1.3/IdentityModel.AspNetCore.ScopeValidation.dll"
       ]
     },
-    "IdentityServer4/1.0.0-beta4-update1": {
-      "sha512": "LZwrH7XgJijHEKEev5ONDZ0gZv4K3nIF8iXBrf+pgXiXo2ZZ8pNTACQq5mwACUBY7DbqJj4d94ahsE3gtkAgWg==",
+    "IdentityServer4/1.0.0-beta4-update2": {
+      "sha512": "UZoUea5GLuIJEsAKoiXe5EE9Qe9flC61fRuoGzYkSkmcB+7fHQaC4dAcK3CyyzB4LMYSy5Vu4pnYmuH7KDXyLA==",
       "type": "package",
-      "path": "IdentityServer4/1.0.0-beta4-update1",
+      "path": "IdentityServer4/1.0.0-beta4-update2",
       "files": [
-        "IdentityServer4.1.0.0-beta4-update1.nupkg.sha512",
+        "IdentityServer4.1.0.0-beta4-update2.nupkg.sha512",
         "IdentityServer4.nuspec",
         "lib/net452/IdentityServer4.dll",
         "lib/netstandard1.4/IdentityServer4.dll"
@@ -5115,6 +5103,7 @@
     "Microsoft.DotNet.Cli.Utils/1.0.0-preview2-003121": {
       "sha512": "FLXqhQjkjj83Sh0TRlLEyMIMtAhDRJuPRWnDONtnCv5bozk1jPzflLEXYbk2xsnsOMpnYrUvKQbwUKUWyaXuFQ==",
       "type": "package",
+      "path": "Microsoft.DotNet.Cli.Utils/1.0.0-preview2-003121",
       "files": [
         "Microsoft.DotNet.Cli.Utils.1.0.0-preview2-003121.nupkg.sha512",
         "Microsoft.DotNet.Cli.Utils.nuspec",
@@ -5136,6 +5125,7 @@
     "Microsoft.DotNet.ProjectModel/1.0.0-rc3-003121": {
       "sha512": "wnWw5KsKinG2wWxdoQIJXZlMFvPNhL7WmIyW9q6xrZFUi/uld5PC3ksq2QDZepF148FUjCIyTP+TnRwU3RJqUg==",
       "type": "package",
+      "path": "Microsoft.DotNet.ProjectModel/1.0.0-rc3-003121",
       "files": [
         "Microsoft.DotNet.ProjectModel.1.0.0-rc3-003121.nupkg.sha512",
         "Microsoft.DotNet.ProjectModel.nuspec",
@@ -5158,6 +5148,7 @@
     "Microsoft.EntityFrameworkCore.Design/1.0.0-preview2-final": {
       "sha512": "RhyjntECuOVsrKjgFog9rv+V7oBsxBNxz5NviF7uHvDDQXLyHH3os/CewQxRNsve114AQH5RX/Bww6qAXlSORQ==",
       "type": "package",
+      "path": "Microsoft.EntityFrameworkCore.Design/1.0.0-preview2-final",
       "files": [
         "Microsoft.EntityFrameworkCore.Design.1.0.0-preview2-final.nupkg.sha512",
         "Microsoft.EntityFrameworkCore.Design.nuspec",
@@ -5173,6 +5164,7 @@
     "Microsoft.EntityFrameworkCore.Design.Core/1.0.0-preview2-final": {
       "sha512": "H3pHksGErQSEwWyvISlDYMslIXftS4XB2m0AvqBS08ECGHagh27mqm/oIyUetzzRad+C2V0zpguJmR14eMiRaA==",
       "type": "package",
+      "path": "Microsoft.EntityFrameworkCore.Design.Core/1.0.0-preview2-final",
       "files": [
         "Microsoft.EntityFrameworkCore.Design.Core.1.0.0-preview2-final.nupkg.sha512",
         "Microsoft.EntityFrameworkCore.Design.Core.nuspec",
@@ -5197,6 +5189,7 @@
     "Microsoft.EntityFrameworkCore.Relational.Design/1.0.0": {
       "sha512": "pw4EmGTp5U645is0Lyf0C6yU1uQGHVIZiRyxlDNNrRllL0ZjSFKTShv9qbE+fBpvvvArNp2HhDmP7d6vJAt0Dw==",
       "type": "package",
+      "path": "Microsoft.EntityFrameworkCore.Relational.Design/1.0.0",
       "files": [
         "Microsoft.EntityFrameworkCore.Relational.Design.1.0.0.nupkg.sha512",
         "Microsoft.EntityFrameworkCore.Relational.Design.nuspec",
@@ -5221,6 +5214,7 @@
     "Microsoft.EntityFrameworkCore.Tools/1.0.0-preview2-final": {
       "sha512": "x+OkqEMERFJY9cAFBZsNPEmZEApAakay2yhE3CD+nyc+HtJDFbyX+spcnOxUjZ2w+YqAdzT6L3DzjlCbRLv9vQ==",
       "type": "package",
+      "path": "Microsoft.EntityFrameworkCore.Tools/1.0.0-preview2-final",
       "files": [
         "Microsoft.EntityFrameworkCore.Tools.1.0.0-preview2-final.nupkg.sha512",
         "Microsoft.EntityFrameworkCore.Tools.nuspec",
@@ -5265,6 +5259,7 @@
     "Microsoft.Extensions.CommandLineUtils/1.0.0": {
       "sha512": "kXJ8+YvEjp1j7ezJ7yvQMLYbRL6QlpBUjRoBfqghoe80yqZ5azYB90lL4iNeyRCznWF+cGm41aaIoFU0aOq7TQ==",
       "type": "package",
+      "path": "Microsoft.Extensions.CommandLineUtils/1.0.0",
       "files": [
         "Microsoft.Extensions.CommandLineUtils.1.0.0.nupkg.sha512",
         "Microsoft.Extensions.CommandLineUtils.nuspec",
@@ -10680,8 +10675,8 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "AutoMapper >= 5.0.0",
-      "IdentityServer4 >= 1.0.0-beta4-update1",
+      "AutoMapper >= 5.0.2",
+      "IdentityServer4 >= 1.0.0-beta4-update2",
       "IdentityServer4.AccessTokenValidation >= 1.0.1-beta1",
       "KidsPrize >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.Facebook >= 1.0.0",

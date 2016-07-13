@@ -26,10 +26,10 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
-    "IdentityServer4": "1.0.0-beta4-update1",
+    "IdentityServer4": "1.0.0-beta4-update2",
     "IdentityServer4.AccessTokenValidation": "1.0.1-beta1",
     "Swashbuckle": "6.0.0-beta901",
-    "AutoMapper": "5.0.0",
+    "AutoMapper": "5.0.2",
     "KidsPrize": "1.0.0"
   },
   "tools": {
@@ -45,7 +45,6 @@
     "netcoreapp1.0": {
       "imports": [
         "dotnet5.6",
-        "dnxcore50",
         "portable-net45+win8"
       ]
     }
