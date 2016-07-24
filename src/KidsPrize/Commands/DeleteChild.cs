@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using KidsPrize.Bus;
-using KidsPrize.Models;
+using KidsPrize.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Commands
@@ -10,24 +10,25 @@ namespace KidsPrize.Commands
     public class DeleteChild : Command
     {
         [Required]
-        public Guid ChildUid { get; set; }
+        public Guid ChildId { get; set; }
     }
 
     public class DeleteChildHandler : IHandleMessages<DeleteChild>
     {
-        private readonly KidsPrizeDbContext _context;
-        public UserInfo User { get; set; }
+        private readonly KidsPrizeContext _context;
 
-        public DeleteChildHandler(KidsPrizeDbContext context)
+        public DeleteChildHandler(KidsPrizeContext context)
         {
             this._context = context;
         }
         public async Task Handle(DeleteChild command)
         {
-            var userUid = User.Uid;
-            var user = await _context.Users.Include(i => i.Children).FirstAsync(i => i.Uid == userUid);
-            user.RemoveChild(command.ChildUid);
-            await _context.SaveChangesAsync();
+            var child = await _context.Children.FirstOrDefaultAsync(i => i.UserId == command.UserId() && i.Id == command.ChildId);
+            if (child != null)
+            {
+                this._context.Children.Remove(child);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

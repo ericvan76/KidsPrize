@@ -1,27 +1,30 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KidsPrize.Models
 {
     [Table(nameof(Child))]
-    public class Child : Entity
+    public class Child
     {
-        private Child() : base()
-        { }
-        public Child(int id, Guid uid, string name, string gender, int totalScore) : base()
+        private Child()
+        {
+        }
+
+        public Child(Guid id, Guid userId, string name, string gender, int totalScore)
         {
             Id = id;
-            Uid = uid;
+            UserId = userId;
             Name = name;
             Gender = gender;
             TotalScore = totalScore;
         }
 
         [Key]
-        public int Id { get; private set; }
+        public Guid Id { get; private set; }
         [Required]
-        public Guid Uid { get; private set; }
+        public Guid UserId { get; private set; }
         [Required]
         [MaxLength(250)]
         public string Name { get; private set; }

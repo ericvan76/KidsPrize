@@ -15,7 +15,7 @@ namespace KidsPrize.Commands
     {
         private DateTime _date;
         [Required]
-        public Guid ChildUid { get; set; }
+        public Guid ChildId { get; set; }
         [Required]
         public DateTime Date
         {
@@ -32,42 +32,35 @@ namespace KidsPrize.Commands
 
     public class SetScoreHandler : IHandleMessages<SetScore>
     {
-        private readonly KidsPrizeDbContext _context;
+        private readonly KidsPrizeContext _context;
         private readonly DefaultTasks _defaultTasks;
-        public UserInfo User { get; set; }
 
-        public SetScoreHandler(KidsPrizeDbContext context, IOptions<DefaultTasks> defaultTasks)
+        public SetScoreHandler(KidsPrizeContext context, IOptions<DefaultTasks> defaultTasks)
         {
             this._context = context;
             this._defaultTasks = defaultTasks.Value;
         }
         public async Task Handle(SetScore command)
         {
-            var userUid = User.Uid;
-            var user = await _context.Users.Include(i => i.Children).FirstAsync(i => i.Uid == userUid);
-            var child = user.Children.FirstOrDefault(i => i.Uid == command.ChildUid);
+            var child = await this._context.Children.FirstOrDefaultAsync(c => c.UserId == command.UserId() && c.Id == command.ChildId);
             if (child == null)
             {
-                throw new ArgumentException($"Child {command.ChildUid} not found.");
+                throw new ArgumentException($"Child {command.ChildId} not found.");
             }
+            var days = await this._context.Days.Include(d => d.Child).Include(d => d.Scores)
+                .Where(d => d.Child.Id == child.Id && d.Date <= command.Date.EndOfWeek()).OrderByDescending(d => d.Date).Take(7)
+                .ToListAsync();
 
-            var day = await this._context.Days.Include(d => d.Child).Include(d => d.Scores)
-                .FirstOrDefaultAsync(d => d.Child.Id == child.Id && d.Date == command.Date);
+            var day = days?.FirstOrDefault(d => d.Date == command.Date);
 
             if (day == null)
             {
-                var childId = child.Id;
-                var endOfWeek = command.Date.EndOfWeek();
-                // get a close day from this/previous week
-                var closeDay = await this._context.Days
-                    .Where(d => d.Child.Id == childId && d.Date <= endOfWeek)
-                    .OrderByDescending(d => d.Date).FirstOrDefaultAsync();
+                var closeDay = days?.FirstOrDefault();
                 var taskList = closeDay?.TaskList ?? _defaultTasks;
                 // create new day
                 day = new Day(0, child, command.Date, taskList.ToArray());
                 this._context.Days.Add(day);
             }
-
             day.SetScore(command.Task, command.Value);
             await this._context.SaveChangesAsync();
         }

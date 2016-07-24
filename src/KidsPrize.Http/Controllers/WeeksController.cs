@@ -3,7 +3,8 @@ using System.Net;
 using System.Threading.Tasks;
 using KidsPrize.Bus;
 using KidsPrize.Commands;
-using KidsPrize.Http.Extensions;
+using KidsPrize.Extensions;
+using KidsPrize.Http.Bus;
 using KidsPrize.Resources;
 using KidsPrize.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -11,33 +12,31 @@ using Swashbuckle.SwaggerGen.Annotations;
 
 namespace KidsPrize.Http.Controllers
 {
-    [Route("Children/{childUid:guid}/[controller]")]
-    public class WeeksController : Controller
+    [Route("Children/{childId:guid}/[controller]")]
+    public class WeeksController : ControllerWithBus
     {
-        private readonly IBus _bus;
         private readonly IScoreService _scoreService;
 
-        public WeeksController(IBus bus, IScoreService scoreService)
+        public WeeksController(IBus bus, IScoreService scoreService) : base(bus)
         {
-            this._bus = bus;
             this._scoreService = scoreService;
         }
 
         [HttpPost]
         [Route("{date:datetime}/Tasks")]
         [SwaggerResponse(HttpStatusCode.Accepted)]
-        public async Task<IActionResult> SetTasks([FromRoute] Guid childUid, [FromRoute] DateTime date, [FromBody] string[] tasks)
+        public async Task<IActionResult> SetTasks([FromRoute] Guid childId, [FromRoute] DateTime date, [FromBody] string[] tasks)
         {
-            await this._bus.Send(new SetWeekTasks() { ChildUid = childUid, Date = date.Date, Tasks = tasks });
+            await this.Send(new SetWeekTasks() { ChildId = childId, Date = date.Date, Tasks = tasks });
             return StatusCode((int)HttpStatusCode.Accepted);
         }
 
         [HttpGet]
         [Route("{date:datetime}")]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(WeekScores))]
-        public async Task<IActionResult> GetScores([FromRoute] Guid childUid, [FromRoute] DateTime date)
+        public async Task<IActionResult> GetScores([FromRoute] Guid childId, [FromRoute] DateTime date)
         {
-            var result = await this._scoreService.GetWeekScores(User.GetUserInfo().Uid, childUid, date.Date);
+            var result = await this._scoreService.GetWeekScores(User.UserId(), childId, date.Date);
             return Ok(result);
         }
     }

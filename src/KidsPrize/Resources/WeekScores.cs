@@ -6,7 +6,7 @@ namespace KidsPrize.Resources
 {
     public class WeekScores
     {
-        public Guid ChildUid { get; set; }
+        public Guid ChildId { get; set; }
         public int ChildTotal { get; set; }
         public IEnumerable<DayScore> DayScores { get; set; }
         public int WeekTotal => DayScores.Sum(s => s.DayTotal);

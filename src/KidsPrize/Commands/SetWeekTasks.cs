@@ -13,7 +13,7 @@ namespace KidsPrize.Commands
     {
         private DateTime _date;
         [Required]
-        public Guid ChildUid { get; set; }
+        public Guid ChildId { get; set; }
         [Required]
         public DateTime Date
         {
@@ -27,31 +27,30 @@ namespace KidsPrize.Commands
 
     public class SetWeekTasksHandler : IHandleMessages<SetWeekTasks>
     {
-        private readonly KidsPrizeDbContext _context;
-        public UserInfo User { get; set; }
+        private readonly KidsPrizeContext _context;
 
-        public SetWeekTasksHandler(KidsPrizeDbContext context)
+        public SetWeekTasksHandler(KidsPrizeContext context)
         {
             this._context = context;
         }
 
         public async Task Handle(SetWeekTasks command)
         {
-            var userUid = User.Uid;
-            var user = await _context.Users.Include(i => i.Children).FirstAsync(i => i.Uid == userUid);
-            var child = user.Children.FirstOrDefault(i => i.Uid == command.ChildUid);
+            var child = await this._context.Children.FirstOrDefaultAsync(c => c.UserId == command.UserId() && c.Id == command.ChildId);
             if (child == null)
             {
-                throw new ArgumentException($"Child {command.ChildUid} not found.");
+                throw new ArgumentException($"Child {command.ChildId} not found.");
             }
+            var days = await this._context.Days.Include(d => d.Child).Include(d => d.Scores)
+                .Where(d => d.Child.Id == child.Id && d.Date <= command.Date.EndOfWeek()).OrderByDescending(d => d.Date).Take(7)
+                .ToListAsync();
 
             // Apply task for whole week
             var start = command.Date.StartOfWeek();
             for (int idx = 0; idx < 7; idx++)
             {
                 var date = start.AddDays(idx);
-                var day = await this._context.Days.Include(d => d.Child).Include(d => d.Scores)
-                    .FirstOrDefaultAsync(d => d.Child.Id == child.Id && d.Date == date);
+                var day = days?.FirstOrDefault(d => d.Date == date);
                 if (day != null)
                 {
                     day.SetTasks(command.Tasks);

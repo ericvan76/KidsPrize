@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using AutoMapper;
-using IdentityServer4.Services.InMemory;
-using KidsPrize.Models;
 using KidsPrize.Bus;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,9 +15,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.Swagger.Model;
 using KidsPrize.Http.Extensions;
-using KidsPrize.Http.Configuration;
 using KidsPrize.Http.Bus;
 using KidsPrize.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace KidsPrize.Http
 {
@@ -32,6 +26,7 @@ namespace KidsPrize.Http
     {
         private readonly MapperConfiguration _mapperConfgiuration;
         private readonly IHostingEnvironment _environment;
+
         public Startup(IHostingEnvironment env)
         {
             // Setup configuration sources.
@@ -52,17 +47,8 @@ namespace KidsPrize.Http
         public IConfigurationRoot Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            var cert = new X509Certificate2(System.IO.Path.Combine(_environment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
-
-            services.AddIdentityServer()
-                .SetSigningCredential(cert)
-                .AddInMemoryClients(Clients.Get())
-                .AddInMemoryScopes(Scopes.Get())
-                .AddInMemoryUsers(new List<InMemoryUser>());
-
-            services.AddOptions();
-
-            services.Configure<DefaultTasks>(Configuration.GetSection("DefaultTasks"));
+            services.AddOptions()
+                .Configure<DefaultTasks>(Configuration.GetSection("DefaultTasks"));
 
             services.AddMvc()
                 .AddMvcOptions(opts =>
@@ -82,11 +68,10 @@ namespace KidsPrize.Http
 
             services.AddMemoryCache();
 
-            // Add Entity Framework services to the services container.
-            services.AddDbContext<KidsPrizeDbContext>(opts =>
-            {
-                opts.UseSqlite("Filename=./KidsPrize.db", b=>b.MigrationsAssembly("KidsPrize.Http"));
-            });
+            // Add framework services.
+            services.AddDbContext<KidsPrizeContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("KidsPrize.Http")));
 
             // AutoMapper
             services.AddSingleton<IMapper>(s => _mapperConfgiuration.CreateMapper());
@@ -111,6 +96,7 @@ namespace KidsPrize.Http
                 opts.MapType<Guid>(() => new Schema() { Type = "string", Format = "uuid" });
                 opts.MapType<DateTime>(() => new Schema() { Type = "string", Format = "date" });
             });
+
             services.AddLogging();
         }
 
@@ -118,10 +104,6 @@ namespace KidsPrize.Http
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
-            app.UseDeveloperExceptionPage();
-
-            app.UseStaticFiles();
 
             // Authentication
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -133,36 +115,6 @@ namespace KidsPrize.Http
                 RequireHttpsMetadata = !env.IsDevelopment(),
                 ScopeName = "api1",
                 AutomaticAuthenticate = true
-            });
-
-            // Identity Server
-            app.UseIdentityServer();
-
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationScheme = "External",
-                AutomaticAuthenticate = false,
-                AutomaticChallenge = false
-            });
-
-            var googleOpts = Configuration.GetSection("GoogleOptions");
-            app.UseGoogleAuthentication(new GoogleOptions
-            {
-                AuthenticationScheme = "Google",
-                SignInScheme = "External",
-                ClientId = googleOpts.GetValue<string>("ClientId"),
-                ClientSecret = googleOpts.GetValue<string>("ClientSecret"),
-                CallbackPath = new PathString(googleOpts.GetValue<string>("CallbackPath"))
-            });
-
-            var facebookOpts = Configuration.GetSection("FacebookOptions");
-            app.UseFacebookAuthentication(new FacebookOptions
-            {
-                AuthenticationScheme = "Facebook",
-                SignInScheme = "External",
-                ClientId = facebookOpts.GetValue<string>("ClientId"),
-                ClientSecret = facebookOpts.GetValue<string>("ClientSecret"),
-                CallbackPath = new PathString(facebookOpts.GetValue<string>("CallbackPath"))
             });
 
             app.UseMvc();

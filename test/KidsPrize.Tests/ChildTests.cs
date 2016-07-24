@@ -1,28 +1,29 @@
 ﻿using Xunit;
-using KidsPrize.Models;
 using KidsPrize.Services;
 using AutoMapper;
 using KidsPrize.Commands;
 using System;
 using KidsPrize.Bus;
 using KidsPrize.Tests.Common;
+using System.Security.Claims;
+using KidsPrize.Extensions;
 
 namespace KidsPrize.Tests
 {
     public class ChildTests
     {
-        private readonly KidsPrizeDbContext _context;
+        private readonly KidsPrizeContext _context;
         private readonly IMapper _mapper;
         private readonly IChildService _childService;
-        private readonly UserInfo _user;
         private readonly IBus _bus;
+        private readonly ClaimsPrincipal _user;
 
         public ChildTests()
         {
             _context = TestHelper.CreateContext();
             _mapper = TestHelper.CreateMapper();
             _childService = new ChildService(_context, _mapper);
-            _user = TestHelper.CreateUser(_context);
+            _user = TestHelper.CreateUser();
             _bus = new TestBus(_user,
                 new CreateChildHandler(_context),
                 new UpdateChildHandler(_context),
@@ -35,12 +36,13 @@ namespace KidsPrize.Tests
         {
             var command = new CreateChild()
             {
-                ChildUid = Guid.NewGuid(),
+                ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "Male"
             };
+            command.SetAuthorisation(_user);
             await _bus.Send(command);
-            var actual = await _childService.GetChild(_user.Uid, command.ChildUid);
+            var actual = await _childService.GetChild(_user.UserId(), command.ChildId);
             Assert.Equal(command.Name, actual.Name);
             Assert.Equal(command.Gender, actual.Gender);
             Assert.Equal(0, actual.TotalScore);
@@ -51,21 +53,23 @@ namespace KidsPrize.Tests
         {
             var createCommand = new CreateChild()
             {
-                ChildUid = Guid.NewGuid(),
+                ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "Male"
             };
+            createCommand.SetAuthorisation(_user);
             await _bus.Send(createCommand);
 
             var updateCommand = new UpdateChild()
             {
-                ChildUid = createCommand.ChildUid,
+                ChildId = createCommand.ChildId,
                 Name = "New-Child-Name",
                 Gender = "Female"
             };
+            updateCommand.SetAuthorisation(_user);
             await _bus.Send(updateCommand);
 
-            var actual = await _childService.GetChild(_user.Uid, updateCommand.ChildUid);
+            var actual = await _childService.GetChild(_user.UserId(), updateCommand.ChildId);
             Assert.Equal(updateCommand.Name, actual.Name);
             Assert.Equal(updateCommand.Gender, actual.Gender);
             Assert.Equal(0, actual.TotalScore);
@@ -76,19 +80,21 @@ namespace KidsPrize.Tests
         {
             var createCommand = new CreateChild()
             {
-                ChildUid = Guid.NewGuid(),
+                ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "Male"
             };
+            createCommand.SetAuthorisation(_user);
             await _bus.Send(createCommand);
 
             var deleteCommand = new DeleteChild()
             {
-                ChildUid = createCommand.ChildUid
+                ChildId = createCommand.ChildId
             };
+            deleteCommand.SetAuthorisation(_user);
             await _bus.Send(deleteCommand);
 
-            var actual = await _childService.GetChild(_user.Uid, deleteCommand.ChildUid);
+            var actual = await _childService.GetChild(_user.UserId(), deleteCommand.ChildId);
             Assert.Null(actual);
         }
     }

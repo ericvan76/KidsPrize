@@ -3,32 +3,31 @@ using System.Net;
 using System.Threading.Tasks;
 using KidsPrize.Bus;
 using KidsPrize.Commands;
+using KidsPrize.Http.Bus;
 using KidsPrize.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.SwaggerGen.Annotations;
 
 namespace KidsPrize.Http.Controllers
 {
-    [Route("Children/{childUid:guid}/[controller]")]
-    public class ScoresController : Controller
+    [Route("Children/{childId:guid}/[controller]")]
+    public class ScoresController : ControllerWithBus
     {
-        private readonly IBus _bus;
         private readonly IScoreService _scoreService;
-        public ScoresController(IBus bus, IScoreService scoreService)
+        public ScoresController(IBus bus, IScoreService scoreService) : base(bus)
         {
-            this._bus = bus;
             this._scoreService = scoreService;
         }
 
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.Accepted)]
-        public async Task<IActionResult> SetScore([FromRoute] Guid childUid, [FromBody] SetScore command)
+        public async Task<IActionResult> SetScore([FromRoute] Guid childId, [FromBody] SetScore command)
         {
-            if (childUid != command.ChildUid)
+            if (childId != command.ChildId)
             {
                 return BadRequest("Unmatched ChildUid in route and command.");
             }
-            await this._bus.Send(command);
+            await this.Send(command);
             return StatusCode((int)HttpStatusCode.Accepted);
         }
     }

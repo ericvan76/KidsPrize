@@ -1,28 +1,32 @@
 using System;
-using System.Collections.Generic;
+using System.Security.Claims;
 using AutoMapper;
+using IdentityModel;
 using KidsPrize.Bus;
-using KidsPrize.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Tests.Common
 {
     public static class TestHelper
     {
-        public static UserInfo CreateUser(KidsPrizeDbContext context)
+        public static ClaimsPrincipal CreateUser()
         {
-            var uid = Guid.NewGuid();
-            var u = new User(0, uid, "test@user.com", "Test", "User", "TestUser", new HashSet<Identifier>() { new Identifier(0, "test-issuer", Guid.NewGuid().ToString()) }, new List<Child>());
-            context.Users.Add(u);
-            context.SaveChanges();
-            return new UserInfo() { Uid = uid };
+            return new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(JwtClaimTypes.Subject, Guid.NewGuid().ToString())
+            }));
         }
 
-        public static KidsPrizeDbContext CreateContext()
+        public static void SetAuthorisation(this Command command, ClaimsPrincipal user)
         {
-            var opts = new DbContextOptionsBuilder<KidsPrizeDbContext>();
+            command.SetHeader("Authorisation", user);
+        }
+
+        public static KidsPrizeContext CreateContext()
+        {
+            var opts = new DbContextOptionsBuilder<KidsPrizeContext>();
             opts.UseInMemoryDatabase();
-            return new KidsPrizeDbContext(opts.Options);
+            return new KidsPrizeContext(opts.Options);
         }
 
         public static IMapper CreateMapper()

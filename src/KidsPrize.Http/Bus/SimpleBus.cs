@@ -12,12 +12,9 @@ namespace KidsPrize.Http.Bus
     public class SimpleBus : IBus
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public SimpleBus(IServiceProvider serviceProvider, IHttpContextAccessor httpContextAccessor)
+        public SimpleBus(IServiceProvider serviceProvider)
         {
             this._serviceProvider = serviceProvider;
-            this._httpContextAccessor = httpContextAccessor;
         }
 
         public async Task Send<T>(T command) where T : Command
@@ -32,7 +29,6 @@ namespace KidsPrize.Http.Bus
             {
                 try
                 {
-                    handler.User = _httpContextAccessor.HttpContext.User.GetUserInfo();
                     await handler.Handle(command).ConfigureAwait(false);
                 }
                 catch (Exception ex)

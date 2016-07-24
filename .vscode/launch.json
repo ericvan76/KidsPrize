@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Core Launch (web)",
+      "name": "Launch KidsPrize.Http",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
@@ -12,10 +12,37 @@
       "stopAtEntry": false,
       "launchBrowser": {
         "enabled": true,
-        "args": "${auto-detect-url}/swagger/ui",
+        "args": "${auto-detect-url}/swagger/ui/",
         "windows": {
           "command": "cmd.exe",
-          "args": "/C start ${auto-detect-url}/swagger/ui"
+          "args": "/C start ${auto-detect-url}/swagger/ui/"
+        },
+        "osx": {
+          "command": "open"
+        },
+        "linux": {
+          "command": "xdg-open"
+        }
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+  {
+      "name": "Launch IdentityServer",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceRoot}/src/IdentityServer/bin/Debug/netcoreapp1.0/IdentityServer.dll",
+      "args": [],
+      "cwd": "${workspaceRoot}/src/IdentityServer/",
+      "stopAtEntry": false,
+      "launchBrowser": {
+        "enabled": true,
+        "args": "${auto-detect-url}",
+        "windows": {
+          "command": "cmd.exe",
+          "args": "/C start ${auto-detect-url}"
         },
         "osx": {
           "command": "open"

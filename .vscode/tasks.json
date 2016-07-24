@@ -9,6 +9,7 @@
     {
       "taskName": "build",
       "args": [
+        "${workspaceRoot}/src/IdentityServer/project.json",
         "${workspaceRoot}/src/KidsPrize/project.json",
         "${workspaceRoot}/src/KidsPrize.Http/project.json",
         "${workspaceRoot}/test/KidsPrize.Tests/project.json"

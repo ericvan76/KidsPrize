@@ -1,0 +1,119 @@
+﻿using System;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using IdentityServer.Configuration;
+using IdentityServer.Services;
+using IdentityServer4.Services;
+using System.Collections.Generic;
+
+namespace IdentityServer
+{
+    public class Startup
+    {
+        private readonly IHostingEnvironment _environment;
+
+        public Startup(IHostingEnvironment env)
+        {
+            // Setup configuration sources.
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
+
+            _environment = env;
+        }
+
+        public IConfigurationRoot Configuration { get; }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsvr3test.pfx"), "idsrv3test");
+
+            var builder = services.AddIdentityServer(options =>
+            {
+                options.UserInteractionOptions.LoginUrl = "/ui/login";
+                options.UserInteractionOptions.LogoutUrl = "/ui/logout";
+                options.UserInteractionOptions.ConsentUrl = "/ui/consent";
+                options.UserInteractionOptions.ErrorUrl = "/ui/error";
+            })
+            .SetSigningCredential(cert)
+            .AddInMemoryScopes(Scopes.Get());
+
+            // Options
+            services.AddOptions()
+                .Configure<List<ClientOption>>(Configuration.GetSection("Clients"));
+
+            // Add framework services.
+            services.AddDbContext<IdentityContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("IdentityServer")));
+
+            // for the UI
+            services
+                .AddMvc()
+                .AddRazorOptions(razor =>
+                {
+                    razor.ViewLocationExpanders.Add(new UI.CustomViewLocationExpander());
+                });
+            services.AddTransient<ILoginService, LoginService>();
+            services.AddTransient<IProfileService, ProfileService>();
+            services.AddTransient<IClientStore, ClientStore>();
+        }
+
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        {
+            Func<string, LogLevel, bool> filter = (scope, level) =>
+                scope.StartsWith("IdentityServer") ||
+                scope.StartsWith("IdentityModel") ||
+                level == LogLevel.Error ||
+                level == LogLevel.Critical;
+
+            loggerFactory.AddConsole(filter);
+            loggerFactory.AddDebug(filter);
+
+            app.UseDeveloperExceptionPage();
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "Temp",
+                AutomaticAuthenticate = false,
+                AutomaticChallenge = false
+            });
+
+            var googleOpts = Configuration.GetSection("GoogleOptions");
+            app.UseGoogleAuthentication(new GoogleOptions
+            {
+                AuthenticationScheme = "Google",
+                SignInScheme = "Temp",
+                ClientId = googleOpts.GetValue<string>("ClientId"),
+                ClientSecret = googleOpts.GetValue<string>("ClientSecret"),
+                CallbackPath = new PathString(googleOpts.GetValue<string>("CallbackPath"))
+            });
+
+            var facebookOpts = Configuration.GetSection("FacebookOptions");
+            app.UseFacebookAuthentication(new FacebookOptions
+            {
+                AuthenticationScheme = "Facebook",
+                SignInScheme = "Temp",
+                ClientId = facebookOpts.GetValue<string>("ClientId"),
+                ClientSecret = facebookOpts.GetValue<string>("ClientSecret"),
+                CallbackPath = new PathString(facebookOpts.GetValue<string>("CallbackPath"))
+            });
+
+            app.UseIdentityServer();
+
+            app.UseStaticFiles();
+            app.UseMvcWithDefaultRoute();
+        }
+    }
+}

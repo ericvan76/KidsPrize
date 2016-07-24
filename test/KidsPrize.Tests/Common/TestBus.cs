@@ -10,11 +10,9 @@ namespace KidsPrize.Tests.Common
     public class TestBus : IBus
     {
         private readonly IList<object> _handlers = new List<object>();
-        private readonly UserInfo _user;
 
-        public TestBus(UserInfo user, params object[] handlers)
+        public TestBus(params object[] handlers)
         {
-            _user = user;
             _handlers = handlers;
         }
         public async Task Send<T>(T command) where T : Command
@@ -29,8 +27,7 @@ namespace KidsPrize.Tests.Common
             {
                 try
                 {
-                    handler.User = this._user;
-                    await handler.Handle(command).ConfigureAwait(false);
+                    await handler.Handle(command);
                 }
                 catch (Exception ex)
                 {

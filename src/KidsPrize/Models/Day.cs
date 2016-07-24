@@ -7,11 +7,13 @@ using System.Linq;
 namespace KidsPrize.Models
 {
     [Table(nameof(Day))]
-    public class Day : Entity
+    public class Day
     {
-        private Day() : base()
-        { }
-        public Day(int id, Child child, DateTime date, string[] tasks) : base()
+        private Day()
+        {
+        }
+
+        public Day(int id, Child child, DateTime date, string[] tasks)
         {
             Id = id;
             Child = child;
@@ -34,8 +36,8 @@ namespace KidsPrize.Models
         public void SetTasks(string[] tasks)
         {
             var origTotal = DayTotal;
-            Scores.Where(s => !tasks.Contains(s.Task, StringComparer.OrdinalIgnoreCase)).ToList()
-                .ForEach(i => Scores.Remove(i));
+            Scores.Where(s => !tasks.Contains(s.Task, StringComparer.OrdinalIgnoreCase))
+                .ToList().ForEach(i => Scores.Remove(i));
             int pos = 0;
             foreach (var task in tasks)
             {

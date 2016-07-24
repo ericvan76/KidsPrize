@@ -13,34 +13,33 @@ namespace KidsPrize.Services
 {
     public interface IScoreService
     {
-        Task<WeekScores> GetWeekScores(Guid userUid, Guid childUid, DateTime date);
+        Task<WeekScores> GetWeekScores(Guid userId, Guid childId, DateTime date);
     }
 
     public class ScoreService : IScoreService
     {
-        private readonly KidsPrizeDbContext _context;
+        private readonly KidsPrizeContext _context;
         private readonly IMapper _mapper;
         private readonly DefaultTasks _defaultTasks;
 
-        public ScoreService(KidsPrizeDbContext context, IMapper mapper, IOptions<DefaultTasks> defaultTasks)
+        public ScoreService(KidsPrizeContext context, IMapper mapper, IOptions<DefaultTasks> defaultTasks)
         {
             this._context = context;
             this._mapper = mapper;
             this._defaultTasks = defaultTasks.Value;
         }
 
-        public async Task<WeekScores> GetWeekScores(Guid userUid, Guid childUid, DateTime date)
+        public async Task<WeekScores> GetWeekScores(Guid userId, Guid childId, DateTime date)
         {
-            var user = await this._context.Users.Include(i => i.Children).FirstAsync(i => i.Uid == userUid);
-            var child = user.Children.FirstOrDefault(i => i.Uid == childUid);
+            var child = await this._context.Children.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == childId);
             if (child == null)
             {
-                throw new ArgumentException($"Child {childUid} not found.");
+                throw new ArgumentException($"Child {childId} not found.");
             }
-
             var days = await this._context.Days.Include(d => d.Child).Include(d => d.Scores)
-                .Where(d => d.Child.Id == child.Id && d.Date <= date.EndOfWeek())
-                .OrderByDescending(d => d.Date).Take(7).ToListAsync();
+                .Where(d => d.Child.Id == child.Id && d.Date <= date.EndOfWeek()).OrderByDescending(d => d.Date).Take(7)
+                .ToListAsync();
+
             var defaultTasks = days?.FirstOrDefault()?.TaskList ?? _defaultTasks;
 
             var result = new List<Day>();
@@ -52,7 +51,7 @@ namespace KidsPrize.Services
             }
             return new WeekScores()
             {
-                ChildUid = childUid,
+                ChildId = child.Id,
                 ChildTotal = child.TotalScore,
                 DayScores = result.Select(d => _mapper.Map<Day, DayScore>(d))
             };

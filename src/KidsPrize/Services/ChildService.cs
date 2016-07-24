@@ -5,30 +5,28 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KidsPrize.Resources;
 using Microsoft.EntityFrameworkCore;
-using E = KidsPrize.Models;
 
 namespace KidsPrize.Services
 {
     public interface IChildService
     {
-        Task<Child> GetChild(Guid userUid, Guid childUid);
-        Task<IEnumerable<Child>> GetChildren(Guid userUid);
+        Task<Child> GetChild(Guid userId, Guid childId);
+        Task<IEnumerable<Child>> GetChildren(Guid userId);
     }
 
     public class ChildService : IChildService
     {
-        private readonly E.KidsPrizeDbContext _context;
+        private readonly KidsPrizeContext _context;
         private readonly IMapper _mapper;
-        public ChildService(E.KidsPrizeDbContext context, IMapper mapper)
+        public ChildService(KidsPrizeContext context, IMapper mapper)
         {
             this._context = context;
             this._mapper = mapper;
         }
 
-        public async Task<Child> GetChild(Guid userUid, Guid childUid)
+        public async Task<Child> GetChild(Guid userId, Guid childId)
         {
-            var q = await _context.Users.Include(i => i.Children).FirstOrDefaultAsync(i => i.Uid == userUid);
-            var child = q?.Children.FirstOrDefault(i => i.Uid == childUid);
+            var child = await _context.Children.FirstOrDefaultAsync(i => i.UserId == userId && i.Id == childId);
             if (child != null)
             {
                 return _mapper.Map<Child>(child);
@@ -36,17 +34,11 @@ namespace KidsPrize.Services
             return null;
         }
 
-        public async Task<IEnumerable<Child>> GetChildren(Guid userUid)
+        public async Task<IEnumerable<Child>> GetChildren(Guid userId)
         {
-            var q = await _context.Users.Include(i => i.Children).FirstOrDefaultAsync(i => i.Uid == userUid);
             var result = new List<Child>();
-            if (q != null)
-            {
-                foreach (var item in q.Children)
-                {
-                    result.Add(_mapper.Map<Child>(item));
-                }
-            }
+            var children = await _context.Children.Where(i => i.UserId == userId).ToListAsync();
+            children.ForEach(i => result.Add(_mapper.Map<Child>(i)));
             return result;
         }
     }

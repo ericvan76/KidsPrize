@@ -4,11 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace KidsPrize.Models
 {
     [Table(nameof(Score))]
-    public class Score : Entity
+    public class Score
     {
-        private Score() : base()
-        { }
-        public Score(int id, string task, int position, int value) : base()
+        private Score()
+        {
+        }
+
+        public Score(int id, string task, int position, int value)
         {
             Id = id;
             Task = task;
