@@ -9,7 +9,7 @@ namespace IdentityServer
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseUrls("http://localhost:5010/")
+                .UseUrls("http://localhost:4999")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()

@@ -31,7 +31,8 @@ namespace KidsPrize.Services
 
         public async Task<WeekScores> GetWeekScores(Guid userId, Guid childId, DateTime date)
         {
-            var child = await this._context.Children.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == childId);
+            var child = await this._context.Children
+                .FirstOrDefaultAsync(c => c.UserId == userId && c.Id == childId);
             if (child == null)
             {
                 throw new ArgumentException($"Child {childId} not found.");

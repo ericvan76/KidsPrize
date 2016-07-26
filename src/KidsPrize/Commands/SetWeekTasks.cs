@@ -36,13 +36,15 @@ namespace KidsPrize.Commands
 
         public async Task Handle(SetWeekTasks command)
         {
-            var child = await this._context.Children.FirstOrDefaultAsync(c => c.UserId == command.UserId() && c.Id == command.ChildId);
+            var child = await this._context.Children
+                .FirstOrDefaultAsync(c => c.UserId == command.UserId() && c.Id == command.ChildId);
             if (child == null)
             {
                 throw new ArgumentException($"Child {command.ChildId} not found.");
             }
             var days = await this._context.Days.Include(d => d.Child).Include(d => d.Scores)
-                .Where(d => d.Child.Id == child.Id && d.Date <= command.Date.EndOfWeek()).OrderByDescending(d => d.Date).Take(7)
+                .Where(d => d.Child.Id == child.Id && d.Date <= command.Date.EndOfWeek())
+                .OrderByDescending(d => d.Date).Take(7)
                 .ToListAsync();
 
             // Apply task for whole week
