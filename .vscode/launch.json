@@ -11,7 +11,7 @@
       "cwd": "${workspaceRoot}/src/KidsPrize.Http/",
       "stopAtEntry": false,
       "launchBrowser": {
-        "enabled": true,
+        "enabled": false,
         "args": "${auto-detect-url}/swagger/ui/",
         "windows": {
           "command": "cmd.exe",
@@ -38,7 +38,7 @@
       "cwd": "${workspaceRoot}/src/IdentityServer/",
       "stopAtEntry": false,
       "launchBrowser": {
-        "enabled": true,
+        "enabled": false,
         "args": "${auto-detect-url}",
         "windows": {
           "command": "cmd.exe",

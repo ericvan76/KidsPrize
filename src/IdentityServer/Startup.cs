@@ -12,6 +12,7 @@ using IdentityServer.Configuration;
 using IdentityServer.Services;
 using IdentityServer4.Services;
 using System.Collections.Generic;
+using NLog.Extensions.Logging;
 
 namespace IdentityServer
 {
@@ -24,8 +25,8 @@ namespace IdentityServer
             // Setup configuration sources.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile("Config/appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"Config/appsettings.{env.EnvironmentName}.json", optional: true);
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -37,7 +38,8 @@ namespace IdentityServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsvr3test.pfx"), "idsrv3test");
+            var certOptions = Configuration.GetSection("Certificate");
+            var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "Config", certOptions.GetValue<string>("FileName")), certOptions.GetValue<string>("Password"));
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -55,8 +57,9 @@ namespace IdentityServer
 
             // Add framework services.
             services.AddDbContext<IdentityContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly("IdentityServer")));
+            {
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("IdentityServer"));
+            });
 
             // for the UI
             services
@@ -72,16 +75,20 @@ namespace IdentityServer
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            Func<string, LogLevel, bool> filter = (scope, level) =>
-                scope.StartsWith("IdentityServer") ||
-                scope.StartsWith("IdentityModel") ||
-                level == LogLevel.Error ||
-                level == LogLevel.Critical;
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
 
-            loggerFactory.AddConsole(filter);
-            loggerFactory.AddDebug(filter);
+            // NLog
+            loggerFactory.AddNLog();
+			_environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "Config/nlog.config"));
 
             app.UseDeveloperExceptionPage();
+
+            // DbContext initialise
+            using (var context = app.ApplicationServices.GetService<IdentityContext>())
+            {
+                context.Database.Migrate();
+            }
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
@@ -114,6 +121,8 @@ namespace IdentityServer
 
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
+
+
         }
     }
 }

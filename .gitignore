@@ -1,6 +1,8 @@
 bin/
 obj/
+logs/
 appsettings.*.json
 *.pfx
 !idsrv3test.pfx
 project.lock.json
+/backup

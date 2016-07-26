@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KidsPrize.Models
 {
-    [Table(nameof(Score))]
     public class Score
     {
         private Score()

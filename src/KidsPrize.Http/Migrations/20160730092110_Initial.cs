@@ -4,15 +4,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace KidsPrize.Http.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreatePostgresExtension("uuid-ossp");
+
             migrationBuilder.CreateTable(
                 name: "Child",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false)
+                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     Gender = table.Column<string>(maxLength: 50, nullable: true),
                     Name = table.Column<string>(maxLength: 250, nullable: false),
                     TotalScore = table.Column<int>(nullable: false),
@@ -28,7 +31,7 @@ namespace KidsPrize.Http.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Autoincrement", true),
+                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     ChildId = table.Column<Guid>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false)
                 },
@@ -49,7 +52,7 @@ namespace KidsPrize.Http.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Autoincrement", true),
+                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     DayId = table.Column<int>(nullable: false),
                     Position = table.Column<int>(nullable: false),
                     Task = table.Column<string>(maxLength: 50, nullable: false),
@@ -85,6 +88,8 @@ namespace KidsPrize.Http.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropPostgresExtension("uuid-ossp");
+
             migrationBuilder.DropTable(
                 name: "Score");
 

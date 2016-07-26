@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KidsPrize.Models
 {
-    [Table(nameof(Child))]
     public class Child
     {
         private Child()

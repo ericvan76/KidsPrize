@@ -8,12 +8,13 @@ using KidsPrize;
 namespace KidsPrize.Http.Migrations
 {
     [DbContext(typeof(KidsPrizeContext))]
-    [Migration("20160726034619_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20160730092110_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
+                .HasAnnotation("Npgsql:PostgresExtension:.uuid-ossp", "'uuid-ossp', '', ''")
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
 
             modelBuilder.Entity("KidsPrize.Models.Child", b =>

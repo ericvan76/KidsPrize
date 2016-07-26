@@ -19,6 +19,8 @@ using KidsPrize.Http.Bus;
 using KidsPrize.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using NLog.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace KidsPrize.Http
 {
@@ -32,8 +34,8 @@ namespace KidsPrize.Http
             // Setup configuration sources.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile("Config/appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"Config/appsettings.{env.EnvironmentName}.json", optional: true);
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -70,8 +72,9 @@ namespace KidsPrize.Http
 
             // Add framework services.
             services.AddDbContext<KidsPrizeContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly("KidsPrize.Http")));
+            {
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("KidsPrize.Http"));
+            });
 
             // AutoMapper
             services.AddSingleton<IMapper>(s => _mapperConfgiuration.CreateMapper());
@@ -105,6 +108,16 @@ namespace KidsPrize.Http
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            // NLog
+            loggerFactory.AddNLog();
+			_environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "Config", "nlog.config"));
+
+            // DbContext initialise
+            using (var context = app.ApplicationServices.GetService<KidsPrizeContext>())
+            {
+                context.Database.Migrate();
+            }
+
             // Authentication
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -121,6 +134,7 @@ namespace KidsPrize.Http
 
             app.UseSwagger();
             app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
+
         }
     }
 

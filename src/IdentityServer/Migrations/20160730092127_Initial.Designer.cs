@@ -8,12 +8,13 @@ using IdentityServer;
 namespace IdentityServer.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    [Migration("20160724234240_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20160730092127_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
+                .HasAnnotation("Npgsql:PostgresExtension:.uuid-ossp", "'uuid-ossp', '', ''")
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole<System.Guid>", b =>

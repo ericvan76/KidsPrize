@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace IdentityServer
 {
@@ -15,7 +16,10 @@ namespace IdentityServer
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.RemovePluralizingTableNameConvention();
+            // modelBuilder.HasDefaultSchema("Identity");
+            modelBuilder.HasPostgresExtension("uuid-ossp");
 
             modelBuilder.Entity<IdentityUser<Guid>>().Property(i => i.Email).IsRequired();
             modelBuilder.Entity<IdentityUser<Guid>>().Property(i => i.NormalizedEmail).IsRequired();
@@ -30,8 +34,8 @@ namespace IdentityServer
             foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
             {
                 var typeName = entity.DisplayName();
-                var regex = new Regex(@"\<\w+\>");
-                var tableName = regex.Replace(typeName, string.Empty);
+                var tableName = Regex.Replace(typeName, @"\<\w+\>", string.Empty);
+                // tableName = Regex.Replace(tableName, @"^Identity", string.Empty);
                 entity.Relational().TableName = tableName;
             }
         }
