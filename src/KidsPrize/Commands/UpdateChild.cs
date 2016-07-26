@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using KidsPrize.Bus;
 using KidsPrize.Extensions;
-using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Commands
 {
@@ -27,11 +26,7 @@ namespace KidsPrize.Commands
 
         public async Task Handle(UpdateChild command)
         {
-            var child = await _context.Children.FirstOrDefaultAsync(i => i.UserId == command.UserId() && i.Id == command.ChildId);
-            if (child == null)
-            {
-                throw new ArgumentException($"Child {command.ChildId} not found.");
-            }
+            var child = await this._context.GetChildOrThrow(command.UserId(), command.ChildId);
             child.Update(command.Name, command.Gender, null);
             await _context.SaveChangesAsync();
         }

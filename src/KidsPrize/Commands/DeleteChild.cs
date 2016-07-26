@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using KidsPrize.Bus;
 using KidsPrize.Extensions;
-using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Commands
 {
@@ -23,12 +22,9 @@ namespace KidsPrize.Commands
         }
         public async Task Handle(DeleteChild command)
         {
-            var child = await _context.Children.FirstOrDefaultAsync(i => i.UserId == command.UserId() && i.Id == command.ChildId);
-            if (child != null)
-            {
-                this._context.Children.Remove(child);
-                await _context.SaveChangesAsync();
-            }
+            var child = await this._context.GetChildOrThrow(command.UserId(), command.ChildId);
+            this._context.Children.Remove(child);
+            await _context.SaveChangesAsync();
         }
     }
 }

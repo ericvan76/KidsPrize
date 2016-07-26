@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KidsPrize.Extensions;
 using KidsPrize.Resources;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,7 +27,7 @@ namespace KidsPrize.Services
 
         public async Task<Child> GetChild(Guid userId, Guid childId)
         {
-            var child = await _context.Children.FirstOrDefaultAsync(i => i.UserId == userId && i.Id == childId);
+            var child = await _context.GetChild(userId, childId);
             if (child != null)
             {
                 return _mapper.Map<Child>(child);

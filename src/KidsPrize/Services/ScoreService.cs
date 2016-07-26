@@ -31,15 +31,8 @@ namespace KidsPrize.Services
 
         public async Task<WeekScores> GetWeekScores(Guid userId, Guid childId, DateTime date)
         {
-            var child = await this._context.Children
-                .FirstOrDefaultAsync(c => c.UserId == userId && c.Id == childId);
-            if (child == null)
-            {
-                throw new ArgumentException($"Child {childId} not found.");
-            }
-            var days = await this._context.Days.Include(d => d.Child).Include(d => d.Scores)
-                .Where(d => d.Child.Id == child.Id && d.Date <= date.EndOfWeek()).OrderByDescending(d => d.Date).Take(7)
-                .ToListAsync();
+            var child = await this._context.GetChildOrThrow(userId, childId);
+            var days = await this._context.ResolveRecentDays(child, date);
 
             var defaultTasks = days?.FirstOrDefault()?.TaskList ?? _defaultTasks;
 

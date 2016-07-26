@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using KidsPrize.Bus;
 using KidsPrize.Extensions;
 using KidsPrize.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Commands
 {
@@ -36,16 +35,8 @@ namespace KidsPrize.Commands
 
         public async Task Handle(SetWeekTasks command)
         {
-            var child = await this._context.Children
-                .FirstOrDefaultAsync(c => c.UserId == command.UserId() && c.Id == command.ChildId);
-            if (child == null)
-            {
-                throw new ArgumentException($"Child {command.ChildId} not found.");
-            }
-            var days = await this._context.Days.Include(d => d.Child).Include(d => d.Scores)
-                .Where(d => d.Child.Id == child.Id && d.Date <= command.Date.EndOfWeek())
-                .OrderByDescending(d => d.Date).Take(7)
-                .ToListAsync();
+            var child = await this._context.GetChildOrThrow(command.UserId(), command.ChildId);
+            var days = await this._context.ResolveRecentDays(child, command.Date);
 
             // Apply task for whole week
             var start = command.Date.StartOfWeek();
