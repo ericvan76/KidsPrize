@@ -13,7 +13,8 @@ namespace IdentityServer.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("Npgsql:PostgresExtension:.uuid-ossp", "'uuid-ossp', '', ''")
+                .HasDefaultSchema("Identity")
+                .HasAnnotation("Npgsql:PostgresExtension:public.uuid-ossp", "'uuid-ossp', 'public', ''")
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole<System.Guid>", b =>
@@ -35,7 +36,7 @@ namespace IdentityServer.Migrations
                     b.HasIndex("NormalizedName")
                         .HasName("RoleNameIndex");
 
-                    b.ToTable("IdentityRole");
+                    b.ToTable("Role");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<System.Guid>", b =>
@@ -53,7 +54,7 @@ namespace IdentityServer.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("IdentityRoleClaim");
+                    b.ToTable("RoleClaim");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUser<System.Guid>", b =>
@@ -107,7 +108,7 @@ namespace IdentityServer.Migrations
                         .IsUnique()
                         .HasName("UserNameIndex");
 
-                    b.ToTable("IdentityUser");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<System.Guid>", b =>
@@ -125,7 +126,7 @@ namespace IdentityServer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IdentityUserClaim");
+                    b.ToTable("UserClaim");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<System.Guid>", b =>
@@ -142,7 +143,7 @@ namespace IdentityServer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IdentityUserLogin");
+                    b.ToTable("UserLogin");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<System.Guid>", b =>
@@ -157,7 +158,7 @@ namespace IdentityServer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IdentityUserRole");
+                    b.ToTable("UserRole");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserToken<System.Guid>", b =>
@@ -172,7 +173,7 @@ namespace IdentityServer.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("IdentityUserToken");
+                    b.ToTable("UserToken");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<System.Guid>", b =>

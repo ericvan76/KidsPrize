@@ -13,7 +13,8 @@ namespace KidsPrize.Http.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("Npgsql:PostgresExtension:.uuid-ossp", "'uuid-ossp', '', ''")
+                .HasDefaultSchema("KidsPrize")
+                .HasAnnotation("Npgsql:PostgresExtension:public.uuid-ossp", "'uuid-ossp', 'public', ''")
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
 
             modelBuilder.Entity("KidsPrize.Models.Child", b =>

@@ -6,13 +6,14 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./config/api:/root/Config
+      - ./cfg/api-appsettings.Development.json:/root/appsettings.Development.json
       - ./logs:/root/logs
     depends_on:
       - db
       - idsvr
     restart: always
     environment:
+      ASPNETCORE_URLS: http://*:5000
       ASPNETCORE_ENVIRONMENT: Development
   idsvr:
     depends_on:
@@ -22,16 +23,18 @@ services:
     ports:
       - "4999:4999"
     volumes:
-      - ./config/idsvr:/root/Config
+      - ./cfg/idsvr-appsettings.Development.json:/root/appsettings.Development.json
       - ./logs:/root/logs
     restart: always
     environment:
+      ASPNETCORE_URLS: http://*:4999
       ASPNETCORE_ENVIRONMENT: Development
   db:
     image: postgres
     volumes:
       - data:/var/lib/postgresql/data
     environment:
+      POSTGRES_USER: kidsprize
       POSTGRES_PASSWORD: password
 volumes:
-  data:
+  data: {}

@@ -16,7 +16,8 @@ namespace IdentityServer.Configuration
                     Name = "api1",
                     DisplayName = "API 1",
                     Description = "API 1 features and data",
-                    Type = ScopeType.Resource
+                    Type = ScopeType.Resource,
+
                 }
             };
         }

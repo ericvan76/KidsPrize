@@ -3,6 +3,6 @@ obj/
 logs/
 appsettings.*.json
 *.pfx
-!idsrv3test.pfx
+!*test.pfx
 project.lock.json
 /backup

@@ -21,8 +21,8 @@ namespace KidsPrize
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.RemovePluralizingTableNameConvention();
-            // modelBuilder.HasDefaultSchema("KidsPrize");
-            modelBuilder.HasPostgresExtension("uuid-ossp");
+            modelBuilder.HasPostgresExtension("uuid-ossp", "public");
+            modelBuilder.HasDefaultSchema("KidsPrize");
 
             modelBuilder.Entity<Child>().HasIndex(c => c.UserId);
             modelBuilder.Entity<Day>().HasOne(d => d.Child).WithMany().IsRequired();

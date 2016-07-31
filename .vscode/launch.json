@@ -25,6 +25,7 @@
         }
       },
       "env": {
+        "ASPNETCORE_URLS": "http://localhost:5000",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
@@ -52,6 +53,7 @@
         }
       },
       "env": {
+        "ASPNETCORE_URLS": "http://localhost:4999",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },

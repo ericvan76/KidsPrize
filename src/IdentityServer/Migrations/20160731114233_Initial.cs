@@ -8,10 +8,15 @@ namespace IdentityServer.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreatePostgresExtension("uuid-ossp");
+            migrationBuilder.CreatePostgresExtension(name: "uuid-ossp",
+                schema: "public");
+
+            migrationBuilder.EnsureSchema(
+                name: "Identity");
 
             migrationBuilder.CreateTable(
-                name: "IdentityRole",
+                name: "Role",
+                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false)
@@ -22,11 +27,12 @@ namespace IdentityServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityRole", x => x.Id);
+                    table.PrimaryKey("PK_Role", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUser",
+                name: "User",
+                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false)
@@ -48,12 +54,13 @@ namespace IdentityServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUser", x => x.Id);
-                    table.UniqueConstraint("AK_IdentityUser_NormalizedEmail", x => x.NormalizedEmail);
+                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.UniqueConstraint("AK_User_NormalizedEmail", x => x.NormalizedEmail);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUserToken",
+                name: "UserToken",
+                schema: "Identity",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(nullable: false),
@@ -63,11 +70,12 @@ namespace IdentityServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUserToken", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.PrimaryKey("PK_UserToken", x => new { x.UserId, x.LoginProvider, x.Name });
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityRoleClaim",
+                name: "RoleClaim",
+                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -78,17 +86,19 @@ namespace IdentityServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityRoleClaim", x => x.Id);
+                    table.PrimaryKey("PK_RoleClaim", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_IdentityRoleClaim_IdentityRole_RoleId",
+                        name: "FK_RoleClaim_Role_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "IdentityRole",
+                        principalSchema: "Identity",
+                        principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUserClaim",
+                name: "UserClaim",
+                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -99,17 +109,19 @@ namespace IdentityServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUserClaim", x => x.Id);
+                    table.PrimaryKey("PK_UserClaim", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_IdentityUserClaim_IdentityUser_UserId",
+                        name: "FK_UserClaim_User_UserId",
                         column: x => x.UserId,
-                        principalTable: "IdentityUser",
+                        principalSchema: "Identity",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUserLogin",
+                name: "UserLogin",
+                schema: "Identity",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(nullable: false),
@@ -119,17 +131,19 @@ namespace IdentityServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUserLogin", x => new { x.LoginProvider, x.ProviderKey });
+                    table.PrimaryKey("PK_UserLogin", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_IdentityUserLogin_IdentityUser_UserId",
+                        name: "FK_UserLogin_User_UserId",
                         column: x => x.UserId,
-                        principalTable: "IdentityUser",
+                        principalSchema: "Identity",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUserRole",
+                name: "UserRole",
+                schema: "Identity",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(nullable: false),
@@ -137,60 +151,70 @@ namespace IdentityServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUserRole", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_UserRole", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_IdentityUserRole_IdentityRole_RoleId",
+                        name: "FK_UserRole_Role_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "IdentityRole",
+                        principalSchema: "Identity",
+                        principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_IdentityUserRole_IdentityUser_UserId",
+                        name: "FK_UserRole_User_UserId",
                         column: x => x.UserId,
-                        principalTable: "IdentityUser",
+                        principalSchema: "Identity",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                table: "IdentityRole",
+                schema: "Identity",
+                table: "Role",
                 column: "NormalizedName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityRoleClaim_RoleId",
-                table: "IdentityRoleClaim",
+                name: "IX_RoleClaim_RoleId",
+                schema: "Identity",
+                table: "RoleClaim",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
-                table: "IdentityUser",
+                schema: "Identity",
+                table: "User",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
-                table: "IdentityUser",
+                schema: "Identity",
+                table: "User",
                 column: "NormalizedUserName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserClaim_UserId",
-                table: "IdentityUserClaim",
+                name: "IX_UserClaim_UserId",
+                schema: "Identity",
+                table: "UserClaim",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserLogin_UserId",
-                table: "IdentityUserLogin",
+                name: "IX_UserLogin_UserId",
+                schema: "Identity",
+                table: "UserLogin",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserRole_RoleId",
-                table: "IdentityUserRole",
+                name: "IX_UserRole_RoleId",
+                schema: "Identity",
+                table: "UserRole",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserRole_UserId",
-                table: "IdentityUserRole",
+                name: "IX_UserRole_UserId",
+                schema: "Identity",
+                table: "UserRole",
                 column: "UserId");
         }
 
@@ -199,25 +223,32 @@ namespace IdentityServer.Migrations
             migrationBuilder.DropPostgresExtension("uuid-ossp");
 
             migrationBuilder.DropTable(
-                name: "IdentityRoleClaim");
+                name: "RoleClaim",
+                schema: "Identity");
 
             migrationBuilder.DropTable(
-                name: "IdentityUserClaim");
+                name: "UserClaim",
+                schema: "Identity");
 
             migrationBuilder.DropTable(
-                name: "IdentityUserLogin");
+                name: "UserLogin",
+                schema: "Identity");
 
             migrationBuilder.DropTable(
-                name: "IdentityUserRole");
+                name: "UserRole",
+                schema: "Identity");
 
             migrationBuilder.DropTable(
-                name: "IdentityUserToken");
+                name: "UserToken",
+                schema: "Identity");
 
             migrationBuilder.DropTable(
-                name: "IdentityRole");
+                name: "Role",
+                schema: "Identity");
 
             migrationBuilder.DropTable(
-                name: "IdentityUser");
+                name: "User",
+                schema: "Identity");
         }
     }
 }

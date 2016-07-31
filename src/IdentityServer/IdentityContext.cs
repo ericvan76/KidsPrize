@@ -18,8 +18,8 @@ namespace IdentityServer
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.RemovePluralizingTableNameConvention();
-            // modelBuilder.HasDefaultSchema("Identity");
-            modelBuilder.HasPostgresExtension("uuid-ossp");
+            modelBuilder.HasPostgresExtension("uuid-ossp", "public");
+            modelBuilder.HasDefaultSchema("Identity");
 
             modelBuilder.Entity<IdentityUser<Guid>>().Property(i => i.Email).IsRequired();
             modelBuilder.Entity<IdentityUser<Guid>>().Property(i => i.NormalizedEmail).IsRequired();
@@ -35,7 +35,7 @@ namespace IdentityServer
             {
                 var typeName = entity.DisplayName();
                 var tableName = Regex.Replace(typeName, @"\<\w+\>", string.Empty);
-                // tableName = Regex.Replace(tableName, @"^Identity", string.Empty);
+                tableName = Regex.Replace(tableName, @"^Identity", string.Empty);
                 entity.Relational().TableName = tableName;
             }
         }

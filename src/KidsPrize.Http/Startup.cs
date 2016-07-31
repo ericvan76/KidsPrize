@@ -34,8 +34,8 @@ namespace KidsPrize.Http
             // Setup configuration sources.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("Config/appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"Config/appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -110,7 +110,7 @@ namespace KidsPrize.Http
 
             // NLog
             loggerFactory.AddNLog();
-			_environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "Config", "nlog.config"));
+			_environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "nlog.config"));
 
             // DbContext initialise
             using (var context = app.ApplicationServices.GetService<KidsPrizeContext>())

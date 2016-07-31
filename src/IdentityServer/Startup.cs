@@ -25,8 +25,8 @@ namespace IdentityServer
             // Setup configuration sources.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("Config/appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"Config/appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -38,8 +38,8 @@ namespace IdentityServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var certOptions = Configuration.GetSection("Certificate");
-            var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "Config", certOptions.GetValue<string>("FileName")), certOptions.GetValue<string>("Password"));
+            var certOptions = Configuration.GetSection("SigningCredential");
+            var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, certOptions.GetValue<string>("FileName")), certOptions.GetValue<string>("Password"));
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -48,11 +48,11 @@ namespace IdentityServer
                 options.UserInteractionOptions.ConsentUrl = "/ui/consent";
                 options.UserInteractionOptions.ErrorUrl = "/ui/error";
             })
-            .SetSigningCredential(cert)
-            .AddInMemoryScopes(Scopes.Get());
+            .SetSigningCredential(cert);
 
             // Options
             services.AddOptions()
+                .Configure<List<ScopeOption>>(Configuration.GetSection("Scopes"))
                 .Configure<List<ClientOption>>(Configuration.GetSection("Clients"));
 
             // Add framework services.
@@ -70,6 +70,7 @@ namespace IdentityServer
                 });
             services.AddTransient<ILoginService, LoginService>();
             services.AddTransient<IProfileService, ProfileService>();
+            services.AddTransient<IScopeStore, ScopeStore>();
             services.AddTransient<IClientStore, ClientStore>();
         }
 
@@ -80,7 +81,7 @@ namespace IdentityServer
 
             // NLog
             loggerFactory.AddNLog();
-			_environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "Config/nlog.config"));
+			_environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "nlog.config"));
 
             app.UseDeveloperExceptionPage();
 

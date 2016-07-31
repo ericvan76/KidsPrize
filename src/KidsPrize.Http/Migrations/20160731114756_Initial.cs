@@ -8,10 +8,15 @@ namespace KidsPrize.Http.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreatePostgresExtension("uuid-ossp");
+            migrationBuilder.CreatePostgresExtension(name: "uuid-ossp",
+                schema: "public");
+
+            migrationBuilder.EnsureSchema(
+                name: "KidsPrize");
 
             migrationBuilder.CreateTable(
                 name: "Child",
+                schema: "KidsPrize",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false)
@@ -28,6 +33,7 @@ namespace KidsPrize.Http.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Day",
+                schema: "KidsPrize",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -42,6 +48,7 @@ namespace KidsPrize.Http.Migrations
                     table.ForeignKey(
                         name: "FK_Day_Child_ChildId",
                         column: x => x.ChildId,
+                        principalSchema: "KidsPrize",
                         principalTable: "Child",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -49,6 +56,7 @@ namespace KidsPrize.Http.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Score",
+                schema: "KidsPrize",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -65,6 +73,7 @@ namespace KidsPrize.Http.Migrations
                     table.ForeignKey(
                         name: "FK_Score_Day_DayId",
                         column: x => x.DayId,
+                        principalSchema: "KidsPrize",
                         principalTable: "Day",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -72,16 +81,19 @@ namespace KidsPrize.Http.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Child_UserId",
+                schema: "KidsPrize",
                 table: "Child",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Day_ChildId",
+                schema: "KidsPrize",
                 table: "Day",
                 column: "ChildId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Score_DayId",
+                schema: "KidsPrize",
                 table: "Score",
                 column: "DayId");
         }
@@ -91,13 +103,16 @@ namespace KidsPrize.Http.Migrations
             migrationBuilder.DropPostgresExtension("uuid-ossp");
 
             migrationBuilder.DropTable(
-                name: "Score");
+                name: "Score",
+                schema: "KidsPrize");
 
             migrationBuilder.DropTable(
-                name: "Day");
+                name: "Day",
+                schema: "KidsPrize");
 
             migrationBuilder.DropTable(
-                name: "Child");
+                name: "Child",
+                schema: "KidsPrize");
         }
     }
 }
