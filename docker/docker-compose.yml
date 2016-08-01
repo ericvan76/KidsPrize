@@ -2,11 +2,11 @@ version: '2'
 services:
   api:
     build:
-      context: src/KidsPrize.Http
+      context: ../src/KidsPrize.Http
     ports:
       - "5000:5000"
     volumes:
-      - ./cfg/api-appsettings.Development.json:/root/appsettings.Development.json
+      - ./appsettings-api.Development.json:/root/appsettings.Development.json
       - ./logs:/root/logs
     depends_on:
       - db
@@ -19,11 +19,11 @@ services:
     depends_on:
       - db
     build:
-      context: src/IdentityServer
+      context: ../src/IdentityServer
     ports:
       - "4999:4999"
     volumes:
-      - ./cfg/idsvr-appsettings.Development.json:/root/appsettings.Development.json
+      - ./appsettings-idsvr.Development.json:/root/appsettings.Development.json
       - ./logs:/root/logs
     restart: always
     environment:
@@ -31,6 +31,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
   db:
     image: postgres
+    ports:
+      - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
     environment:

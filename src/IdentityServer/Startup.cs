@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using IdentityServer.Configuration;
 using IdentityServer.Services;
 using IdentityServer4.Services;
 using System.Collections.Generic;
