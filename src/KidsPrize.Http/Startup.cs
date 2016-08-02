@@ -130,6 +130,7 @@ namespace KidsPrize.Http
                 AutomaticAuthenticate = true
             });
 
+            app.UseStaticFiles();
             app.UseMvc();
 
             app.UseSwagger();
