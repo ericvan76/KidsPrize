@@ -1,0 +1,42 @@
+version: '2'
+services:
+  api:
+    build:
+      context: ../src/KidsPrize.Http
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./appsettings-api.Development.json:/root/appsettings.Development.json
+      - ./logs:/root/logs
+    depends_on:
+      - db
+      - idsvr
+    restart: always
+    environment:
+      ASPNETCORE_URLS: http://*:5000
+      ASPNETCORE_ENVIRONMENT: Development
+  idsvr:
+    depends_on:
+      - db
+    build:
+      context: ../src/IdentityServer
+    ports:
+      - "4999:4999"
+    volumes:
+      - ./appsettings-idsvr.Development.json:/root/appsettings.Development.json
+      - ./logs:/root/logs
+    restart: always
+    environment:
+      ASPNETCORE_URLS: http://*:4999
+      ASPNETCORE_ENVIRONMENT: Development
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: kidsprize
+      POSTGRES_PASSWORD: password
+volumes:
+  data: {}

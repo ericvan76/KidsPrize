@@ -1,33 +1,20 @@
 version: '2'
 services:
-  api:
+  combined:
     build:
-      context: ../src/KidsPrize.Http
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./appsettings-api.Development.json:/root/appsettings.Development.json
-      - ./logs:/root/logs
-    depends_on:
-      - db
-      - idsvr
-    restart: always
-    environment:
-      ASPNETCORE_URLS: http://*:5000
-      ASPNETCORE_ENVIRONMENT: Development
-  idsvr:
-    depends_on:
-      - db
-    build:
-      context: ../src/IdentityServer
+      context: ../src
     ports:
       - "4999:4999"
+      - "5000:5000"
     volumes:
-      - ./appsettings-idsvr.Development.json:/root/appsettings.Development.json
-      - ./logs:/root/logs
+      - /Users/eric/Dropbox/Repos/kids-prize/docker/appsettings-idsvr.Development.json:/root/idsvr/appsettings.Development.json
+      - /Users/eric/Dropbox/Repos/kids-prize/docker/appsettings-api.Development.json:/root/api/appsettings.Development.json
+      - /Users/eric/Dropbox/Repos/kids-prize/docker/logs:/root/idsvr/logs
+      - /Users/eric/Dropbox/Repos/kids-prize/docker/logs:/root/api/logs
+    depends_on:
+      - db
     restart: always
     environment:
-      ASPNETCORE_URLS: http://*:4999
       ASPNETCORE_ENVIRONMENT: Development
   db:
     image: postgres
