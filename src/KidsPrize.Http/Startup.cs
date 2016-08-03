@@ -130,12 +130,17 @@ namespace KidsPrize.Http
                 AutomaticAuthenticate = true
             });
 
-            app.UseStaticFiles();
+            // Serve unknonw types for site verification purpose
+            app.UseStaticFiles(new StaticFileOptions{
+                ServeUnknownFileTypes = true
+            });
             app.UseMvc();
 
-            app.UseSwagger();
-            app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
-
+            if (_environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
+            }
         }
     }
 

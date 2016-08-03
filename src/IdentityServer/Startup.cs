@@ -38,7 +38,9 @@ namespace IdentityServer
         public void ConfigureServices(IServiceCollection services)
         {
             var certOptions = Configuration.GetSection("SigningCredential");
-            var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, certOptions.GetValue<string>("FileName")), certOptions.GetValue<string>("Password"));
+            var cert = _environment.IsDevelopment()
+                ? new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsvr3test.pfx", "idsrv3test"))
+                : new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsvr.crt"));
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -119,10 +121,11 @@ namespace IdentityServer
 
             app.UseIdentityServer();
 
-            app.UseStaticFiles();
+            // Serve unknonw types for site verification purpose
+            app.UseStaticFiles(new StaticFileOptions{
+                ServeUnknownFileTypes = true
+            });
             app.UseMvcWithDefaultRoute();
-
-
         }
     }
 }
