@@ -6,7 +6,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./appsettings-api.Production.json:/root/appsettings.Production.json
+      - ./appsettings-api.json:/root/appsettings.Production.json
       - ./logs:/root/logs
     depends_on:
       - db
@@ -22,7 +22,8 @@ services:
     ports:
       - "4999:4999"
     volumes:
-      - ./appsettings-idsvr.Production.json:/root/appsettings.Production.json
+      - ./idsvr.pfx:/root/idsvr.pfx
+      - ./appsettings-idsvr.json:/root/appsettings.Production.json
       - ./logs:/root/logs
     restart: always
     environment:

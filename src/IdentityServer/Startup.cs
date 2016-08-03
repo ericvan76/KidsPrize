@@ -39,8 +39,8 @@ namespace IdentityServer
         {
             var certOptions = Configuration.GetSection("SigningCredential");
             var cert = _environment.IsDevelopment()
-                ? new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsvr3test.pfx", "idsrv3test"))
-                : new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsvr.crt"));
+                ? new X509Certificate2(Path.Combine(_environment.ContentRootPath, "test.pfx"), "password")
+                : new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsvr.pfx"));
 
             var builder = services.AddIdentityServer(options =>
             {

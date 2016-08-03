@@ -14,14 +14,17 @@ namespace IdentityServer
                 .Build();
             var env = config.GetValue<string>("ASPNETCORE_ENVIRONMENT");
 
+            var contentRoot = Directory.GetCurrentDirectory();
+
             var host = new WebHostBuilder()
-                .UseKestrel(opts=>{
+                .UseKestrel(opts =>
+                {
                     if (env == EnvironmentName.Production)
                     {
-                        opts.UseHttps(new X509Certificate2(Path.Combine(Directory.GetCurrentDirectory(), "idsvr.crt")));
+                        opts.UseHttps(new X509Certificate2(Path.Combine(contentRoot, "idsvr.pfx")));
                     }
                 })
-                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseContentRoot(contentRoot)
                 .UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();
