@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +11,7 @@ using IdentityServer.Services;
 using IdentityServer4.Services;
 using System.Collections.Generic;
 using NLog.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer
 {
@@ -38,9 +38,9 @@ namespace IdentityServer
         public void ConfigureServices(IServiceCollection services)
         {
             var certOptions = Configuration.GetSection("SigningCredential");
-            var cert = _environment.IsDevelopment()
-                ? new X509Certificate2(Path.Combine(_environment.ContentRootPath, "test.pfx"), "password")
-                : new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsvr.pfx"));
+            var cert = new X509Certificate2(
+                Path.Combine(_environment.ContentRootPath, certOptions.GetValue<string>("FileName")),
+                certOptions.GetValue<string>("Password"));
 
             var builder = services.AddIdentityServer(options =>
             {

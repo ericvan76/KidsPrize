@@ -1,0 +1,44 @@
+version: '2'
+services:
+  https-portal:
+    image: steveltn/https-portal
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: always
+    environment:
+      DOMAINS: 'secure.kids-prize.com -> http://idsvr:4999/, api.kids-prize.com -> http://api:5000/'
+      # STAGE: 'production'
+      # FORCE_RENEW: 'true'
+  idsvr:
+    depends_on:
+      - db
+    build:
+      context: src/IdentityServer
+    volumes:
+      - ./appsettings-idsvr.json:/root/appsettings.Production.json
+      - ./logs:/root/logs
+    restart: always
+    environment:
+      ASPNETCORE_URLS: http://*:4999
+  api:
+    build:
+      context: src/KidsPrize.Http
+    volumes:
+      - ./appsettings-api.json:/root/appsettings.Production.json
+      - ./logs:/root/logs
+    depends_on:
+      - db
+      - idsvr
+    restart: always
+    environment:
+      ASPNETCORE_URLS: http://*:5000
+  db:
+    image: postgres
+    volumes:
+      - data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: kidsprize
+      POSTGRES_PASSWORD: password
+volumes:
+  data: {}
