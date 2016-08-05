@@ -119,6 +119,7 @@ namespace KidsPrize.Http
             // Authentication
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
+            // IdentityServer
             var idsvrOptions = Configuration.GetSection("IdentityServer");
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions()
             {
@@ -130,7 +131,7 @@ namespace KidsPrize.Http
 
             app.UseMvc();
 
-            if (_environment.IsDevelopment())
+            if (Configuration.GetValue<bool>("EnableSwagger") == true)
             {
                 app.UseSwagger();
                 app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
