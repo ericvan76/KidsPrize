@@ -123,7 +123,7 @@ namespace KidsPrize.Http
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions()
             {
                 Authority = idsvrOptions.GetValue<string>("Authority"),
-                RequireHttpsMetadata = !env.IsDevelopment(),
+                RequireHttpsMetadata = false; //!env.IsDevelopment(),
                 ScopeName = "api1",
                 AutomaticAuthenticate = true
             });
