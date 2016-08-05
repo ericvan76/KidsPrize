@@ -113,10 +113,8 @@ namespace KidsPrize.Http
 			_environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "nlog.config"));
 
             // DbContext initialise
-            using (var context = app.ApplicationServices.GetService<KidsPrizeContext>())
-            {
-                context.Database.Migrate();
-            }
+            var context = app.ApplicationServices.GetService<KidsPrizeContext>();
+            context.Database.Migrate();
 
             // Authentication
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -130,10 +128,6 @@ namespace KidsPrize.Http
                 AutomaticAuthenticate = true
             });
 
-            // Serve unknonw types for site verification purpose
-            app.UseStaticFiles(new StaticFileOptions{
-                ServeUnknownFileTypes = true
-            });
             app.UseMvc();
 
             if (_environment.IsDevelopment())

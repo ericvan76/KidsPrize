@@ -62,7 +62,6 @@
   },
   "publishOptions": {
     "include": [
-      "wwwroot",
       "appsettings.json",
       "nlog.config"
     ]

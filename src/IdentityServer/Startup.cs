@@ -11,7 +11,6 @@ using IdentityServer.Services;
 using IdentityServer4.Services;
 using System.Collections.Generic;
 using NLog.Extensions.Logging;
-using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer
 {
@@ -87,11 +86,10 @@ namespace IdentityServer
             app.UseDeveloperExceptionPage();
 
             // DbContext initialise
-            using (var context = app.ApplicationServices.GetService<IdentityContext>())
-            {
-                context.Database.Migrate();
-            }
+            var context = app.ApplicationServices.GetService<IdentityContext>();
+            context.Database.Migrate();
 
+            // Setup authentications
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationScheme = "Temp",
@@ -121,10 +119,7 @@ namespace IdentityServer
 
             app.UseIdentityServer();
 
-            // Serve unknonw types for site verification purpose
-            app.UseStaticFiles(new StaticFileOptions{
-                ServeUnknownFileTypes = true
-            });
+            app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
         }
     }
