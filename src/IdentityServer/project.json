@@ -27,7 +27,8 @@
       "type": "build"
     },
     "NLog.Extensions.Logging": "1.0.0-rtm-alpha4",
-    "IdentityServer4": "1.0.0-rc1-update2"
+    "IdentityServer4": "1.0.0-rc1-update2",
+    "IdentityServer4.AspNetIdentity": "1.0.0-rc1-update2"
   },
   "tools": {
     "BundlerMinifier.Core": "2.0.238",
@@ -66,7 +67,7 @@
 
   "publishOptions": {
     "include": [
-      "Views/**/*",
+      "Views/**/*.cshtml",
       "wwwroot",
       "appsettings.json",
       "nlog.config",

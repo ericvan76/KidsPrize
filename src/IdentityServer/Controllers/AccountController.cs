@@ -163,9 +163,9 @@ namespace IdentityServer.Controllers
                 additionalClaims.Add(new Claim(JwtClaimTypes.SessionId, sid.Value));
             }
 
-            var name = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Name);
+            var name = user.Claims.FirstOrDefault(x => x.ClaimType == JwtClaimTypes.Name);
             additionalClaims.Add(new Claim(JwtClaimTypes.Subject, user.Id.ToString()));
-            additionalClaims.Add(new Claim(JwtClaimTypes.Name, name?.Value ?? "Unknown"));
+            additionalClaims.Add(new Claim(JwtClaimTypes.Name, name?.ClaimValue ?? "Unknown"));
             additionalClaims.Add(new Claim(JwtClaimTypes.IdentityProvider, provider));
             additionalClaims.Add(new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString()));
 

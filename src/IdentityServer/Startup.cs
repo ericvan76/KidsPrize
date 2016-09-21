@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,7 +13,6 @@ using System.Collections.Generic;
 using NLog.Extensions.Logging;
 using IdentityServer4.Stores;
 using IdentityServer4;
-using IdentityServer4.Services;
 
 namespace IdentityServer
 {
@@ -43,27 +43,35 @@ namespace IdentityServer
                 Path.Combine(_environment.ContentRootPath, certOptions.GetValue<string>("FileName")),
                 certOptions.GetValue<string>("Password"));
 
-            var builder = services.AddIdentityServer()
-            .AddInMemoryStores()
-            .SetSigningCredential(cert);
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             // Options
             services.AddOptions()
-                .Configure<List<ScopeOption>>(Configuration.GetSection("Scopes"))
                 .Configure<List<ClientOption>>(Configuration.GetSection("Clients"));
 
             // Add framework services.
-            services.AddDbContext<IdentityContext>(options =>
+            services.AddDbContext<IdentityContext>(builder =>
             {
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly("IdentityServer"));
+                builder.UseNpgsql(connectionString, options =>
+                    options.MigrationsAssembly(migrationsAssembly));
             });
 
-            // for the UI
+            // services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>()
+            //     .AddEntityFrameworkStores<IdentityContext, Guid>()
+            //     .AddDefaultTokenProviders();
+
             services.AddMvc();
+
+            // Add Identity Server
+            services.AddIdentityServer()
+                .SetSigningCredential(cert)
+                .AddProfileService<ProfileService>()
+                // .AddAspNetIdentity<IdentityUser<Guid>>()
+                .AddInMemoryStores()
+                .AddInMemoryScopes(Config.GetScopes());
+
             services.AddTransient<IUserLoginService, UserLoginService>();
-            services.AddTransient<IProfileService, ProfileService>();
-            services.AddTransient<IScopeStore, ScopeStore>();
             services.AddTransient<IClientStore, ClientStore>();
         }
 
@@ -74,13 +82,12 @@ namespace IdentityServer
 
             // NLog
             loggerFactory.AddNLog();
-			_environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "nlog.config"));
+            _environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "nlog.config"));
 
             app.UseDeveloperExceptionPage();
 
             // DbContext initialise
-            var context = app.ApplicationServices.GetService<IdentityContext>();
-            context.Database.Migrate();
+            app.ApplicationServices.GetService<IdentityContext>().Database.Migrate();
 
             // Setup authentications
             app.UseCookieAuthentication(new CookieAuthenticationOptions
@@ -111,6 +118,8 @@ namespace IdentityServer
                 ClientSecret = facebookOpts.GetValue<string>("ClientSecret"),
                 CallbackPath = new PathString(facebookOpts.GetValue<string>("CallbackPath"))
             });
+
+            // app.UseIdentity();
 
             app.UseIdentityServer();
 
