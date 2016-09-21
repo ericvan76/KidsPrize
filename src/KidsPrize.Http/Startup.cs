@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Swashbuckle.Swagger.Model;
 using KidsPrize.Http.Extensions;
 using KidsPrize.Http.Bus;
 using KidsPrize.Services;
@@ -21,6 +20,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using NLog.Extensions.Logging;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Swashbuckle.Swagger.Model;
 
 namespace KidsPrize.Http
 {

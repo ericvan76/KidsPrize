@@ -8,9 +8,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using IdentityServer.Services;
-using IdentityServer4.Services;
 using System.Collections.Generic;
 using NLog.Extensions.Logging;
+using IdentityServer4.Stores;
+using IdentityServer4;
+using IdentityServer4.Services;
 
 namespace IdentityServer
 {
@@ -41,13 +43,8 @@ namespace IdentityServer
                 Path.Combine(_environment.ContentRootPath, certOptions.GetValue<string>("FileName")),
                 certOptions.GetValue<string>("Password"));
 
-            var builder = services.AddIdentityServer(options =>
-            {
-                options.UserInteractionOptions.LoginUrl = "/ui/login";
-                options.UserInteractionOptions.LogoutUrl = "/ui/logout";
-                options.UserInteractionOptions.ConsentUrl = "/ui/consent";
-                options.UserInteractionOptions.ErrorUrl = "/ui/error";
-            })
+            var builder = services.AddIdentityServer()
+            .AddInMemoryStores()
             .SetSigningCredential(cert);
 
             // Options
@@ -58,17 +55,13 @@ namespace IdentityServer
             // Add framework services.
             services.AddDbContext<IdentityContext>(options =>
             {
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("IdentityServer"));
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
+                    b => b.MigrationsAssembly("IdentityServer"));
             });
 
             // for the UI
-            services
-                .AddMvc()
-                .AddRazorOptions(razor =>
-                {
-                    razor.ViewLocationExpanders.Add(new UI.CustomViewLocationExpander());
-                });
-            services.AddTransient<ILoginService, LoginService>();
+            services.AddMvc();
+            services.AddTransient<IUserLoginService, UserLoginService>();
             services.AddTransient<IProfileService, ProfileService>();
             services.AddTransient<IScopeStore, ScopeStore>();
             services.AddTransient<IClientStore, ClientStore>();
@@ -92,7 +85,7 @@ namespace IdentityServer
             // Setup authentications
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                AuthenticationScheme = "Temp",
+                AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
                 AutomaticAuthenticate = false,
                 AutomaticChallenge = false
             });
@@ -101,7 +94,8 @@ namespace IdentityServer
             app.UseGoogleAuthentication(new GoogleOptions
             {
                 AuthenticationScheme = "Google",
-                SignInScheme = "Temp",
+                DisplayName = "Google",
+                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
                 ClientId = googleOpts.GetValue<string>("ClientId"),
                 ClientSecret = googleOpts.GetValue<string>("ClientSecret"),
                 CallbackPath = new PathString(googleOpts.GetValue<string>("CallbackPath"))
@@ -111,7 +105,8 @@ namespace IdentityServer
             app.UseFacebookAuthentication(new FacebookOptions
             {
                 AuthenticationScheme = "Facebook",
-                SignInScheme = "Temp",
+                DisplayName = "Facebook",
+                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
                 ClientId = facebookOpts.GetValue<string>("ClientId"),
                 ClientSecret = facebookOpts.GetValue<string>("ClientSecret"),
                 CallbackPath = new PathString(facebookOpts.GetValue<string>("CallbackPath"))

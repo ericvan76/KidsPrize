@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
-using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using Microsoft.Extensions.Options;
 
 namespace IdentityServer.Services

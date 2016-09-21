@@ -16,7 +16,7 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
     "Microsoft.Extensions.Caching.Memory": "1.0.0",
-    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.1",
     "Npgsql.EntityFrameworkCore.PostgreSQL": "1.0.1",
     "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.0.1",
     "Microsoft.EntityFrameworkCore.Tools": {
@@ -24,10 +24,12 @@
       "type": "build"
     },
     "NLog.Extensions.Logging": "1.0.0-rtm-alpha4",
-    "IdentityServer4.AccessTokenValidation": "1.0.1-beta1",
+    "IdentityServer4.AccessTokenValidation": "1.0.1-rc1",
     "Swashbuckle": "6.0.0-beta901",
-    "AutoMapper": "5.0.2",
-    "KidsPrize": "1.0.0"
+    "AutoMapper": "5.1.1",
+    "KidsPrize": {
+      "target": "project"
+    }
   },
   "tools": {
     "Microsoft.EntityFrameworkCore.Tools": {

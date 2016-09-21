@@ -23,7 +23,7 @@ namespace IdentityServer.Services
             var id = Guid.Parse(context.Subject.GetSubjectId());
             var user = await _context.Users.Include(i => i.Claims).FirstOrDefaultAsync(u => u.Id == id);
 
-            var claims = user.Claims.Select(i => new Claim(i.ClaimType, i.ClaimValue));
+            var claims = user.Claims.Select(i => new Claim(i.ClaimType, i.ClaimValue)).ToList();
             if (!context.AllClaimsRequested)
             {
                 claims = claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
