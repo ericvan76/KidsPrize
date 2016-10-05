@@ -1,58 +1,45 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KidsPrize.Extensions;
-using KidsPrize.Models;
-using KidsPrize.Resources;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using R = KidsPrize.Resources;
 
 namespace KidsPrize.Services
 {
     public interface IScoreService
     {
-        Task<WeekScores> GetWeekScores(Guid userId, Guid childId, DateTime date);
+        Task<R.ScoreResult> GetScores(Guid userId, Guid childId, DateTime rewindFrom, int numOfWeeks);
     }
 
     public class ScoreService : IScoreService
     {
         private readonly KidsPrizeContext _context;
         private readonly IMapper _mapper;
-        private readonly DefaultTasks _defaultTasks;
 
-        public ScoreService(KidsPrizeContext context, IMapper mapper, IOptions<DefaultTasks> defaultTasks)
+        public ScoreService(KidsPrizeContext context, IMapper mapper)
         {
             this._context = context;
             this._mapper = mapper;
-            this._defaultTasks = defaultTasks.Value;
         }
 
-        public async Task<WeekScores> GetWeekScores(Guid userId, Guid childId, DateTime date)
+        public async Task<R.ScoreResult> GetScores(Guid userId, Guid childId, DateTime rewindFrom, int numOfWeeks)
         {
+            var dateFrom = rewindFrom.AddDays(-7 * numOfWeeks);
+
+            // todo: improve this
             var child = await this._context.GetChildOrThrow(userId, childId);
-            var days = await this._context.ResolveRecentDays(child, date);
+            var scores = await this._context.Scores.Where(s => s.Child.Id == childId && s.Date >= dateFrom && s.Date < rewindFrom).ToListAsync();
+            var taskGroups = (await this._context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == childId && tg.EffectiveDate > dateFrom && tg.EffectiveDate < rewindFrom).ToListAsync())
+                .Union(await this._context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == childId && tg.EffectiveDate <= dateFrom).OrderByDescending(tg => tg.EffectiveDate).Take(1).ToListAsync());
 
-            var defaultTasks = days?.FirstOrDefault()?.TaskList ?? _defaultTasks;
-
-            var result = new List<Day>();
-            var startOfWeek = date.StartOfWeek();
-            for (int idx = 0; idx < 7; idx++)
+            return new R.ScoreResult
             {
-                var d = startOfWeek.AddDays(idx);
-                result.Add(days?.FirstOrDefault(i => i.Date == d) ?? new Day(0, child, d, defaultTasks.ToArray()));
-            }
-            return new WeekScores()
-            {
-                ChildId = child.Id,
-                ChildTotal = child.TotalScore,
-                DayScores = result.Select(d => _mapper.Map<Day, DayScore>(d))
+                Child = _mapper.Map<R.Child>(child),
+                Scores = scores.Select(s =>_mapper.Map<R.Score>(s)).ToList(),
+                TaskGroups = taskGroups.Select(t=>_mapper.Map<R.TaskGroup>(t)).ToList()
             };
         }
-    }
-
-    public class DefaultTasks : List<string>
-    {
     }
 }

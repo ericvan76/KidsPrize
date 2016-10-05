@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KidsPrize.Models;
-using KidsPrize.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Extensions
@@ -25,28 +23,20 @@ namespace KidsPrize.Extensions
             return child;
         }
 
-        public static async Task<IEnumerable<Day>> ResolveRecentDays(this KidsPrizeContext context, Child child, DateTime date)
+        public static async Task<TaskGroup> GetTaskGroup(this KidsPrizeContext context, Guid childId, DateTime calendarDate)
         {
-            return await context.Days.Include(d => d.Child).Include(d => d.Scores)
-                .Where(d => d.Child.Id == child.Id && d.Date <= date.EndOfWeek())
-                .OrderByDescending(d => d.Date).Take(7)
-                .ToListAsync();
+            var effectiveDate = calendarDate.StartOfWeek();
+            return await context.TaskGroups
+                .Include(tg => tg.Tasks)
+                .Where(tg => tg.Child.Id == childId && tg.EffectiveDate <= effectiveDate)
+                .OrderByDescending(tg => tg.EffectiveDate)
+                .FirstOrDefaultAsync();
         }
 
-        public static async Task<Day> ResolveDay(this KidsPrizeContext context, Child child, DateTime date, DefaultTasks defaultTasks)
+        public static async Task<Preference> GetPreference(this KidsPrizeContext context, Guid userId)
         {
-            var days = await context.ResolveRecentDays(child, date);
-
-            var day = days?.FirstOrDefault(d => d.Date == date);
-            if (day == null)
-            {
-                var closeDay = days?.FirstOrDefault();
-                var taskList = closeDay?.TaskList ?? defaultTasks;
-                // create new day
-                day = new Day(0, child, date, taskList.ToArray());
-                context.Days.Add(day);
-            }
-            return day;
+            return await context.Preferences.FirstOrDefaultAsync(p => p.UserId == userId)
+                ?? new Preference(userId, 0);
         }
     }
 }

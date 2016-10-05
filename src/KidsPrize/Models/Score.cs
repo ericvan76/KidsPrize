@@ -1,39 +1,42 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace KidsPrize.Models
 {
     public class Score
     {
-        private Score()
-        {
-        }
+        private Score() { }
 
-        public Score(int id, string task, int position, int value)
+        public Score(Child child, DateTime date, string task, int value)
         {
-            Id = id;
+            Child = child;
+            Date = date;
             Task = task;
-            Position = position;
             Value = value;
         }
 
         [Key]
         public int Id { get; private set; }
+
+        [Required]
+        public virtual Child Child { get; private set; }
+
+        [RequiredAttribute]
+        [DataType(DataType.Date)]
+        public DateTime Date { get; private set; }
+
         [Required]
         [MaxLength(50)]
         public string Task { get; private set; }
-        [Required]
-        public int Position { get; private set; }
+
         [Required]
         public int Value { get; private set; }
 
-        public void Update(int? value)
+        public void Update(int value)
         {
-            Value = value ?? Value;
-        }
-
-        public void SetPosition(int pos)
-        {
-            Position = pos;
+            var delta = value - Value;
+            this.Value = value;
+            this.Child.Update(null, null, this.Child.TotalScore + delta);
         }
     }
 }

@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace KidsPrize.Bus
+namespace KidsPrize
 {
-    public class Command
+    public abstract class Command
     {
         private IDictionary<string, object> _headers = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
@@ -21,4 +22,5 @@ namespace KidsPrize.Bus
             return default(T);
         }
     }
+
 }

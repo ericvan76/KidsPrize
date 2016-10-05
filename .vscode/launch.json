@@ -29,7 +29,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-  {
+    {
       "name": "Launch IdentityServer",
       "type": "coreclr",
       "request": "launch",

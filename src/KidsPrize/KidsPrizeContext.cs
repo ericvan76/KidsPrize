@@ -1,4 +1,3 @@
-using System;
 using KidsPrize.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -9,26 +8,33 @@ namespace KidsPrize
 {
     public class KidsPrizeContext : DbContext
     {
+
         public KidsPrizeContext(DbContextOptions options) : base(options)
         {
         }
 
         public DbSet<Child> Children { get; set; }
-        public DbSet<Day> Days { get; set; }
+        public DbSet<Score> Scores { get; set; }
+        public DbSet<TaskGroup> TaskGroups { get; set; }
+        public DbSet<Preference> Preferences { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.RemovePluralizingTableNameConvention();
             modelBuilder.HasPostgresExtension("uuid-ossp", "public");
+
+            modelBuilder.RemovePluralizingTableNameConvention();
             modelBuilder.HasDefaultSchema("KidsPrize");
 
             modelBuilder.Entity<Child>().HasIndex(c => c.UserId);
-            modelBuilder.Entity<Day>().HasOne(d => d.Child).WithMany().IsRequired();
-            modelBuilder.Entity<Day>().HasMany(d => d.Scores).WithOne().IsRequired();
-            modelBuilder.Entity<Day>().HasAlternateKey("ChildId", "Date");
-            modelBuilder.Entity<Score>().HasAlternateKey("DayId", "Task");
+
+            modelBuilder.Entity<Score>().HasOne(s => s.Child).WithMany().IsRequired();
+            modelBuilder.Entity<Score>().HasAlternateKey("ChildId", "Date", "Task");
+
+            modelBuilder.Entity<TaskGroup>().HasOne(tg => tg.Child).WithMany().IsRequired();
+            modelBuilder.Entity<TaskGroup>().HasAlternateKey("ChildId", "EffectiveDate");
+            modelBuilder.Entity<TaskGroup>().HasMany(tg => tg.Tasks).WithOne().IsRequired();
         }
     }
 

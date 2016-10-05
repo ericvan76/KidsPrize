@@ -27,6 +27,8 @@
     "IdentityServer4.AccessTokenValidation": "1.0.1-rc1",
     "Swashbuckle": "6.0.0-beta901",
     "AutoMapper": "5.1.1",
+    "MediatR": "2.1.0",
+    "Scrutor": "1.10.0",
     "KidsPrize": {
       "target": "project"
     }

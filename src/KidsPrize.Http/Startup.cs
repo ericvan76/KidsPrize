@@ -2,7 +2,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using AutoMapper;
-using KidsPrize.Bus;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +13,16 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using KidsPrize.Http.Extensions;
-using KidsPrize.Http.Bus;
 using KidsPrize.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using NLog.Extensions.Logging;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Swashbuckle.Swagger.Model;
+using System.Reflection;
+using MediatR;
+using Scrutor;
+using KidsPrize.Commands;
 
 namespace KidsPrize.Http
 {
@@ -41,7 +43,7 @@ namespace KidsPrize.Http
             Configuration = builder.Build();
 
             _mapperConfgiuration = new MapperConfiguration(cfg =>
-                cfg.AddProfile(new Resources.MappingProfile()));
+                cfg.AddProfile(new MappingProfile()));
 
             _environment = env;
         }
@@ -49,8 +51,6 @@ namespace KidsPrize.Http
         public IConfigurationRoot Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions()
-                .Configure<DefaultTasks>(Configuration.GetSection("DefaultTasks"));
 
             services.AddMvc()
                 .AddMvcOptions(opts =>
@@ -70,20 +70,32 @@ namespace KidsPrize.Http
 
             services.AddMemoryCache();
 
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+
             // Add framework services.
-            services.AddDbContext<KidsPrizeContext>(options =>
+            services.AddDbContext<KidsPrizeContext>(builder =>
             {
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("KidsPrize.Http"));
+                builder.UseNpgsql(connectionString, options =>
+                {
+                    options.MigrationsAssembly(migrationsAssembly);
+                    options.MigrationsHistoryTable("__MigrationHistory", "KidsPrize");
+                });
             });
 
             // AutoMapper
             services.AddSingleton<IMapper>(s => _mapperConfgiuration.CreateMapper());
 
-            // Add IBus
-            services.AddSingleton<IBus, SimpleBus>();
+            // MediatR
+            services.AddScoped<SingleInstanceFactory>(p => t => p.GetRequiredService(t));
+            services.AddScoped<MultiInstanceFactory>(p => t => p.GetRequiredServices(t));
+            services.AddScoped<IMediator, Mediator>();
 
-            // Add Services & Handlers
-            services.AutoRegistration();
+            services.Scan(scan => scan
+                .FromAssembliesOf(typeof(Command))
+                .AddClasses(cfg => cfg.Where(t => t.Name.EndsWith("Handler") || t.Name.EndsWith("Service")))
+                .AsImplementedInterfaces()
+            );
 
             services.AddSwaggerGen(opts =>
             {
@@ -110,7 +122,7 @@ namespace KidsPrize.Http
 
             // NLog
             loggerFactory.AddNLog();
-			_environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "nlog.config"));
+            _environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "nlog.config"));
 
             // DbContext initialise
             var context = app.ApplicationServices.GetService<KidsPrizeContext>();

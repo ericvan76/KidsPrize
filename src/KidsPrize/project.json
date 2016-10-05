@@ -10,7 +10,8 @@
     "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.0.1",
     "Microsoft.AspNetCore.Identity": "1.0.0",
     "IdentityModel": "2.0.0-rc3",
-    "AutoMapper": "5.1.1"
+    "AutoMapper": "5.1.1",
+    "MediatR": "2.1.0"
   },
   "frameworks": {
     "netstandard1.6": {

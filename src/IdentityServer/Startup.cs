@@ -54,7 +54,10 @@ namespace IdentityServer
             services.AddDbContext<IdentityContext>(builder =>
             {
                 builder.UseNpgsql(connectionString, options =>
-                    options.MigrationsAssembly(migrationsAssembly));
+                {
+                    options.MigrationsAssembly(migrationsAssembly);
+                    options.MigrationsHistoryTable("__MigrationHistory", "Identity");
+                });
             });
 
             // services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>()

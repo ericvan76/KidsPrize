@@ -1,176 +1,176 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
-using KidsPrize.Bus;
 using KidsPrize.Commands;
 using KidsPrize.Extensions;
 using KidsPrize.Services;
-using KidsPrize.Tests.Common;
-using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace KidsPrize.Tests
 {
     public class ScoreTests
     {
-        public static DefaultTasks defaultTasks = new DefaultTasks() { "Task A", "Task B", "Task C" };
         private readonly KidsPrizeContext _context;
         private readonly IMapper _mapper;
         private readonly IScoreService _scoreService;
-        private readonly IBus _bus;
+        private readonly CreateChildHandler _createChildHandler;
+        private readonly SetScoreHandler _setScoreHandler;
         private readonly ClaimsPrincipal _user;
 
         public ScoreTests()
         {
             _context = TestHelper.CreateContext();
             _mapper = TestHelper.CreateMapper();
-            _scoreService = new ScoreService(_context, _mapper, new FakeDefaultTasksOptions());
-            _user = TestHelper.CreateUser();
-            _bus = new TestBus(_user,
-                new CreateChildHandler(_context),
-                new SetScoreHandler(_context, new FakeDefaultTasksOptions()),
-                new SetWeekTasksHandler(_context)
-            );
+            _scoreService = new ScoreService(_context, _mapper);
+            _createChildHandler = new CreateChildHandler(_context, _scoreService);
+            _setScoreHandler = new SetScoreHandler(_context);
+            _user = TestHelper.CreateUser(_context);
         }
 
-        public class FakeDefaultTasksOptions : IOptions<DefaultTasks>
-        {
-            public DefaultTasks Value { get; } = defaultTasks;
-        }
 
         [Fact]
-        public async void TestGetWeekScoresFromNew()
+        public async Task TestSetScore()
         {
-            var command = new CreateChild()
+            var createCommand = new CreateChild()
             {
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
-                Gender = "Male"
+                Gender = "M",
+                Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            command.SetAuthorisation(_user);
-            await _bus.Send(command);
+            TestHelper.ValidateModel(createCommand);
 
-            var actual = await _scoreService.GetWeekScores(_user.UserId(), command.ChildId, DateTime.Today);
-
-            Assert.Equal(command.ChildId, actual.ChildId);
-            Assert.Equal(3, actual.Tasks.Count());
-            Assert.Collection(actual.Tasks,
-                s => Assert.Equal(defaultTasks[0], s),
-                s => Assert.Equal(defaultTasks[1], s),
-                s => Assert.Equal(defaultTasks[2], s));
-            Assert.Equal(7, actual.DayScores.Count());
-            Assert.All(actual.DayScores, i =>
-            {
-                Assert.Equal(3, i.Scores.Count());
-                Assert.Collection(i.Scores,
-                    s => Assert.Equal(defaultTasks[0], s.Task),
-                    s => Assert.Equal(defaultTasks[1], s.Task),
-                    s => Assert.Equal(defaultTasks[2], s.Task));
-                Assert.All(i.Scores, v => Assert.Equal(0, v.Value));
-            });
-        }
-
-        [Fact]
-        public async void TestSetScore()
-        {
-            var childId = Guid.NewGuid();
-            var createChildCommand = new CreateChild()
-            {
-                ChildId = childId,
-                Name = "Test-Child-Name",
-                Gender = "Male"
-            };
-            createChildCommand.SetAuthorisation(_user);
-            await _bus.Send(createChildCommand);
+            createCommand.SetAuthorisation(_user);
+            await _createChildHandler.Handle(createCommand);
 
             var setScoreCommand = new SetScore()
             {
-                ChildId = childId,
+                ChildId = createCommand.ChildId,
                 Date = DateTime.Today,
                 Task = "Task A",
                 Value = 1
             };
+            TestHelper.ValidateModel(setScoreCommand);
+
             setScoreCommand.SetAuthorisation(_user);
-            await _bus.Send(setScoreCommand);
-            var weekScores = await this._scoreService.GetWeekScores(_user.UserId(), childId, DateTime.Today);
-            Assert.Equal(1, weekScores.WeekTotal);
-            Assert.Equal(1, weekScores.ChildTotal);
+            await _setScoreHandler.Handle(setScoreCommand);
 
-            setScoreCommand.Task = "Task B";
-            await _bus.Send(setScoreCommand);
-            weekScores = await this._scoreService.GetWeekScores(_user.UserId(), childId, DateTime.Today);
-            Assert.Equal(2, weekScores.WeekTotal);
-            Assert.Equal(2, weekScores.ChildTotal);
+            var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
 
-            setScoreCommand.Task = "Task C";
-            setScoreCommand.Date = DateTime.Today.AddDays(7);
-            await _bus.Send(setScoreCommand);
-            weekScores = await this._scoreService.GetWeekScores(_user.UserId(), childId, DateTime.Today.AddDays(7));
-            Assert.Equal(1, weekScores.WeekTotal);
-            Assert.Equal(3, weekScores.ChildTotal);
+            Assert.Equal(1, actual.Child.TotalScore);
+            Assert.Equal(1, actual.Scores.Count(s => s.Value == 1));
+            var score = actual.Scores.FirstOrDefault(s => s.Value == 1);
+            Assert.Equal(setScoreCommand.Date, score.Date);
+            Assert.Equal(setScoreCommand.Task, score.Task);
+        }
 
-            setScoreCommand.Task = "Task B";
+        [Fact]
+        public async Task TestUnsetScore()
+        {
+            var createCommand = new CreateChild()
+            {
+                ChildId = Guid.NewGuid(),
+                Name = "Test-Child-Name",
+                Gender = "M",
+                Tasks = new[] { "Task A", "Task B", "Task C" }
+            };
+            TestHelper.ValidateModel(createCommand);
+
+            createCommand.SetAuthorisation(_user);
+            await _createChildHandler.Handle(createCommand);
+
+            var setScoreCommand = new SetScore()
+            {
+                ChildId = createCommand.ChildId,
+                Date = DateTime.Today,
+                Task = "Task B",
+                Value = 1
+            };
+            TestHelper.ValidateModel(setScoreCommand);
+
+            setScoreCommand.SetAuthorisation(_user);
+            await _setScoreHandler.Handle(setScoreCommand);
+
             setScoreCommand.Value = 0;
-            setScoreCommand.Date = DateTime.Today;
-            await _bus.Send(setScoreCommand);
-            weekScores = await this._scoreService.GetWeekScores(_user.UserId(), childId, DateTime.Today);
-            Assert.Equal(1, weekScores.WeekTotal);
-            Assert.Equal(2, weekScores.ChildTotal);
+            await _setScoreHandler.Handle(setScoreCommand);
 
-            setScoreCommand.Task = "Dummy";
-            await Assert.ThrowsAnyAsync<AggregateException>(async () => await _bus.Send(setScoreCommand));
-            weekScores = await this._scoreService.GetWeekScores(_user.UserId(), childId, DateTime.Today);
-            Assert.Equal(1, weekScores.WeekTotal);
-            Assert.Equal(2, weekScores.ChildTotal);
+            var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
+
+            Assert.Equal(0, actual.Child.TotalScore);
+            Assert.Equal(0, actual.Scores.Count(s => s.Value == 1));
         }
 
+
         [Fact]
-        public async void TestSetTasks()
+        public async Task TestSetScoreCaseInsensitive()
         {
-            var childId = Guid.NewGuid();
-            var createChildCommand = new CreateChild()
+            var createCommand = new CreateChild()
             {
-                ChildId = childId,
+                ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
-                Gender = "Male"
+                Gender = "M",
+                Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            createChildCommand.SetAuthorisation(_user);
-            await _bus.Send(createChildCommand);
+            TestHelper.ValidateModel(createCommand);
+
+            createCommand.SetAuthorisation(_user);
+            await _createChildHandler.Handle(createCommand);
 
             var setScoreCommand = new SetScore()
             {
-                ChildId = childId,
+                ChildId = createCommand.ChildId,
                 Date = DateTime.Today,
-                Task = "Task A",
+                Task = "task c",
                 Value = 1
             };
+            TestHelper.ValidateModel(setScoreCommand);
+
             setScoreCommand.SetAuthorisation(_user);
-            await _bus.Send(setScoreCommand);
-            var weekScores = await this._scoreService.GetWeekScores(_user.UserId(), childId, DateTime.Today);
-            Assert.Equal(1, weekScores.WeekTotal);
+            await _setScoreHandler.Handle(setScoreCommand);
 
-            setScoreCommand.Task = "Task B";
-            await _bus.Send(setScoreCommand);
-            weekScores = await this._scoreService.GetWeekScores(_user.UserId(), childId, DateTime.Today);
-            Assert.Equal(2, weekScores.WeekTotal);
+            var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
 
-            var setTasksCommand = new SetWeekTasks()
-            {
-                ChildId = childId,
-                Date = DateTime.Today,
-                Tasks = new[] { "Task D", "Task C", "Task B" }
-            };
-            setTasksCommand.SetAuthorisation(_user);
-            await _bus.Send(setTasksCommand);
-
-            weekScores = await this._scoreService.GetWeekScores(_user.UserId(), childId, DateTime.Today);
-            Assert.Equal(1, weekScores.WeekTotal);
-            Assert.DoesNotContain("Task A", weekScores.Tasks);
-            Assert.Collection(weekScores.Tasks,
-                s => Assert.Equal("Task D", s),
-                s => Assert.Equal("Task C", s),
-                s => Assert.Equal("Task B", s));
+            Assert.Equal(1, actual.Child.TotalScore);
+            Assert.Equal(1, actual.Scores.Count(s => s.Value == 1));
+            var score = actual.Scores.FirstOrDefault(s => s.Value == 1);
+            Assert.Equal(setScoreCommand.Date, score.Date);
+            Assert.Equal(setScoreCommand.Task, score.Task);
         }
+
+        [Fact]
+        public async Task TestSetScoreForInvalidTask()
+        {
+            var createCommand = new CreateChild()
+            {
+                ChildId = Guid.NewGuid(),
+                Name = "Test-Child-Name",
+                Gender = "M",
+                Tasks = new[] { "Task A", "Task B", "Task C" }
+            };
+            TestHelper.ValidateModel(createCommand);
+
+            createCommand.SetAuthorisation(_user);
+            await _createChildHandler.Handle(createCommand);
+
+            var setScoreCommand = new SetScore()
+            {
+                ChildId = createCommand.ChildId,
+                Date = DateTime.Today,
+                Task = "task D",
+                Value = 1
+            };
+            TestHelper.ValidateModel(setScoreCommand);
+
+            setScoreCommand.SetAuthorisation(_user);
+            await _setScoreHandler.Handle(setScoreCommand);
+
+            var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
+
+            Assert.Equal(0, actual.Child.TotalScore);
+            Assert.Equal(0, actual.Scores.Count(s => s.Value == 1));
+        }
+
     }
 }

@@ -8,9 +8,10 @@ using KidsPrize;
 namespace KidsPrize.Http.Migrations
 {
     [DbContext(typeof(KidsPrizeContext))]
-    partial class KidsPrizeContextModelSnapshot : ModelSnapshot
+    [Migration("20161007113111_Initialise")]
+    partial class Initialise
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasDefaultSchema("KidsPrize")

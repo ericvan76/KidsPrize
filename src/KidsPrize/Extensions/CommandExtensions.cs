@@ -1,6 +1,5 @@
 using System;
 using System.Security.Claims;
-using KidsPrize.Bus;
 
 namespace KidsPrize.Extensions
 {

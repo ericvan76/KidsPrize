@@ -5,28 +5,30 @@ namespace KidsPrize.Models
 {
     public class Child
     {
-        private Child()
-        {
-        }
+        private Child() { }
 
-        public Child(Guid id, Guid userId, string name, string gender, int totalScore)
+        public Child(Guid id, Guid userId, string name, string gender)
         {
             Id = id;
             UserId = userId;
             Name = name;
             Gender = gender;
-            TotalScore = totalScore;
+            TotalScore = 0;
         }
 
         [Key]
         public Guid Id { get; private set; }
+
         [Required]
         public Guid UserId { get; private set; }
+
         [Required]
         [MaxLength(250)]
         public string Name { get; private set; }
-        [MaxLength(50)]
+
+        [MaxLength(10)]
         public string Gender { get; private set; }
+
         [Required]
         public int TotalScore { get; private set; }
 
