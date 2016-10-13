@@ -1,0 +1,17 @@
+sudo: required
+
+language: csharp
+mono: none
+dotnet: 1.0.0-preview2-003131
+
+services:
+  - docker
+
+script:
+  - bash ./travis_build.sh
+
+branches:
+  only:
+  - master
+  - develop
+  - /^[0-9.]+/

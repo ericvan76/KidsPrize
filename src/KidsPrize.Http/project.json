@@ -67,7 +67,8 @@
   "publishOptions": {
     "include": [
       "appsettings.json",
-      "nlog.config"
+      "nlog.config",
+      "Dockerfile"
     ]
   }
 }
