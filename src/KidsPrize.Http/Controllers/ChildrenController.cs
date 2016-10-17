@@ -8,22 +8,22 @@ using KidsPrize.Resources;
 using KidsPrize.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.SwaggerGen.Annotations;
 
 namespace KidsPrize.Http.Controllers
 {
     [Route("[controller]")]
+    [Produces("application/json")]
     public class ChildrenController : ControllerWithMediator
     {
         private readonly IChildService _childService;
 
-        public ChildrenController(IMediator mediator, IChildService childService): base(mediator)
+        public ChildrenController(IMediator mediator, IChildService childService) : base(mediator)
         {
             this._childService = childService;
         }
 
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<Child>))]
+        [ProducesResponseType(typeof(IEnumerable<Child>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetChildren()
         {
             var result = await this._childService.GetChildren(User.UserId());
@@ -31,7 +31,7 @@ namespace KidsPrize.Http.Controllers
         }
 
         [HttpPost]
-        [SwaggerResponse(HttpStatusCode.OK, Type= typeof(ScoreResult))]
+        [ProducesResponseType(typeof(ScoreResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateChild([FromBody] CreateChild command)
         {
             var result = await this.Send<CreateChild, ScoreResult>(command);
@@ -40,7 +40,7 @@ namespace KidsPrize.Http.Controllers
 
         [HttpPut]
         [Route("{childId:guid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type= typeof(ScoreResult))]
+        [ProducesResponseType(typeof(ScoreResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateChild([FromRoute] Guid childId, [FromBody] UpdateChild command)
         {
             if (childId != command.ChildId)
@@ -53,7 +53,7 @@ namespace KidsPrize.Http.Controllers
 
         [HttpDelete]
         [Route("{childId:guid}")]
-        [SwaggerResponse(HttpStatusCode.Accepted)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> DeleteChild([FromRoute] Guid childId)
         {
             await this.Send<DeleteChild>(new DeleteChild() { ChildId = childId });

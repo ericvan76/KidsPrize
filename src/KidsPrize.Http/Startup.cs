@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using KidsPrize.Http.Extensions;
-using KidsPrize.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using NLog.Extensions.Logging;
@@ -22,7 +21,6 @@ using Swashbuckle.Swagger.Model;
 using System.Reflection;
 using MediatR;
 using Scrutor;
-using KidsPrize.Commands;
 
 namespace KidsPrize.Http
 {

@@ -8,7 +8,7 @@ namespace KidsPrize.Http.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreatePostgresExtension(name: "uuid-ossp",
+            migrationBuilder.EnsurePostgresExtension(name: "uuid-ossp",
                 schema: "public");
 
             migrationBuilder.EnsureSchema(

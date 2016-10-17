@@ -6,12 +6,12 @@ using KidsPrize.Commands;
 using KidsPrize.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.SwaggerGen.Annotations;
 using R = KidsPrize.Resources;
 
 namespace KidsPrize.Http.Controllers
 {
     [Route("[controller]")]
+    [Produces("application/json")]
     public class PreferenceController : ControllerWithMediator
     {
         private readonly KidsPrizeContext _context;
@@ -24,7 +24,7 @@ namespace KidsPrize.Http.Controllers
         }
 
         [HttpPut]
-        [SwaggerResponse(HttpStatusCode.Accepted)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> SetPreference([FromBody] SetPreference command)
         {
             await this.Send(command);
@@ -32,7 +32,7 @@ namespace KidsPrize.Http.Controllers
         }
 
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(R.Preference))]
+        [ProducesResponseType(typeof(R.Preference), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetPreference()
         {
             var preference = await this._context.GetPreference(this.User.UserId());
