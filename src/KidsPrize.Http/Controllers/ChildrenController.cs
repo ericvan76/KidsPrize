@@ -45,7 +45,8 @@ namespace KidsPrize.Http.Controllers
         {
             if (childId != command.ChildId)
             {
-                return BadRequest("Unmatched ChildUid in route and command.");
+                ModelState.AddModelError(nameof(childId), "Unmatched childUid in route and command.");
+                return BadRequest(ModelState);
             }
             var result = await this.Send<UpdateChild, ScoreResult>(command);
             return Ok(result);

@@ -27,7 +27,8 @@ namespace KidsPrize.Http.Controllers
         {
             if (childId != command.ChildId)
             {
-                return BadRequest("Unmatched ChildUid in route and command.");
+                ModelState.AddModelError(nameof(childId), "Unmatched childUid in route and command.");
+                return BadRequest(ModelState);
             }
             await this.Send(command);
             return StatusCode((int)HttpStatusCode.Accepted);
@@ -39,15 +40,19 @@ namespace KidsPrize.Http.Controllers
         {
             if (!rewindFrom.IsCalendarDate())
             {
-                return BadRequest("RewindFrom should be a calendar date.");
+                ModelState.AddModelError(nameof(rewindFrom), "rewindFrom should be a calendar date.");
             }
             if (!rewindFrom.IsStartOfWeek())
             {
-                return BadRequest("RewindFrom should be a calendar date.");
+                ModelState.AddModelError(nameof(rewindFrom), "rewindFrom should be a calendar date.");
             }
             if (numOfWeeks <= 0)
             {
-                return BadRequest("NumOfWeeks should be a positive value.");
+                ModelState.AddModelError(nameof(numOfWeeks), "numOfWeeks should be a positive value.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
             }
             var result = await this._scoreService.GetScores(this.User.UserId(), childId, rewindFrom, numOfWeeks);
             return Ok(result);
