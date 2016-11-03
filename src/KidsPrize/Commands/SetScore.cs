@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using KidsPrize.Converters;
 using KidsPrize.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using E = KidsPrize.Models;
 
 namespace KidsPrize.Commands
@@ -16,6 +18,8 @@ namespace KidsPrize.Commands
         public Guid ChildId { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
+        [JsonConverter(typeof(DateConverter))]
         public DateTime Date{ get; set; }
 
         [Required]

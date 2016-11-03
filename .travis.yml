@@ -15,3 +15,7 @@ branches:
   - master
   - develop
   - /^[0-9.]+/
+  
+cache:
+  directories:
+  - $HOME/.nuget

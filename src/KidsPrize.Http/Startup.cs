@@ -1,26 +1,27 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
+using KidsPrize.Http.Extensions;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using KidsPrize.Http.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using NLog.Extensions.Logging;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Swashbuckle.Swagger.Model;
-using System.Reflection;
-using MediatR;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 using Scrutor;
+using Swashbuckle.Swagger.Model;
+using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
+using System.Threading.Tasks;
+using System;
 
 namespace KidsPrize.Http
 {
@@ -125,6 +126,15 @@ namespace KidsPrize.Http
             // DbContext initialise
             var context = app.ApplicationServices.GetService<KidsPrizeContext>();
             context.Database.Migrate();
+
+            if (_environment.IsProduction())
+            {
+                // http://stackoverflow.com/questions/38153044/how-to-force-an-https-callback-using-microsoft-aspnetcore-authentication-google
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedProto
+                });
+            }
 
             // Authentication
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
