@@ -60,8 +60,10 @@ namespace KidsPrize.Tests
             var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
 
             Assert.Equal(1, actual.Child.TotalScore);
-            Assert.Equal(1, actual.Scores.Count(s => s.Value == 1));
-            var score = actual.Scores.FirstOrDefault(s => s.Value == 1);
+            Assert.Equal(1, actual.WeeklyScores.Count());
+            var weeklyScores = actual.WeeklyScores.First();
+            Assert.Equal(1, weeklyScores.Scores.Count(s => s.Value == 1));
+            var score = weeklyScores.Scores.FirstOrDefault(s => s.Value == 1);
             Assert.Equal(setScoreCommand.Date, score.Date);
             Assert.Equal(setScoreCommand.Task, score.Task);
         }
@@ -99,7 +101,9 @@ namespace KidsPrize.Tests
             var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
 
             Assert.Equal(0, actual.Child.TotalScore);
-            Assert.Equal(0, actual.Scores.Count(s => s.Value == 1));
+            Assert.Equal(1, actual.WeeklyScores.Count());
+            var weeklyScores = actual.WeeklyScores.First();
+            Assert.Equal(0, weeklyScores.Scores.Count(s => s.Value == 1));
         }
 
 
@@ -133,8 +137,10 @@ namespace KidsPrize.Tests
             var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
 
             Assert.Equal(1, actual.Child.TotalScore);
-            Assert.Equal(1, actual.Scores.Count(s => s.Value == 1));
-            var score = actual.Scores.FirstOrDefault(s => s.Value == 1);
+            Assert.Equal(1, actual.WeeklyScores.Count());
+            var weeklyScores = actual.WeeklyScores.First();
+            Assert.Equal(1, weeklyScores.Scores.Count(s => s.Value == 1));
+            var score = weeklyScores.Scores.FirstOrDefault(s => s.Value == 1);
             Assert.Equal(setScoreCommand.Date, score.Date);
             Assert.Equal(setScoreCommand.Task, score.Task);
         }
@@ -169,7 +175,9 @@ namespace KidsPrize.Tests
             var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
 
             Assert.Equal(0, actual.Child.TotalScore);
-            Assert.Equal(0, actual.Scores.Count(s => s.Value == 1));
+            Assert.Equal(1, actual.WeeklyScores.Count());
+            var weeklyScores = actual.WeeklyScores.First();
+            Assert.Equal(0, weeklyScores.Scores.Count(s => s.Value == 1));
         }
 
     }

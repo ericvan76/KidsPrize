@@ -12,7 +12,7 @@ namespace KidsPrize.Extensions
             var claim = principal.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
             if (claim != null)
             {
-                 return Guid.Parse(claim.Value);
+                return Guid.Parse(claim.Value);
             }
             return Guid.Empty;
         }

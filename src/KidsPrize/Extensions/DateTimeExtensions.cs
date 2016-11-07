@@ -11,7 +11,7 @@ namespace KidsPrize.Extensions
 
         public static bool IsStartOfWeek(this DateTime date)
         {
-            return date ==  date.StartOfWeek();
+            return date == date.StartOfWeek();
         }
 
         public static DateTime StartOfWeek(this DateTime date)

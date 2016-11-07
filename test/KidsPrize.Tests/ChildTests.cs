@@ -4,7 +4,6 @@ using AutoMapper;
 using KidsPrize.Commands;
 using System;
 using System.Security.Claims;
-using KidsPrize.Extensions;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -55,10 +54,10 @@ namespace KidsPrize.Tests
             Assert.Equal(command.Name, actual.Child.Name);
             Assert.Equal(command.Gender, actual.Child.Gender);
             Assert.Equal(0, actual.Child.TotalScore);
-            Assert.Equal(0, actual.Scores.Count());
-            Assert.Equal(1, actual.TaskGroups.Count());
-            Assert.Equal(DateTime.Today.StartOfWeek(), actual.TaskGroups.First().EffectiveDate);
-            actual.TaskGroups.First().Tasks.SequenceEqual(command.Tasks);
+            Assert.Equal(1, actual.WeeklyScores.Count());
+            var weeklyScores = actual.WeeklyScores.First();
+            Assert.Equal(0, weeklyScores.Scores.Count());
+            weeklyScores.Tasks.SequenceEqual(command.Tasks);
         }
 
         [Fact]
@@ -90,10 +89,10 @@ namespace KidsPrize.Tests
             Assert.Equal(updateCommand.Name, actual.Child.Name);
             Assert.Equal(updateCommand.Gender, actual.Child.Gender);
             Assert.Equal(0, actual.Child.TotalScore);
-            Assert.Equal(0, actual.Scores.Count());
-            Assert.Equal(1, actual.TaskGroups.Count());
-            Assert.Equal(DateTime.Today.StartOfWeek(), actual.TaskGroups.First().EffectiveDate);
-            actual.TaskGroups.First().Tasks.SequenceEqual(createCommand.Tasks);
+            Assert.Equal(1, actual.WeeklyScores.Count());
+            var weeklyScores = actual.WeeklyScores.First();
+            Assert.Equal(0, weeklyScores.Scores.Count());
+            weeklyScores.Tasks.SequenceEqual(createCommand.Tasks);
         }
 
         [Fact]

@@ -42,8 +42,8 @@ namespace KidsPrize.Tests
         public static void ValidateModel(Command command)
         {
             var context = new ValidationContext(command, null, null);
-	        var results = new List<ValidationResult>();
-	        Validator.ValidateObject(command, context);
+            var results = new List<ValidationResult>();
+            Validator.ValidateObject(command, context);
         }
     }
 }

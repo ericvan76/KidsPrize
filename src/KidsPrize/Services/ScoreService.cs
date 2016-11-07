@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -28,17 +29,34 @@ namespace KidsPrize.Services
         {
             var dateFrom = rewindFrom.AddDays(-7 * numOfWeeks);
 
-            // todo: improve this
+            // todo: improve this query
             var child = await this._context.GetChildOrThrow(userId, childId);
             var scores = await this._context.Scores.Where(s => s.Child.Id == childId && s.Date >= dateFrom && s.Date < rewindFrom).ToListAsync();
             var taskGroups = (await this._context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == childId && tg.EffectiveDate > dateFrom && tg.EffectiveDate < rewindFrom).ToListAsync())
-                .Union(await this._context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == childId && tg.EffectiveDate <= dateFrom).OrderByDescending(tg => tg.EffectiveDate).Take(1).ToListAsync());
+                .Union(await this._context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == childId && tg.EffectiveDate <= dateFrom).OrderByDescending(tg => tg.EffectiveDate).Take(1).ToListAsync())
+                .ToList();
+
+            var weeklyScoresList = new List<R.WeeklyScores>();
+            for (int i = 1; i <= numOfWeeks; i++)
+            {
+                var weekStart = rewindFrom.AddDays(-7 * i);
+                var weekEnd = weekStart.AddDays(7);
+                var taskGroup = taskGroups.OrderByDescending(tg => tg.EffectiveDate).FirstOrDefault(tg => tg.EffectiveDate <= weekStart);
+                if (taskGroup != null)
+                {
+                    weeklyScoresList.Add(new R.WeeklyScores()
+                    {
+                        Week = weekStart,
+                        Tasks = taskGroup.Tasks.OrderBy(t => t.Order).Select(t => t.Name).ToList(),
+                        Scores = scores.Where(s => s.Date >= weekStart && s.Date < weekEnd).Select(s => _mapper.Map<R.Score>(s)).ToList()
+                    });
+                }
+            }
 
             return new R.ScoreResult
             {
                 Child = _mapper.Map<R.Child>(child),
-                Scores = scores.Select(s =>_mapper.Map<R.Score>(s)).ToList(),
-                TaskGroups = taskGroups.Select(t=>_mapper.Map<R.TaskGroup>(t)).ToList()
+                WeeklyScores = weeklyScoresList
             };
         }
     }

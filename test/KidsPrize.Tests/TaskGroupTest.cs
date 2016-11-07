@@ -65,11 +65,10 @@ namespace KidsPrize.Tests
             Assert.Equal(createCommand.Name, actual.Child.Name);
             Assert.Equal(createCommand.Gender, actual.Child.Gender);
             Assert.Equal(0, actual.Child.TotalScore);
-            Assert.Equal(0, actual.Scores.Count());
-            Assert.Equal(1, actual.TaskGroups.Count());
-            Assert.Equal(DateTime.Today.StartOfWeek(), actual.TaskGroups.First().EffectiveDate);
-            actual.TaskGroups.First().Tasks.SequenceEqual(updateCommand.Tasks);
-
+            Assert.Equal(1, actual.WeeklyScores.Count());
+            var weeklyScores = actual.WeeklyScores.First();
+            Assert.Equal(0, weeklyScores.Scores.Count());
+            weeklyScores.Tasks.SequenceEqual(updateCommand.Tasks);
             var allTaskGroups = await _context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == createCommand.ChildId).ToListAsync();
             Assert.Equal(1, allTaskGroups.Count);
         }
@@ -109,15 +108,15 @@ namespace KidsPrize.Tests
             Assert.Equal(createCommand.Name, actual.Child.Name);
             Assert.Equal(createCommand.Gender, actual.Child.Gender);
             Assert.Equal(0, actual.Child.TotalScore);
-            Assert.Equal(0, actual.Scores.Count());
-            Assert.Equal(1, actual.TaskGroups.Count());
-            Assert.Equal(DateTime.Today.StartOfWeek(), actual.TaskGroups.First().EffectiveDate);
-            actual.TaskGroups.First().Tasks.SequenceEqual(updateCommand.Tasks);
+            Assert.Equal(1, actual.WeeklyScores.Count());
+            var weeklyScores = actual.WeeklyScores.First();
+            Assert.Equal(0, weeklyScores.Scores.Count());
+            weeklyScores.Tasks.SequenceEqual(updateCommand.Tasks);
 
             var allTaskGroups = await _context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == createCommand.ChildId).OrderBy(tg => tg.EffectiveDate).ToListAsync();
             Assert.Equal(2, allTaskGroups.Count);
             Assert.Equal(DateTime.Today.AddDays(-7).StartOfWeek(), allTaskGroups.First().EffectiveDate);
-            allTaskGroups.First().Tasks.OrderBy(t=>t.Order).Select(t=>t.Name).SequenceEqual(updateCommand.Tasks);
+            allTaskGroups.First().Tasks.OrderBy(t => t.Order).Select(t => t.Name).SequenceEqual(updateCommand.Tasks);
         }
 
         [Fact]
@@ -179,13 +178,16 @@ namespace KidsPrize.Tests
             Assert.Equal(createCommand.Name, actual.Child.Name);
             Assert.Equal(createCommand.Gender, actual.Child.Gender);
             Assert.Equal(2, actual.Child.TotalScore);
-            Assert.Equal(1, actual.Scores.Count());
-            Assert.Equal("Task C", actual.Scores.First().Task);
+            Assert.Equal(1, actual.WeeklyScores.Count());
+            var weeklyScores = actual.WeeklyScores.First();
+            Assert.Equal(1, weeklyScores.Scores.Count());
+            Assert.Equal("Task C", weeklyScores.Scores.First().Task);
 
             actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfWeek(), 1);
             Assert.Equal(2, actual.Child.TotalScore);
-            Assert.Equal(1, actual.Scores.Count());
-            Assert.Equal("Task A", actual.Scores.First().Task);
+            Assert.Equal(1, actual.WeeklyScores.Count());
+            weeklyScores = actual.WeeklyScores.First();
+            Assert.Equal("Task A", weeklyScores.Scores.First().Task);
         }
 
     }

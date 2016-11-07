@@ -23,7 +23,7 @@ namespace KidsPrize.Commands
 
         [Required]
         [MinLength(1)]
-        public string[] Tasks{ get; set; }
+        public string[] Tasks { get; set; }
 
     }
 

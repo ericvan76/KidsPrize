@@ -21,7 +21,7 @@ namespace KidsPrize.Commands
         [RegularExpression(@"^(M|F)$")]
         public string Gender { get; set; }
 
-        public string[] Tasks{ get; set; }
+        public string[] Tasks { get; set; }
     }
 
     public class UpdateChildHandler : IAsyncRequestHandler<UpdateChild, R.ScoreResult>

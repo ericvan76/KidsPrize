@@ -20,7 +20,7 @@ namespace KidsPrize.Commands
         [Required]
         [DataType(DataType.Date)]
         [JsonConverter(typeof(DateConverter))]
-        public DateTime Date{ get; set; }
+        public DateTime Date { get; set; }
 
         [Required]
         [MaxLength(50)]

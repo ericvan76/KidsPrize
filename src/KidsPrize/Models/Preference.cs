@@ -5,7 +5,7 @@ namespace KidsPrize.Models
 {
     public class Preference
     {
-        private Preference() {}
+        private Preference() { }
 
         public Preference(Guid userId, int timeZoneOffset)
         {
@@ -17,7 +17,7 @@ namespace KidsPrize.Models
         public Guid UserId { get; private set; }
 
         [Required]
-        public int TimeZoneOffset{ get; private set; }
+        public int TimeZoneOffset { get; private set; }
 
         public void Update(int? timeZoneOffset)
         {
