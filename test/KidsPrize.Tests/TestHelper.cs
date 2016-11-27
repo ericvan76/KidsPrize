@@ -14,7 +14,7 @@ namespace KidsPrize.Tests
         public static ClaimsPrincipal CreateUser(KidsPrizeContext context)
         {
             var userId = Guid.NewGuid();
-            context.Preferences.Add(new Preference(userId, (int)DateTimeOffset.Now.Offset.TotalMinutes));
+            context.Preferences.Add(new Preference(userId, -1 * (int)DateTimeOffset.Now.Offset.TotalMinutes));
             context.SaveChanges();
             return new ClaimsPrincipal(new ClaimsIdentity(new[]
             {

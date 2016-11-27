@@ -44,7 +44,7 @@ namespace KidsPrize.Http.Controllers
             }
             if (!rewindFrom.IsStartOfWeek())
             {
-                ModelState.AddModelError(nameof(rewindFrom), "rewindFrom should be a calendar date.");
+                ModelState.AddModelError(nameof(rewindFrom), "rewindFrom should be a start of week.");
             }
             if (numOfWeeks <= 0)
             {
