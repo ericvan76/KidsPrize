@@ -7,14 +7,15 @@ namespace KidsPrize.Models
     {
         private Preference() { }
 
-        public Preference(Guid userId, int timeZoneOffset)
+        public Preference(string userId, int timeZoneOffset)
         {
             UserId = userId;
             TimeZoneOffset = timeZoneOffset;
         }
 
         [Key]
-        public Guid UserId { get; private set; }
+        [MaxLength(250)]
+        public string UserId { get; private set; }
 
         [Required]
         public int TimeZoneOffset { get; private set; }

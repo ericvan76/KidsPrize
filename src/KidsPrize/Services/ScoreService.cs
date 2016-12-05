@@ -11,7 +11,7 @@ namespace KidsPrize.Services
 {
     public interface IScoreService
     {
-        Task<R.ScoreResult> GetScores(Guid userId, Guid childId, DateTime rewindFrom, int numOfWeeks);
+        Task<R.ScoreResult> GetScores(string userId, Guid childId, DateTime rewindFrom, int numOfWeeks);
     }
 
     public class ScoreService : IScoreService
@@ -25,7 +25,7 @@ namespace KidsPrize.Services
             this._mapper = mapper;
         }
 
-        public async Task<R.ScoreResult> GetScores(Guid userId, Guid childId, DateTime rewindFrom, int numOfWeeks)
+        public async Task<R.ScoreResult> GetScores(string userId, Guid childId, DateTime rewindFrom, int numOfWeeks)
         {
             var dateFrom = rewindFrom.AddDays(-7 * numOfWeeks);
 

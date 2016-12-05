@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Security.Claims;
 using IdentityModel;
@@ -7,14 +6,15 @@ namespace KidsPrize.Extensions
 {
     public static class ClaimsPrincipalExtensions
     {
-        public static Guid UserId(this ClaimsPrincipal principal)
+        public static string UserId(this ClaimsPrincipal principal)
         {
-            var claim = principal.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+            // Use Email as the UserId, as Auth0's free plan doesn't support account linking
+            var claim = principal.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Email);
             if (claim != null)
             {
-                return Guid.Parse(claim.Value);
+                return claim.Value.ToLower();
             }
-            return Guid.Empty;
+            return string.Empty;
         }
     }
 }

@@ -11,8 +11,8 @@ namespace KidsPrize.Services
 {
     public interface IChildService
     {
-        Task<Child> GetChild(Guid userId, Guid childId);
-        Task<IEnumerable<Child>> GetChildren(Guid userId);
+        Task<Child> GetChild(string userId, Guid childId);
+        Task<IEnumerable<Child>> GetChildren(string userId);
     }
 
     public class ChildService : IChildService
@@ -25,7 +25,7 @@ namespace KidsPrize.Services
             this._mapper = mapper;
         }
 
-        public async Task<Child> GetChild(Guid userId, Guid childId)
+        public async Task<Child> GetChild(string userId, Guid childId)
         {
             var child = await _context.GetChild(userId, childId);
             if (child != null)
@@ -35,7 +35,7 @@ namespace KidsPrize.Services
             return null;
         }
 
-        public async Task<IEnumerable<Child>> GetChildren(Guid userId)
+        public async Task<IEnumerable<Child>> GetChildren(string userId)
         {
             var result = new List<Child>();
             var children = await _context.Children.Where(i => i.UserId == userId).ToListAsync();

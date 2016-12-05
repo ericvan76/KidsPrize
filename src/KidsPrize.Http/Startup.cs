@@ -139,14 +139,12 @@ namespace KidsPrize.Http
             // Authentication
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            // IdentityServer
-            var idsvrOptions = Configuration.GetSection("IdentityServer");
-            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions()
+            // Jwt Bearer
+            var authOptions = Configuration.GetSection("JwtBearerOptions");
+            app.UseJwtBearerAuthentication(new JwtBearerOptions()
             {
-                Authority = idsvrOptions.GetValue<string>("Authority"),
-                RequireHttpsMetadata = false, //!env.IsDevelopment(),
-                ScopeName = "api1",
-                AutomaticAuthenticate = true
+                Authority = authOptions.GetValue<string>("Authority"),
+                Audience = authOptions.GetValue<string>("Audience")
             });
 
             app.UseMvc();

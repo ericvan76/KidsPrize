@@ -8,7 +8,7 @@ using KidsPrize;
 namespace KidsPrize.Http.Migrations
 {
     [DbContext(typeof(KidsPrizeContext))]
-    [Migration("20161007113111_Initialise")]
+    [Migration("20161205013251_Initialise")]
     partial class Initialise
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +32,9 @@ namespace KidsPrize.Http.Migrations
 
                     b.Property<int>("TotalScore");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasAnnotation("MaxLength", 250);
 
                     b.HasKey("Id");
 
@@ -43,8 +45,8 @@ namespace KidsPrize.Http.Migrations
 
             modelBuilder.Entity("KidsPrize.Models.Preference", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<string>("UserId")
+                        .HasAnnotation("MaxLength", 250);
 
                     b.Property<int>("TimeZoneOffset");
 

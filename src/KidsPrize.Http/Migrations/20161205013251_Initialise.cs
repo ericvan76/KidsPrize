@@ -8,11 +8,11 @@ namespace KidsPrize.Http.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsurePostgresExtension(name: "uuid-ossp",
-                schema: "public");
-
             migrationBuilder.EnsureSchema(
                 name: "KidsPrize");
+
+            migrationBuilder.EnsurePostgresExtension(name: "uuid-ossp",
+                schema: "public");
 
             migrationBuilder.CreateTable(
                 name: "Child",
@@ -24,7 +24,7 @@ namespace KidsPrize.Http.Migrations
                     Gender = table.Column<string>(maxLength: 10, nullable: true),
                     Name = table.Column<string>(maxLength: 250, nullable: false),
                     TotalScore = table.Column<int>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: false)
+                    UserId = table.Column<string>(maxLength: 250, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -36,8 +36,7 @@ namespace KidsPrize.Http.Migrations
                 schema: "KidsPrize",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(nullable: false)
-                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                    UserId = table.Column<string>(maxLength: 250, nullable: false),
                     TimeZoneOffset = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -143,8 +142,6 @@ namespace KidsPrize.Http.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropPostgresExtension("uuid-ossp");
-
             migrationBuilder.DropTable(
                 name: "Preference",
                 schema: "KidsPrize");

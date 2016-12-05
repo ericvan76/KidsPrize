@@ -13,12 +13,12 @@ namespace KidsPrize.Tests
     {
         public static ClaimsPrincipal CreateUser(KidsPrizeContext context)
         {
-            var userId = Guid.NewGuid();
+            var userId = Guid.NewGuid().ToString();
             context.Preferences.Add(new Preference(userId, -1 * (int)DateTimeOffset.Now.Offset.TotalMinutes));
             context.SaveChanges();
             return new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                new Claim(JwtClaimTypes.Subject, userId.ToString())
+                new Claim(JwtClaimTypes.Email, userId)
             }));
         }
 

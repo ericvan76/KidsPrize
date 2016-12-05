@@ -3,7 +3,6 @@ services:
   https-portal:
     image: steveltn/https-portal
     depends_on:
-      - idsvr
       - api
     ports:
       - '80:80'
@@ -12,7 +11,7 @@ services:
       - ./ssl_certs:/var/lib/https-portal
     restart: always
     environment:
-      DOMAINS: 'secure.kids-prize.com -> http://idsvr:4999/, api.kids-prize.com -> http://api:5000/'
+      DOMAINS: 'api.kids-prize.com -> http://api:5000/'
       # STAGE: production
       # FORCE_RENEW: true
   api:
@@ -27,19 +26,6 @@ services:
     restart: always
     environment:
       ASPNETCORE_URLS: http://*:5000
-  idsvr:
-    image: ericvan76/identityserver:develop
-    depends_on:
-      - db
-    ports:
-      - '4999:5000'
-    volumes:
-      - ./ssl_certs:/app/certs
-      - ./appsettings-idsvr.json:/app/appsettings.Production.json
-      - ./logs:/app/logs
-    restart: always
-    environment:
-      ASPNETCORE_URLS: http://*:4999
   db:
     image: postgres
     ports:

@@ -7,7 +7,7 @@ namespace KidsPrize.Models
     {
         private Child() { }
 
-        public Child(Guid id, Guid userId, string name, string gender)
+        public Child(Guid id, string userId, string name, string gender)
         {
             Id = id;
             UserId = userId;
@@ -20,7 +20,8 @@ namespace KidsPrize.Models
         public Guid Id { get; private set; }
 
         [Required]
-        public Guid UserId { get; private set; }
+        [MaxLength(250)]
+        public string UserId { get; private set; }
 
         [Required]
         [MaxLength(250)]

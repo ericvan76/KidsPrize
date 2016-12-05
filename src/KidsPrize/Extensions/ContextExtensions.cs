@@ -8,12 +8,12 @@ namespace KidsPrize.Extensions
 {
     public static class KidsPrizeContextExtensions
     {
-        public static async Task<Child> GetChild(this KidsPrizeContext context, Guid userId, Guid childId)
+        public static async Task<Child> GetChild(this KidsPrizeContext context, string userId, Guid childId)
         {
             return await context.Children.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == childId);
         }
 
-        public static async Task<Child> GetChildOrThrow(this KidsPrizeContext context, Guid userId, Guid childId)
+        public static async Task<Child> GetChildOrThrow(this KidsPrizeContext context, string userId, Guid childId)
         {
             var child = await context.GetChild(userId, childId);
             if (child == null)
@@ -33,7 +33,7 @@ namespace KidsPrize.Extensions
                 .FirstOrDefaultAsync();
         }
 
-        public static async Task<Preference> GetPreference(this KidsPrizeContext context, Guid userId)
+        public static async Task<Preference> GetPreference(this KidsPrizeContext context, string userId)
         {
             return await context.Preferences.FirstOrDefaultAsync(p => p.UserId == userId)
                 ?? new Preference(userId, 0);
