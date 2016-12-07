@@ -22,6 +22,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Threading.Tasks;
 using System;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using IdentityModel;
+using System.Linq;
 
 namespace KidsPrize.Http
 {
@@ -141,11 +145,14 @@ namespace KidsPrize.Http
 
             // Jwt Bearer
             var authOptions = Configuration.GetSection("JwtBearerOptions");
-            app.UseJwtBearerAuthentication(new JwtBearerOptions()
+            var jwtOptions = new JwtBearerOptions()
             {
                 Authority = authOptions.GetValue<string>("Authority"),
-                Audience = authOptions.GetValue<string>("Audience")
-            });
+                Audience = authOptions.GetValue<string>("Audience"),
+            };
+            jwtOptions.SecurityTokenValidators.Clear();
+            jwtOptions.SecurityTokenValidators.Add(new OverridedJwtSecurityTokenHandler());
+            app.UseJwtBearerAuthentication(jwtOptions);
 
             app.UseMvc();
 
@@ -154,6 +161,24 @@ namespace KidsPrize.Http
                 app.UseSwagger();
                 app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
             }
+        }
+    }
+
+    public class OverridedJwtSecurityTokenHandler : JwtSecurityTokenHandler
+    {
+        public override ClaimsPrincipal ValidateToken(string securityToken, TokenValidationParameters validationParameters, out SecurityToken validatedToken)
+        {
+            SecurityToken validated;
+            bool emailVerified = false;
+            var principal = base.ValidateToken(securityToken, validationParameters, out validated);
+            if (principal.HasClaim(c => c.Type == JwtClaimTypes.Email) &&
+                principal.HasClaim(c => c.Type == JwtClaimTypes.EmailVerified &&
+                bool.TryParse(c.Value, out emailVerified) && emailVerified))
+            {
+                validatedToken = validated;
+                return principal;
+            }
+            throw new Exception("Email is not verified.");
         }
     }
 
