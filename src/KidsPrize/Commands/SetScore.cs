@@ -12,7 +12,7 @@ using E = KidsPrize.Models;
 
 namespace KidsPrize.Commands
 {
-    public class SetScore : Command, IAsyncRequest, IValidatableObject
+    public class SetScore : Command, IRequest, IValidatableObject
     {
         [Required]
         public Guid ChildId { get; set; }
@@ -41,7 +41,7 @@ namespace KidsPrize.Commands
         }
     }
 
-    public class SetScoreHandler : AsyncRequestHandler<SetScore>
+    public class SetScoreHandler : IAsyncRequestHandler<SetScore>
     {
         private readonly KidsPrizeContext _context;
 
@@ -50,7 +50,7 @@ namespace KidsPrize.Commands
             this._context = context;
         }
 
-        protected override async Task HandleCore(SetScore message)
+        public async Task Handle(SetScore message)
         {
             // Ensure the child blongs to current user
             var child = await this._context.GetChildOrThrow(message.UserId(), message.ChildId);

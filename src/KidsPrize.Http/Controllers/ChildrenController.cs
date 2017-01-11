@@ -54,11 +54,11 @@ namespace KidsPrize.Http.Controllers
 
         [HttpDelete]
         [Route("{childId:guid}")]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Accepted)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteChild([FromRoute] Guid childId)
         {
             await this.Send<DeleteChild>(new DeleteChild() { ChildId = childId });
-            return StatusCode((int)HttpStatusCode.Accepted);
+            return Ok();
         }
 
     }

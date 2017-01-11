@@ -6,13 +6,13 @@ using MediatR;
 
 namespace KidsPrize.Commands
 {
-    public class DeleteChild : Command, IAsyncRequest
+    public class DeleteChild : Command, IRequest
     {
         [Required]
         public Guid ChildId { get; set; }
     }
 
-    public class DeleteChildHandler : AsyncRequestHandler<DeleteChild>
+    public class DeleteChildHandler : IAsyncRequestHandler<DeleteChild>
     {
         private readonly KidsPrizeContext _context;
 
@@ -21,7 +21,7 @@ namespace KidsPrize.Commands
             this._context = context;
         }
 
-        protected override async Task HandleCore(DeleteChild message)
+        public async Task Handle(DeleteChild message)
         {
             var child = await this._context.GetChildOrThrow(message.UserId(), message.ChildId);
 
@@ -29,5 +29,6 @@ namespace KidsPrize.Commands
 
             await _context.SaveChangesAsync();
         }
+
     }
 }

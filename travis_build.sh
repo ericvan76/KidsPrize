@@ -23,6 +23,9 @@ echo IMAGE_TAG=$IMAGE_TAG
 # build docker
 docker build publish -t "$IMAGE_TAG"
 
+# do not push docker images for pull request
+if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then exit 0; fi
+
 # docker push
 docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 docker push "$IMAGE_TAG"

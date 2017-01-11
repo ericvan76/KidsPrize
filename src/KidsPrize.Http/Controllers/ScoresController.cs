@@ -22,7 +22,7 @@ namespace KidsPrize.Http.Controllers
         }
 
         [HttpPut]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Accepted)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> SetScore([FromRoute] Guid childId, [FromBody] SetScore command)
         {
             if (childId != command.ChildId)
@@ -31,7 +31,7 @@ namespace KidsPrize.Http.Controllers
                 return BadRequest(ModelState);
             }
             await this.Send(command);
-            return StatusCode((int)HttpStatusCode.Accepted);
+            return Ok();
         }
 
         [HttpGet]

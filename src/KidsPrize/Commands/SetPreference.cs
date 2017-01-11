@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Commands
 {
-    public class SetPreference : Command, IAsyncRequest
+    public class SetPreference : Command, IRequest
     {
         public int? TimeZoneOffset { get; set; }
     }
 
-    public class SetPreferenceHandler : AsyncRequestHandler<SetPreference>
+    public class SetPreferenceHandler : IAsyncRequestHandler<SetPreference>
     {
         private readonly KidsPrizeContext _context;
 
@@ -20,7 +20,7 @@ namespace KidsPrize.Commands
             this._context = context;
         }
 
-        protected override async Task HandleCore(SetPreference message)
+        public async Task Handle(SetPreference message)
         {
             var preference = await this._context.Preferences.FirstOrDefaultAsync(p => p.UserId == message.UserId());
             if (preference == null)

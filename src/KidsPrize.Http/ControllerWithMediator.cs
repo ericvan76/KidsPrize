@@ -13,16 +13,16 @@ namespace KidsPrize.Http
             this._mediator = mediator;
         }
 
-        public async Task Send<TCommand>(TCommand command) where TCommand : Command, IAsyncRequest
+        public async Task Send<TCommand>(TCommand command) where TCommand : Command, IRequest
         {
             command.SetHeader("Authorisation", this.User);
-            await this._mediator.SendAsync(command);
+            await this._mediator.Send(command);
         }
 
-        public async Task<TResponse> Send<TCommand, TResponse>(TCommand command) where TCommand : Command, IAsyncRequest<TResponse>
+        public async Task<TResponse> Send<TCommand, TResponse>(TCommand command) where TCommand : Command, IRequest<TResponse>
         {
             command.SetHeader("Authorisation", this.User);
-            return await this._mediator.SendAsync<TResponse>(command);
+            return await this._mediator.Send<TResponse>(command);
         }
 
     }

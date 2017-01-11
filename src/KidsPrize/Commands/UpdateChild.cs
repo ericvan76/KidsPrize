@@ -11,7 +11,7 @@ using R = KidsPrize.Resources;
 
 namespace KidsPrize.Commands
 {
-    public class UpdateChild : Command, IAsyncRequest<R.ScoreResult>
+    public class UpdateChild : Command, IRequest<R.ScoreResult>
     {
         [Required]
         public Guid ChildId { get; set; }

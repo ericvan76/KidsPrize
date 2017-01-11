@@ -9,7 +9,7 @@ using R = KidsPrize.Resources;
 
 namespace KidsPrize.Commands
 {
-    public class CreateChild : Command, IAsyncRequest<R.ScoreResult>
+    public class CreateChild : Command, IRequest<R.ScoreResult>
     {
         [Required]
         public Guid ChildId { get; set; }

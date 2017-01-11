@@ -24,11 +24,11 @@ namespace KidsPrize.Http.Controllers
         }
 
         [HttpPut]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Accepted)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> SetPreference([FromBody] SetPreference command)
         {
             await this.Send(command);
-            return StatusCode((int)HttpStatusCode.Accepted);
+            return Ok();
         }
 
         [HttpGet]

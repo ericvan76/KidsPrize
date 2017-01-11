@@ -17,12 +17,13 @@ namespace KidsPrize
         public DbSet<Score> Scores { get; set; }
         public DbSet<TaskGroup> TaskGroups { get; set; }
         public DbSet<Preference> Preferences { get; set; }
+        public DbSet<Redeem> Redeems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.HasPostgresExtension("uuid-ossp", "public");
+            modelBuilder.HasPostgresExtension("uuid-ossp").Schema("public");
 
             modelBuilder.RemovePluralizingTableNameConvention();
             modelBuilder.HasDefaultSchema("KidsPrize");
@@ -35,6 +36,9 @@ namespace KidsPrize
             modelBuilder.Entity<TaskGroup>().HasOne(tg => tg.Child).WithMany().IsRequired();
             modelBuilder.Entity<TaskGroup>().HasAlternateKey("ChildId", "EffectiveDate");
             modelBuilder.Entity<TaskGroup>().HasMany(tg => tg.Tasks).WithOne().IsRequired();
+
+            modelBuilder.Entity<Redeem>().HasOne(s => s.Child).WithMany().IsRequired();
+            modelBuilder.Entity<Redeem>().HasIndex("ChildId", "Timestamp");
         }
     }
 
