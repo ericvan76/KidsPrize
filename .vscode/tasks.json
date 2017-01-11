@@ -1,0 +1,21 @@
+{
+  "version": "0.1.0",
+  "command": "dotnet",
+  "isShellCommand": true,
+  "args": [],
+  "tasks": [{
+    "taskName": "build",
+    "args": [
+      "${workspaceRoot}/src/KidsPrize.Http/project.json"
+    ],
+    "isBuildCommand": true,
+    "problemMatcher": "$msCompile"
+  }, {
+    "taskName": "test",
+    "args": [
+      "${workspaceRoot}/test/KidsPrize.Tests/project.json"
+    ],
+    "isBuildCommand": false,
+    "problemMatcher": "$msCompile"
+  }]
+}
