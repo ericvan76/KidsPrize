@@ -12,7 +12,6 @@ using R = KidsPrize.Resources;
 namespace KidsPrize.Http.Controllers
 {
     [Route("Children/{childId:guid}/[controller]")]
-    [Produces("application/json")]
     public class RedeemsController : ControllerWithMediator
     {
         private readonly IRedeemService _redeemService;

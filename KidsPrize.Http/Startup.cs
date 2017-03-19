@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
-using KidsPrize.Http.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,15 +14,15 @@ using NLog.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using Scrutor;
-using Swashbuckle.Swagger.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
-using System.Threading.Tasks;
 using System;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using IdentityModel;
 using System.Linq;
+using Swashbuckle.AspNetCore.Swagger;
+using KidsPrize.Http.Mvc;
+using KidsPrize.Http.Jwt;
+using KidsPrize.Http.Swagger;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace KidsPrize.Http
 {
@@ -58,11 +55,12 @@ namespace KidsPrize.Http
             services.AddMvc()
                 .AddMvcOptions(opts =>
                 {
-                    opts.Filters.Add(new ModelStateValidActionFilter());
                     var policyBuilder = new AuthorizationPolicyBuilder();
                     policyBuilder.AddAuthenticationSchemes(new[] { "Bearer" });
                     policyBuilder.RequireAuthenticatedUser();
                     opts.Filters.Add(new AuthorizeFilter(policyBuilder.Build()));
+                    opts.Filters.Add(new ModelStateValidActionFilter());
+                    opts.Conventions.Insert(0, new RoutePrefixConvention("v{version:apiVersion}"));
                 })
                 .AddJsonOptions(opts =>
                 {
@@ -102,18 +100,15 @@ namespace KidsPrize.Http
 
             services.AddSwaggerGen(opts =>
             {
-                opts.SingleApiVersion(new Info()
-                {
-                    Version = "v1",
-                    Title = "KidsPrize API",
-                    Description = "",
-                    TermsOfService = ""
-                });
+                opts.SetupDocs();
+                opts.DocumentFilter<SetVersionInPath>();
+                opts.OperationFilter<SetAuthorization>();
                 opts.DescribeAllEnumsAsStrings();
-                opts.CustomSchemaIds(t => t.FullName);
                 opts.MapType<Guid>(() => new Schema() { Type = "string", Format = "uuid" });
                 opts.MapType<DateTime>(() => new Schema() { Type = "string", Format = "date" });
             });
+
+            services.AddApiVersioning();
 
             services.AddLogging();
         }
@@ -154,45 +149,16 @@ namespace KidsPrize.Http
             jwtOptions.SecurityTokenValidators.Add(new OverridedJwtSecurityTokenHandler());
             app.UseJwtBearerAuthentication(jwtOptions);
 
-            app.UseMvc();
-
             if (Configuration.GetValue<bool>("EnableSwagger") == true)
             {
                 app.UseSwagger();
-                app.UseSwaggerUi(swaggerUrl: $"/swagger/v1/swagger.json");
+                app.UseSwaggerUI(opts => opts.SetupEndpoints());
             }
+
+            // rewrite unversioned to v1
+            app.UseRewriter(new RewriteOptions().AddRewrite(@"^(?!v\d+/)(.*)", "v1/$1", skipRemainingRules: true));
+            app.UseMvc();
+
         }
     }
-
-    public class OverridedJwtSecurityTokenHandler : JwtSecurityTokenHandler
-    {
-        public override ClaimsPrincipal ValidateToken(string securityToken, TokenValidationParameters validationParameters, out SecurityToken validatedToken)
-        {
-            SecurityToken validated;
-            bool emailVerified = false;
-            var principal = base.ValidateToken(securityToken, validationParameters, out validated);
-            if (principal.HasClaim(c => c.Type == JwtClaimTypes.Email) &&
-                principal.HasClaim(c => c.Type == JwtClaimTypes.EmailVerified &&
-                bool.TryParse(c.Value, out emailVerified) && emailVerified))
-            {
-                validatedToken = validated;
-                return principal;
-            }
-            throw new Exception("Email is not verified.");
-        }
-    }
-
-    public class ModelStateValidActionFilter : IAsyncActionFilter
-    {
-        public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
-        {
-            if (context.ModelState.IsValid)
-            {
-                return next();
-            }
-            context.Result = new BadRequestObjectResult(context.ModelState);
-            return Task.CompletedTask;
-        }
-    }
-
 }

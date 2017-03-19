@@ -1,10 +1,11 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
-namespace KidsPrize.Http
+namespace KidsPrize.Http.Controllers
 {
-    public class ControllerWithMediator : Controller
+    [Produces("application/json")]
+    public abstract class ControllerWithMediator : VersionedController
     {
         private readonly IMediator _mediator;
 

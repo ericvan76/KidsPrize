@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace KidsPrize.Http.Controllers
 {
     [Route("[controller]")]
-    [Produces("application/json")]
     public class ChildrenController : ControllerWithMediator
     {
         private readonly IChildService _childService;
@@ -38,8 +37,7 @@ namespace KidsPrize.Http.Controllers
             return Ok(result);
         }
 
-        [HttpPut]
-        [Route("{childId:guid}")]
+        [HttpPut("{childId:guid}")]
         [ProducesResponseType(typeof(ScoreResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateChild([FromRoute] Guid childId, [FromBody] UpdateChild command)
         {
@@ -52,8 +50,7 @@ namespace KidsPrize.Http.Controllers
             return Ok(result);
         }
 
-        [HttpDelete]
-        [Route("{childId:guid}")]
+        [HttpDelete("{childId:guid}")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteChild([FromRoute] Guid childId)
         {

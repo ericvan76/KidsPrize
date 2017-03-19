@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace KidsPrize.Http.Migrations
@@ -20,7 +21,7 @@ namespace KidsPrize.Http.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false)
-                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Gender = table.Column<string>(maxLength: 10, nullable: true),
                     Name = table.Column<string>(maxLength: 250, nullable: false),
                     TotalScore = table.Column<int>(nullable: false),
@@ -50,7 +51,7 @@ namespace KidsPrize.Http.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     ChildId = table.Column<Guid>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
                     Task = table.Column<string>(maxLength: 50, nullable: false),
@@ -75,7 +76,7 @@ namespace KidsPrize.Http.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     ChildId = table.Column<Guid>(nullable: false),
                     EffectiveDate = table.Column<DateTime>(nullable: false)
                 },
@@ -98,7 +99,7 @@ namespace KidsPrize.Http.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(maxLength: 50, nullable: true),
                     Order = table.Column<int>(nullable: false),
                     TaskGroupId = table.Column<int>(nullable: false)

@@ -3,9 +3,9 @@ set -ev
 
 # dotnet build & publish
 dotnet restore
-dotnet test ./test/KidsPrize.Tests
+dotnet test ./KidsPrize.Tests/KidsPrize.Tests.csproj
 rm -rf $(pwd)/publish
-dotnet publish -c Release ./src/KidsPrize.Http -o $(pwd)/publish
+dotnet publish -c Release ./KidsPrize.Http/KidsPrize.Http.csproj -o $(pwd)/publish
 
 # Determine $TAG by GIT BRANCH AND TAG
 echo TRAVIS_BRANCH=$TRAVIS_BRANCH

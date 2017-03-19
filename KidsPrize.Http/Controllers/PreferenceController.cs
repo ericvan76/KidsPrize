@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KidsPrize.Commands;
 using KidsPrize.Extensions;
+using KidsPrize.Http.Mvc;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using R = KidsPrize.Resources;
@@ -11,7 +12,6 @@ using R = KidsPrize.Resources;
 namespace KidsPrize.Http.Controllers
 {
     [Route("[controller]")]
-    [Produces("application/json")]
     public class PreferenceController : ControllerWithMediator
     {
         private readonly KidsPrizeContext _context;

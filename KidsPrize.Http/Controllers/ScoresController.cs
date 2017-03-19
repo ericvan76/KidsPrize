@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using KidsPrize.Commands;
 using KidsPrize.Extensions;
+using KidsPrize.Http.Mvc;
 using KidsPrize.Resources;
 using KidsPrize.Services;
 using MediatR;
@@ -11,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace KidsPrize.Http.Controllers
 {
     [Route("Children/{childId:guid}/[controller]")]
-    [Produces("application/json")]
     public class ScoresController : ControllerWithMediator
     {
         private readonly IScoreService _scoreService;
