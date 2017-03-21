@@ -16,12 +16,11 @@ services:
   - docker
 
 script:
-  - bash ./travis_build.sh
+  - bash ./scripts/travis_build.sh
 
 branches:
   only:
   - master
-  - develop
   - /^[0-9.]+/
 
 cache:
