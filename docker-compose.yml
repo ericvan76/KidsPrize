@@ -15,7 +15,7 @@ services:
       # STAGE: production
       # FORCE_RENEW: true
   api:
-    image: ericvan76/kidsprize:develop
+    image: ericvan76/kidsprize:latest
     depends_on:
       - db
     ports:
