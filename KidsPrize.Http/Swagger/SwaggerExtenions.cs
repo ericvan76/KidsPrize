@@ -49,11 +49,11 @@ namespace KidsPrize.Http.Swagger
 
         public static void SetupEndpoints(this SwaggerUIOptions opts)
         {
-            opts.SwaggerEndpoint($"/swagger/latest/swagger.json", $"latest");
+            opts.SwaggerEndpoint($"latest/swagger.json", $"latest");
             foreach (var version in ApiVersions.All().Reverse())
             {
                 var deprecated = ApiVersions.Deprecated().Contains(version);
-                opts.SwaggerEndpoint($"/swagger/v{version}/swagger.json", deprecated ? $"v{version} - deprecated" : $"v{version}");
+                opts.SwaggerEndpoint($"v{version}/swagger.json", deprecated ? $"v{version} - deprecated" : $"v{version}");
             }
         }
     }
