@@ -20,7 +20,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="1.1.0-beta1" />
     <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.1" />
@@ -42,7 +41,7 @@
     <PackageReference Include="AutoMapper" Version="5.2.0" />
     <PackageReference Include="MediatR" Version="3.0.0" />
     <PackageReference Include="Scrutor" Version="1.10.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0-rc3" />
+    <PackageReference Include="EasyVersioning.AspNetCore" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />

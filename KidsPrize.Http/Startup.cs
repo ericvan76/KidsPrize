@@ -21,8 +21,9 @@ using System.Linq;
 using Swashbuckle.AspNetCore.Swagger;
 using KidsPrize.Http.Mvc;
 using KidsPrize.Http.Jwt;
-using KidsPrize.Http.Swagger;
 using Microsoft.AspNetCore.Rewrite;
+using EasyVersioning.AspNetCore.Mvc;
+using EasyVersioning.AspNetCore.Swagger;
 
 namespace KidsPrize.Http
 {
@@ -60,7 +61,7 @@ namespace KidsPrize.Http
                     policyBuilder.RequireAuthenticatedUser();
                     opts.Filters.Add(new AuthorizeFilter(policyBuilder.Build()));
                     opts.Filters.Add(new ModelStateValidActionFilter());
-                    opts.Conventions.Insert(0, new RoutePrefixConvention("v{version:apiVersion}"));
+                    opts.Conventions.Insert(0, new VersionPrefixConvention());
                 })
                 .AddJsonOptions(opts =>
                 {
@@ -100,9 +101,7 @@ namespace KidsPrize.Http
 
             services.AddSwaggerGen(opts =>
             {
-                opts.SetupDocs();
-                opts.DocumentFilter<SetVersionInPath>();
-                opts.OperationFilter<SetAuthorization>();
+                opts.SetupVersionedDocs("KidsPrize API");
                 opts.DescribeAllEnumsAsStrings();
                 opts.MapType<Guid>(() => new Schema() { Type = "string", Format = "uuid" });
                 opts.MapType<DateTime>(() => new Schema() { Type = "string", Format = "date" });

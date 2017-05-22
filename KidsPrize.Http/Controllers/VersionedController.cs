@@ -1,4 +1,4 @@
-using KidsPrize.Http.Versioning;
+using EasyVersioning.AspNetCore.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KidsPrize.Http.Controllers
