@@ -93,6 +93,8 @@ namespace KidsPrize.Http
             services.AddScoped<MultiInstanceFactory>(p => t => p.GetRequiredServices(t));
             services.AddScoped<IMediator, Mediator>();
 
+            services.AddSingleton<IConfigurationRoot>(Configuration);
+
             services.Scan(scan => scan
                 .FromAssembliesOf(typeof(Command))
                 .AddClasses(cfg => cfg.Where(t => t.Name.EndsWith("Handler") || t.Name.EndsWith("Service")))
