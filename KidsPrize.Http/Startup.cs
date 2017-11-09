@@ -123,10 +123,6 @@ namespace KidsPrize.Http
             loggerFactory.AddNLog();
             _environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "nlog.config"));
 
-            // DbContext initialise
-            var context = app.ApplicationServices.GetService<KidsPrizeContext>();
-            context.Database.Migrate();
-
             if (_environment.IsProduction())
             {
                 // http://stackoverflow.com/questions/38153044/how-to-force-an-https-callback-using-microsoft-aspnetcore-authentication-google
