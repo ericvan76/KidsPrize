@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
     stop_grace_period: 1m
     environment:
-      - DOMAINS='api.kids-prize.com -> http://api/'
+      - 'DOMAINS=api.kids-prize.com -> http://api/'
       # - STAGE=production
   api:
     image: ericvan76/kidsprize:latest
@@ -25,10 +25,10 @@ services:
     restart: unless-stopped
     stop_grace_period: 1m
     environment:
-      - kidsprize:ConnectionStrings:DefaultConnection='Server=db;Port=5432;Database=postgres;User Id=kidsprize;Password=password;'
-      - kidsprize:JwtBearerOptions:Authority='https://apperic.auth0.com/'
-      - kidsprize:JwtBearerOptions:Audience='<audience>'
-      - kidsprize:HealthCheckPingUrl='https://hchk.io/0b82deee-121f-40d6-bd76-c8cc9961f266'
+      - 'kidsprize:ConnectionStrings:DefaultConnection=Server=db;Port=5432;Database=postgres;User Id=kidsprize;Password=password;'
+      - 'kidsprize:JwtBearerOptions:Authority=https://apperic.auth0.com/'
+      - 'kidsprize:JwtBearerOptions:Audience=<audience>'
+      - 'kidsprize:HealthCheckPingUrl=<health-check-ping-url>'
   db:
     image: postgres:9.6
     volumes:
