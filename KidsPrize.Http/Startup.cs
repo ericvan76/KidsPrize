@@ -38,9 +38,9 @@ namespace KidsPrize.Http
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables("kidsprize:");
 
-            builder.AddEnvironmentVariables();
             Configuration = builder.Build();
 
             _mapperConfgiuration = new MapperConfiguration(cfg =>
@@ -150,11 +150,8 @@ namespace KidsPrize.Http
             jwtOptions.SecurityTokenValidators.Add(new OverridedJwtSecurityTokenHandler());
             app.UseJwtBearerAuthentication(jwtOptions);
 
-            if (Configuration.GetValue<bool>("EnableSwagger") == true)
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI(opts => opts.SetupEndpoints());
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI(opts => opts.SetupEndpoints());
 
             // rewrite unversioned to v1
             app.UseRewriter(new RewriteOptions().AddRewrite(@"^(?!v\d+/)(.*)", "v1/$1", skipRemainingRules: true));

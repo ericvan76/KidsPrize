@@ -1,0 +1,41 @@
+version: '2'
+services:
+  https-portal:
+    image: steveltn/https-portal:1.1
+    depends_on:
+      - api
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./ssl_certs:/var/lib/https-portal
+    hostname: https-portal
+    restart: unless-stopped
+    stop_grace_period: 1m
+    environment:
+      - DOMAINS='api.kids-prize.com -> http://api/'
+      # - STAGE=production
+  api:
+    image: ericvan76/kidsprize:latest
+    depends_on:
+      - db
+    volumes:
+      - ./logs:/app/logs
+    hostname: api
+    restart: unless-stopped
+    stop_grace_period: 1m
+    environment:
+      - kidsprize:ConnectionStrings:DefaultConnection='Server=db;Port=5432;Database=postgres;User Id=kidsprize;Password=password;'
+      - kidsprize:JwtBearerOptions:Authority='https://apperic.auth0.com/'
+      - kidsprize:JwtBearerOptions:Audience='<audience>'
+      - kidsprize:HealthCheckPingUrl='https://hchk.io/0b82deee-121f-40d6-bd76-c8cc9961f266'
+  db:
+    image: postgres:9.6
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    hostname: db
+    restart: unless-stopped
+    stop_grace_period: 1m
+    environment:
+      - POSTGRES_USER=kidsprize
+      - POSTGRES_PASSWORD=password

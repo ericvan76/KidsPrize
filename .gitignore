@@ -252,3 +252,5 @@ paket-files/
 *.sln.iml
 
 **/*.lock.json
+
+docker/assets/
