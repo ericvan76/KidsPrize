@@ -38,9 +38,3 @@ before_deploy:
 deploy:
   provider: script
   script: docker push $REPO_NAME
-  on:
-    branch: master
-    tags: true
-
-
-
