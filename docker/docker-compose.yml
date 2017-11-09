@@ -2,13 +2,12 @@ version: '2'
 services:
   https-portal:
     image: steveltn/https-portal:1.1
-    depends_on:
-      - api
     ports:
       - '80:80'
       - '443:443'
     volumes:
       - ./ssl_certs:/var/lib/https-portal
+      - ./vhosts:/var/www/vhosts
     hostname: https-portal
     restart: unless-stopped
     stop_grace_period: 1m
@@ -17,8 +16,6 @@ services:
       # - STAGE=production
   api:
     image: ericvan76/kidsprize:latest
-    depends_on:
-      - db
     volumes:
       - ./logs:/app/logs
     hostname: api
