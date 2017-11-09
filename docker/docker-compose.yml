@@ -19,6 +19,8 @@ services:
     volumes:
       - ./logs:/app/logs
     hostname: api
+    depends_on:
+      - db
     restart: unless-stopped
     stop_grace_period: 1m
     environment:
