@@ -1,40 +1,36 @@
-version: '2'
+version: '3'
 services:
+
   https-portal:
     image: steveltn/https-portal:1.1
     ports:
       - '80:80'
       - '443:443'
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./ssl_certs:/var/lib/https-portal
       - ./vhosts:/var/www/vhosts
-    hostname: https-portal
-    restart: unless-stopped
-    stop_grace_period: 1m
+    restart: always
     environment:
-      - 'DOMAINS=api.kids-prize.com -> http://api/'
-      # - STAGE=production
-  api:
+      - STAGE=production
+
+  kidsprize:
     image: ericvan76/kidsprize:latest
     volumes:
       - ./logs:/app/logs
-    hostname: api
-    depends_on:
-      - db
-    restart: unless-stopped
-    stop_grace_period: 1m
+    restart: always
     environment:
-      - 'kidsprize:ConnectionStrings:DefaultConnection=Server=db;Port=5432;Database=postgres;User Id=kidsprize;Password=password;'
+      - 'VIRTUAL_HOST=kidsprize-api.fanstek.com,api.kids-prize.com'
+      - 'kidsprize:ConnectionStrings:DefaultConnection=Server=postgres;Port=5432;Database=kidsprize;User Id=kidsprize;Password=password;'
       - 'kidsprize:JwtBearerOptions:Authority=https://apperic.auth0.com/'
       - 'kidsprize:JwtBearerOptions:Audience=<audience>'
       - 'kidsprize:HealthCheckPingUrl=<health-check-ping-url>'
-  db:
+
+  postgres:
     image: postgres:9.6
     volumes:
-      - ./data:/var/lib/postgresql/data
-    hostname: db
-    restart: unless-stopped
-    stop_grace_period: 1m
+      - ./pgdata:/var/lib/postgresql/data
+    restart: always
     environment:
       - POSTGRES_USER=kidsprize
       - POSTGRES_PASSWORD=password
