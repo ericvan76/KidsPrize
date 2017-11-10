@@ -32,7 +32,7 @@ before_deploy:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker build docker -t $REPO_NAME
 #  - docker tag $REPO_NAME $REPO_NAME:$GitVersion_SemVer
-  - if [! -z $TRAVIS_TAG]; then docker tag $REPO_NAME $REPO_NAME:$TRAVIS_TAG; fi
+  - if [[ ! -z $TRAVIS_TAG ]]; then docker tag $REPO_NAME $REPO_NAME:$TRAVIS_TAG; fi
   - docker tag $REPO_NAME $REPO_NAME:latest
 
 deploy:
