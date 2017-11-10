@@ -38,3 +38,5 @@ before_deploy:
 deploy:
   provider: script
   script: docker push $REPO_NAME
+  on:
+    all_branches: true
