@@ -4,21 +4,22 @@ using System.Net;
 using System.Threading.Tasks;
 using KidsPrize.Commands;
 using KidsPrize.Extensions;
-using KidsPrize.Resources;
+using KidsPrize.Models;
 using KidsPrize.Services;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KidsPrize.Http.Controllers
 {
     [Route("[controller]")]
-    public class ChildrenController : ControllerWithMediator
+    public class ChildrenController : VersionedController
     {
         private readonly IChildService _childService;
+        private readonly IScoreService _scoreService;
 
-        public ChildrenController(IMediator mediator, IChildService childService) : base(mediator)
+        public ChildrenController(IChildService childService, IScoreService scoreService)
         {
             this._childService = childService;
+            this._scoreService = scoreService;
         }
 
         [HttpGet]
@@ -33,7 +34,8 @@ namespace KidsPrize.Http.Controllers
         [ProducesResponseType(typeof(ScoreResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateChild([FromBody] CreateChild command)
         {
-            var result = await this.Send<CreateChild, ScoreResult>(command);
+            await this._childService.CreateChild(User.UserId(), command);
+            var result = await this._scoreService.GetScoresOfCurrentWeek(User.UserId(), command.ChildId);
             return Ok(result);
         }
 
@@ -46,7 +48,8 @@ namespace KidsPrize.Http.Controllers
                 ModelState.AddModelError(nameof(childId), "Unmatched childUid in route and command.");
                 return BadRequest(ModelState);
             }
-            var result = await this.Send<UpdateChild, ScoreResult>(command);
+            await this._childService.UpdateChild(User.UserId(), command);
+            var result = await this._scoreService.GetScoresOfCurrentWeek(User.UserId(), command.ChildId);
             return Ok(result);
         }
 
@@ -54,7 +57,7 @@ namespace KidsPrize.Http.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteChild([FromRoute] Guid childId)
         {
-            await this.Send<DeleteChild>(new DeleteChild() { ChildId = childId });
+            await this._childService.DeleteChild(User.UserId(), childId);
             return Ok();
         }
 

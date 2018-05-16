@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace KidsPrize.Models
+namespace KidsPrize.Entities
 {
     public class Score
     {

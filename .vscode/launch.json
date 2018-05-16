@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/KidsPrize.Http/bin/Debug/netcoreapp1.1/KidsPrize.Http.dll",
+            "program": "${workspaceRoot}/KidsPrize.Http/bin/Debug/netcoreapp2.0/KidsPrize.Http.dll",
             "args": [],
             "cwd": "${workspaceRoot}/KidsPrize.Http",
             "stopAtEntry": false,

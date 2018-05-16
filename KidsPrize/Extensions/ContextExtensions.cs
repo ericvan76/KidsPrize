@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using KidsPrize.Models;
+using KidsPrize.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Extensions

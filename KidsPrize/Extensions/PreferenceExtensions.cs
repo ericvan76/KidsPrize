@@ -1,5 +1,5 @@
 using System;
-using KidsPrize.Models;
+using KidsPrize.Entities;
 
 namespace KidsPrize.Extensions
 {

@@ -4,20 +4,19 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KidsPrize.Commands;
 using KidsPrize.Extensions;
-using KidsPrize.Http.Mvc;
-using MediatR;
+using KidsPrize.Models;
 using Microsoft.AspNetCore.Mvc;
-using R = KidsPrize.Resources;
+using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Http.Controllers
 {
     [Route("[controller]")]
-    public class PreferenceController : ControllerWithMediator
+    public class PreferenceController : VersionedController
     {
         private readonly KidsPrizeContext _context;
         private readonly IMapper _mapper;
 
-        public PreferenceController(IMediator mediator, KidsPrizeContext context, IMapper mapper) : base(mediator)
+        public PreferenceController(KidsPrizeContext context, IMapper mapper)
         {
             this._context = context;
             this._mapper = mapper;
@@ -27,16 +26,23 @@ namespace KidsPrize.Http.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> SetPreference([FromBody] SetPreference command)
         {
-            await this.Send(command);
+            var preference = await this._context.Preferences.FirstOrDefaultAsync(p => p.UserId == User.UserId());
+            if (preference == null)
+            {
+                preference = new KidsPrize.Entities.Preference(User.UserId(), 0);
+                this._context.Preferences.Add(preference);
+            }
+            preference.Update(command.TimeZoneOffset);
+            await this._context.SaveChangesAsync();
             return Ok();
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(R.Preference), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Preference), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetPreference()
         {
             var preference = await this._context.GetPreference(this.User.UserId());
-            return Ok(this._mapper.Map<R.Preference>(preference));
+            return Ok(this._mapper.Map<Preference>(preference));
         }
 
     }

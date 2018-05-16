@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KidsPrize.Commands;
 using KidsPrize.Extensions;
-using KidsPrize.Resources;
+using KidsPrize.Models;
 using KidsPrize.Services;
 using Xunit;
 
@@ -19,10 +19,7 @@ namespace KidsPrize.Tests
         private readonly IChildService _childService;
         private readonly IRedeemService _redeemService;
         private readonly IScoreService _scoreService;
-        private readonly CreateChildHandler _createChildHandler;
-        private readonly SetScoreHandler _setScoreHandler;
-        private readonly CreateRedeemHandler _createRedeemHandler;
-        private readonly ClaimsPrincipal _user;
+        private readonly string _userId;
 
         public RedeemTests()
         {
@@ -31,10 +28,7 @@ namespace KidsPrize.Tests
             _childService = new ChildService(_context, _mapper);
             _scoreService = new ScoreService(_context, _mapper);
             _redeemService = new RedeemService(_context, _mapper);
-            _createChildHandler = new CreateChildHandler(_context, _scoreService);
-            _createRedeemHandler = new CreateRedeemHandler(_context, _mapper);
-            _setScoreHandler = new SetScoreHandler(_context);
-            _user = TestHelper.CreateUser(_context);
+            _userId = Guid.NewGuid().ToString();
         }
 
         [Fact]
@@ -48,10 +42,7 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            TestHelper.ValidateModel(createCommand);
-
-            createCommand.SetAuthorisation(_user);
-            await _createChildHandler.Handle(createCommand);
+            await _childService.CreateChild(_userId, createCommand);
 
             for (int i = 0; i < 100; i++)
             {
@@ -62,13 +53,10 @@ namespace KidsPrize.Tests
                     Task = "Task A",
                     Value = 1
                 };
-                TestHelper.ValidateModel(setScoreCommand);
-
-                setScoreCommand.SetAuthorisation(_user);
-                await _setScoreHandler.Handle(setScoreCommand);
+                await _scoreService.SetScore(_userId, setScoreCommand);
             }
 
-            var actual = await _childService.GetChild(_user.UserId(), createCommand.ChildId);
+            var actual = await _childService.GetChild(_userId, createCommand.ChildId);
 
             Assert.Equal(100, actual.TotalScore);
 
@@ -81,12 +69,10 @@ namespace KidsPrize.Tests
                     Description = $"Icecream-{i}",
                     Value = 2
                 };
-                TestHelper.ValidateModel(createRedeem);
-                createRedeem.SetAuthorisation(_user);
-                var result = await _createRedeemHandler.Handle(createRedeem);
+                var result = await _redeemService.CreateRedeem(_userId, createRedeem);
                 expectRedeems.Add(result);
 
-                actual = await _childService.GetChild(_user.UserId(), createCommand.ChildId);
+                actual = await _childService.GetChild(_userId, createCommand.ChildId);
 
                 Assert.Equal(100 - i * 2, actual.TotalScore);
             }
@@ -94,7 +80,7 @@ namespace KidsPrize.Tests
             var actualRedeems = new List<Redeem>();
             for (int i = 0; i < 99; i++)
             {
-                var redeems = await _redeemService.GetRedeems(_user.UserId(), createCommand.ChildId, 5, i * 5);
+                var redeems = await _redeemService.GetRedeems(_userId, createCommand.ChildId, 5, i * 5);
                 if (redeems.Count() == 0)
                 {
                     break;

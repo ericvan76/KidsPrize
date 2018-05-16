@@ -17,10 +17,10 @@ services:
   kidsprize:
     image: ericvan76/kidsprize:latest
     volumes:
-      - ./logs:/app/logs
+      - ./logs:/service/logs
     restart: always
     environment:
-      - 'VIRTUAL_HOST=kidsprize-api.fanstek.com,api.kids-prize.com'
+      - 'VIRTUAL_HOST=kidsprize-api.fanstek.com'
       - 'kidsprize:ConnectionStrings:DefaultConnection=Server=postgres;Port=5432;Database=kidsprize;User Id=kidsprize;Password=password;'
       - 'kidsprize:JwtBearerOptions:Authority=https://apperic.auth0.com/'
       - 'kidsprize:JwtBearerOptions:Audience=<audience>'

@@ -3,20 +3,18 @@ using System.Net;
 using System.Threading.Tasks;
 using KidsPrize.Commands;
 using KidsPrize.Extensions;
-using KidsPrize.Http.Mvc;
-using KidsPrize.Resources;
+using KidsPrize.Models;
 using KidsPrize.Services;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KidsPrize.Http.Controllers
 {
     [Route("Children/{childId:guid}/[controller]")]
-    public class ScoresController : ControllerWithMediator
+    public class ScoresController : VersionedController
     {
         private readonly IScoreService _scoreService;
 
-        public ScoresController(IMediator mediator, IScoreService scoreService) : base(mediator)
+        public ScoresController(IScoreService scoreService)
         {
             this._scoreService = scoreService;
         }
@@ -30,7 +28,7 @@ namespace KidsPrize.Http.Controllers
                 ModelState.AddModelError(nameof(childId), "Unmatched childUid in route and command.");
                 return BadRequest(ModelState);
             }
-            await this.Send(command);
+            await this._scoreService.SetScore(User.UserId(), command);
             return Ok();
         }
 

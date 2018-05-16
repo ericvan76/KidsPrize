@@ -1,36 +1,19 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace KidsPrize.Models
 {
     public class Redeem
     {
-        private Redeem() { }
-
-        public Redeem(Child child, DateTimeOffset timestamp, string description, int value)
-        {
-            Child = child;
-            Timestamp = timestamp;
-            Description = description;
-            Value = value;
-        }
-
-        [Key]
-        public int Id { get; private set; }
-
-        [Required]
-        public virtual Child Child { get; private set; }
-
-        [Required]
         [DataType(DataType.DateTime)]
+        [JsonProperty("timestamp", Required = Required.Always)]
         public DateTimeOffset Timestamp { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string Description { get; private set; }
+        [JsonProperty("description", Required = Required.Always)]
+        public string Description { get; set; }
 
-        [Required]
-        public int Value { get; private set; }
-
+        [JsonProperty("value", Required = Required.Always)]
+        public int Value { get; set; }
     }
 }
