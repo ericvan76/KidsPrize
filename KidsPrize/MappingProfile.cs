@@ -1,6 +1,6 @@
 using AutoMapper;
-using E = KidsPrize.Models;
-using R = KidsPrize.Resources;
+using E = KidsPrize.Entities;
+using M = KidsPrize.Models;
 
 namespace KidsPrize
 {
@@ -8,10 +8,10 @@ namespace KidsPrize
     {
         public MappingProfile()
         {
-            CreateMap<E.Child, R.Child>();
-            CreateMap<E.Score, R.Score>();
-            CreateMap<E.Preference, R.Preference>();
-            CreateMap<E.Redeem, R.Redeem>();
+            CreateMap<E.Child, M.Child>();
+            CreateMap<E.Score, M.Score>();
+            CreateMap<E.Preference, M.Preference>();
+            CreateMap<E.Redeem, M.Redeem>();
         }
     }
 }

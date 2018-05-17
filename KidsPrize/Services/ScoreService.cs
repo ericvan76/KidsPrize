@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KidsPrize.Commands;
 using KidsPrize.Extensions;
+using KidsPrize.Models;
 using Microsoft.EntityFrameworkCore;
-using R = KidsPrize.Resources;
+using E = KidsPrize.Entities;
 
 namespace KidsPrize.Services
 {
     public interface IScoreService
     {
-        Task<R.ScoreResult> GetScores(string userId, Guid childId, DateTime rewindFrom, int numOfWeeks);
+        Task<ScoreResult> GetScores(string userId, Guid childId, DateTime rewindFrom, int numOfWeeks);
+        Task<ScoreResult> GetScoresOfCurrentWeek(string userId, Guid childId);
+        Task SetScore(string userId, SetScore command);
     }
-
     public class ScoreService : IScoreService
     {
         private readonly KidsPrizeContext _context;
@@ -25,7 +28,7 @@ namespace KidsPrize.Services
             this._mapper = mapper;
         }
 
-        public async Task<R.ScoreResult> GetScores(string userId, Guid childId, DateTime rewindFrom, int numOfWeeks)
+        public async Task<ScoreResult> GetScores(string userId, Guid childId, DateTime rewindFrom, int numOfWeeks)
         {
             var dateFrom = rewindFrom.AddDays(-7 * numOfWeeks);
 
@@ -36,7 +39,7 @@ namespace KidsPrize.Services
                 .Union(await this._context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == childId && tg.EffectiveDate <= dateFrom).OrderByDescending(tg => tg.EffectiveDate).Take(1).ToListAsync())
                 .ToList();
 
-            var weeklyScoresList = new List<R.WeeklyScores>();
+            var weeklyScoresList = new List<WeeklyScores>();
             for (int i = 1; i <= numOfWeeks; i++)
             {
                 var weekStart = rewindFrom.AddDays(-7 * i);
@@ -44,20 +47,52 @@ namespace KidsPrize.Services
                 var taskGroup = taskGroups.OrderByDescending(tg => tg.EffectiveDate).FirstOrDefault(tg => tg.EffectiveDate <= weekStart);
                 if (taskGroup != null)
                 {
-                    weeklyScoresList.Add(new R.WeeklyScores()
+                    weeklyScoresList.Add(new WeeklyScores()
                     {
                         Week = weekStart,
                         Tasks = taskGroup.Tasks.OrderBy(t => t.Order).Select(t => t.Name).ToList(),
-                        Scores = scores.Where(s => s.Date >= weekStart && s.Date < weekEnd).Select(s => _mapper.Map<R.Score>(s)).ToList()
+                        Scores = scores.Where(s => s.Date >= weekStart && s.Date < weekEnd).Select(s => _mapper.Map<Score>(s)).ToList()
                     });
                 }
             }
 
-            return new R.ScoreResult
+            return new ScoreResult
             {
-                Child = _mapper.Map<R.Child>(child),
+                Child = _mapper.Map<Child>(child),
                 WeeklyScores = weeklyScoresList
             };
+        }
+
+        public async Task<ScoreResult> GetScoresOfCurrentWeek(string userId, Guid childId)
+        {
+            var preference = await this._context.GetPreference(userId);
+            return await this.GetScores(userId, childId, preference.Today().StartOfNextWeek(), 1);
+        }
+
+        public async Task SetScore(string userId, SetScore command)
+        {
+            // Ensure the child blongs to current user
+            var child = await this._context.GetChildOrThrow(userId, command.ChildId);
+
+            // Validate Task
+            var taskGroup = await this._context.GetTaskGroup(child.Id, command.Date);
+            if (taskGroup == null || !taskGroup.Tasks.Any(t => t.Name.Equals(command.Task, StringComparison.OrdinalIgnoreCase)))
+            {
+                return;
+            }
+
+            var score = this._context.Scores.Include(s => s.Child)
+                .FirstOrDefault(s => s.Child.Id == command.ChildId && s.Date == command.Date && s.Task == command.Task);
+
+            if (score == null)
+            {
+                score = new E.Score(child, command.Date, command.Task, 0);
+                this._context.Scores.Add(score);
+            }
+
+            score.Update(command.Value);
+
+            await this._context.SaveChangesAsync();
         }
     }
 }

@@ -4,8 +4,5 @@
     "editor.formatOnSave": true,
     "editor.formatOnType": true,
     "files.eol": "\n",
-    "files.exclude": {
-        "**/logs": true
-    },
     "files.trimTrailingWhitespace": true
 }

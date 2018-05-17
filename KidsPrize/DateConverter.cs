@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Converters;
 
-namespace KidsPrize.Converters
+namespace KidsPrize
 {
     public class DateConverter : IsoDateTimeConverter
     {

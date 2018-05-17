@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,48 +9,41 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
-using Scrutor;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System;
 using System.Linq;
 using Swashbuckle.AspNetCore.Swagger;
-using KidsPrize.Http.Mvc;
-using KidsPrize.Http.Jwt;
 using Microsoft.AspNetCore.Rewrite;
-using EasyVersioning.AspNetCore.Mvc;
-using EasyVersioning.AspNetCore.Swagger;
+using EasyVersioning.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using KidsPrize.Services;
 
 namespace KidsPrize.Http
 {
     public class Startup
     {
-        private readonly MapperConfiguration _mapperConfgiuration;
-        private readonly IHostingEnvironment _environment;
+        private readonly MapperConfiguration _mapperConfiguration;
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            // Setup configuration sources.
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables("kidsprize:");
+            Configuration = configuration;
 
-            Configuration = builder.Build();
-
-            _mapperConfgiuration = new MapperConfiguration(cfg =>
+            _mapperConfiguration = new MapperConfiguration(cfg =>
                 cfg.AddProfile(new MappingProfile()));
-
-            _environment = env;
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore,
+            };
 
             services.AddMvc()
                 .AddMvcOptions(opts =>
@@ -62,20 +54,22 @@ namespace KidsPrize.Http
                     opts.Filters.Add(new AuthorizeFilter(policyBuilder.Build()));
                     opts.Filters.Add(new ModelStateValidActionFilter());
                     opts.Conventions.Insert(0, new VersionPrefixConvention());
-                })
-                .AddJsonOptions(opts =>
-                {
-                    opts.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                    opts.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
 
-            services.AddMemoryCache();
+            // Authentication
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services.AddAuthentication().AddJwtBearer(opt =>
+            {
+                var authOptions = Configuration.GetSection("JwtBearerOptions");
+                opt.Authority = authOptions.GetValue<string>("Authority");
+                opt.Audience = authOptions.GetValue<string>("Audience");
+                opt.SecurityTokenValidators.Clear();
+                opt.SecurityTokenValidators.Add(new OverridedJwtSecurityTokenHandler());
+            });
 
+            // Add DBContext
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-
-            // Add framework services.
             services.AddDbContext<KidsPrizeContext>(builder =>
             {
                 builder.UseNpgsql(connectionString, options =>
@@ -85,21 +79,13 @@ namespace KidsPrize.Http
                 });
             });
 
+            services.AddSingleton<IConfiguration>(Configuration);
+
             // AutoMapper
-            services.AddSingleton<IMapper>(s => _mapperConfgiuration.CreateMapper());
-
-            // MediatR
-            services.AddScoped<SingleInstanceFactory>(p => t => p.GetRequiredService(t));
-            services.AddScoped<MultiInstanceFactory>(p => t => p.GetRequiredServices(t));
-            services.AddScoped<IMediator, Mediator>();
-
-            services.AddSingleton<IConfigurationRoot>(Configuration);
-
-            services.Scan(scan => scan
-                .FromAssembliesOf(typeof(Command))
-                .AddClasses(cfg => cfg.Where(t => t.Name.EndsWith("Handler") || t.Name.EndsWith("Service")))
-                .AsImplementedInterfaces()
-            );
+            services.AddSingleton<IMapper>(s => _mapperConfiguration.CreateMapper());
+            services.AddScoped<IChildService, ChildService>();
+            services.AddScoped<IScoreService, ScoreService>();
+            services.AddScoped<IRedeemService, RedeemService>();
 
             services.AddSwaggerGen(opts =>
             {
@@ -114,18 +100,10 @@ namespace KidsPrize.Http
             services.AddLogging();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-
-            // NLog
-            loggerFactory.AddNLog();
-            _environment.ConfigureNLog(System.IO.Path.Combine(_environment.ContentRootPath, "nlog.config"));
-
             // DbContext initialise
-            var context = app.ApplicationServices.GetService<KidsPrizeContext>();
-            context.Database.Migrate();
+            InitializeDatabase(app);
 
             // http://stackoverflow.com/questions/38153044/how-to-force-an-https-callback-using-microsoft-aspnetcore-authentication-google
             app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -133,19 +111,7 @@ namespace KidsPrize.Http
                 ForwardedHeaders = ForwardedHeaders.XForwardedProto
             });
 
-            // Authentication
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-            // Jwt Bearer
-            var authOptions = Configuration.GetSection("JwtBearerOptions");
-            var jwtOptions = new JwtBearerOptions()
-            {
-                Authority = authOptions.GetValue<string>("Authority"),
-                Audience = authOptions.GetValue<string>("Audience"),
-            };
-            jwtOptions.SecurityTokenValidators.Clear();
-            jwtOptions.SecurityTokenValidators.Add(new OverridedJwtSecurityTokenHandler());
-            app.UseJwtBearerAuthentication(jwtOptions);
+            app.UseAuthentication();
 
             app.UseSwagger();
             app.UseSwaggerUI(opts => opts.SetupEndpoints());
@@ -154,6 +120,14 @@ namespace KidsPrize.Http
             app.UseRewriter(new RewriteOptions().AddRewrite(@"^(?!v\d+/)(.*)", "v1/$1", skipRemainingRules: true));
             app.UseMvc();
 
+        }
+
+        private static void InitializeDatabase(IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                scope.ServiceProvider.GetRequiredService<KidsPrizeContext>().Database.Migrate();
+            }
         }
     }
 }

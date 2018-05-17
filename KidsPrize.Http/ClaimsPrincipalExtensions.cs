@@ -2,7 +2,7 @@ using System.Linq;
 using System.Security.Claims;
 using IdentityModel;
 
-namespace KidsPrize.Extensions
+namespace KidsPrize
 {
     public static class ClaimsPrincipalExtensions
     {

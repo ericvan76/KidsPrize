@@ -1,44 +1,20 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace KidsPrize.Models
 {
     public class Child
     {
-        private Child() { }
+        [JsonProperty("id", Required = Required.Always)]
+        public Guid Id { get; set; }
 
-        public Child(Guid id, string userId, string name, string gender)
-        {
-            Id = id;
-            UserId = userId;
-            Name = name;
-            Gender = gender;
-            TotalScore = 0;
-        }
+        [JsonProperty("name", Required = Required.Always)]
+        public string Name { get; set; }
 
-        [Key]
-        public Guid Id { get; private set; }
+        [JsonProperty("gender", Required = Required.Always)]
+        public string Gender { get; set; }
 
-        [Required]
-        [MaxLength(250)]
-        public string UserId { get; private set; }
-
-        [Required]
-        [MaxLength(250)]
-        public string Name { get; private set; }
-
-        [MaxLength(10)]
-        public string Gender { get; private set; }
-
-        [Required]
-        public int TotalScore { get; private set; }
-
-        public void Update(string name, string gender, int? totalScore)
-        {
-            Name = name ?? Name;
-            Gender = gender ?? Gender;
-            TotalScore = totalScore ?? TotalScore;
-        }
+        [JsonProperty("totalScore", Required = Required.Always)]
+        public int TotalScore { get; set; }
     }
-
 }

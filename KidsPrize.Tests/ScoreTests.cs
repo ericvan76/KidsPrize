@@ -14,21 +14,18 @@ namespace KidsPrize.Tests
     {
         private readonly KidsPrizeContext _context;
         private readonly IMapper _mapper;
+        private readonly IChildService _childService;
         private readonly IScoreService _scoreService;
-        private readonly CreateChildHandler _createChildHandler;
-        private readonly SetScoreHandler _setScoreHandler;
-        private readonly ClaimsPrincipal _user;
+        private readonly string _userId;
 
         public ScoreTests()
         {
             _context = TestHelper.CreateContext();
             _mapper = TestHelper.CreateMapper();
+            _childService = new ChildService(_context, _mapper);
             _scoreService = new ScoreService(_context, _mapper);
-            _createChildHandler = new CreateChildHandler(_context, _scoreService);
-            _setScoreHandler = new SetScoreHandler(_context);
-            _user = TestHelper.CreateUser(_context);
+            _userId = Guid.NewGuid().ToString();
         }
-
 
         [Fact]
         public async Task TestSetScore()
@@ -40,10 +37,7 @@ namespace KidsPrize.Tests
                 Gender = "M",
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            TestHelper.ValidateModel(createCommand);
-
-            createCommand.SetAuthorisation(_user);
-            await _createChildHandler.Handle(createCommand);
+            await _childService.CreateChild(_userId, createCommand);
 
             var setScoreCommand = new SetScore()
             {
@@ -52,17 +46,14 @@ namespace KidsPrize.Tests
                 Task = "Task A",
                 Value = 1
             };
-            TestHelper.ValidateModel(setScoreCommand);
+            await _scoreService.SetScore(_userId, setScoreCommand);
 
-            setScoreCommand.SetAuthorisation(_user);
-            await _setScoreHandler.Handle(setScoreCommand);
-
-            var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
 
             Assert.Equal(1, actual.Child.TotalScore);
-            Assert.Equal(1, actual.WeeklyScores.Count());
+            Assert.Single(actual.WeeklyScores);
             var weeklyScores = actual.WeeklyScores.First();
-            Assert.Equal(1, weeklyScores.Scores.Count(s => s.Value == 1));
+            Assert.Single(weeklyScores.Scores.Where(s => s.Value == 1));
             var score = weeklyScores.Scores.FirstOrDefault(s => s.Value == 1);
             Assert.Equal(setScoreCommand.Date, score.Date);
             Assert.Equal(setScoreCommand.Task, score.Task);
@@ -78,10 +69,7 @@ namespace KidsPrize.Tests
                 Gender = "M",
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            TestHelper.ValidateModel(createCommand);
-
-            createCommand.SetAuthorisation(_user);
-            await _createChildHandler.Handle(createCommand);
+            await _childService.CreateChild(_userId, createCommand);
 
             var setScoreCommand = new SetScore()
             {
@@ -90,20 +78,17 @@ namespace KidsPrize.Tests
                 Task = "Task B",
                 Value = 1
             };
-            TestHelper.ValidateModel(setScoreCommand);
-
-            setScoreCommand.SetAuthorisation(_user);
-            await _setScoreHandler.Handle(setScoreCommand);
+            await _scoreService.SetScore(_userId, setScoreCommand);
 
             setScoreCommand.Value = 0;
-            await _setScoreHandler.Handle(setScoreCommand);
+            await _scoreService.SetScore(_userId, setScoreCommand);
 
-            var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
 
             Assert.Equal(0, actual.Child.TotalScore);
-            Assert.Equal(1, actual.WeeklyScores.Count());
+            Assert.Single(actual.WeeklyScores);
             var weeklyScores = actual.WeeklyScores.First();
-            Assert.Equal(0, weeklyScores.Scores.Count(s => s.Value == 1));
+            Assert.Empty(weeklyScores.Scores.Where(s => s.Value == 1));
         }
 
 
@@ -117,10 +102,7 @@ namespace KidsPrize.Tests
                 Gender = "M",
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            TestHelper.ValidateModel(createCommand);
-
-            createCommand.SetAuthorisation(_user);
-            await _createChildHandler.Handle(createCommand);
+            await _childService.CreateChild(_userId, createCommand);
 
             var setScoreCommand = new SetScore()
             {
@@ -129,17 +111,14 @@ namespace KidsPrize.Tests
                 Task = "task c",
                 Value = 1
             };
-            TestHelper.ValidateModel(setScoreCommand);
+            await _scoreService.SetScore(_userId, setScoreCommand);
 
-            setScoreCommand.SetAuthorisation(_user);
-            await _setScoreHandler.Handle(setScoreCommand);
-
-            var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
 
             Assert.Equal(1, actual.Child.TotalScore);
-            Assert.Equal(1, actual.WeeklyScores.Count());
+            Assert.Single(actual.WeeklyScores);
             var weeklyScores = actual.WeeklyScores.First();
-            Assert.Equal(1, weeklyScores.Scores.Count(s => s.Value == 1));
+            Assert.Single(weeklyScores.Scores.Where(s => s.Value == 1));
             var score = weeklyScores.Scores.FirstOrDefault(s => s.Value == 1);
             Assert.Equal(setScoreCommand.Date, score.Date);
             Assert.Equal(setScoreCommand.Task, score.Task);
@@ -155,10 +134,7 @@ namespace KidsPrize.Tests
                 Gender = "M",
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            TestHelper.ValidateModel(createCommand);
-
-            createCommand.SetAuthorisation(_user);
-            await _createChildHandler.Handle(createCommand);
+            await _childService.CreateChild(_userId, createCommand);
 
             var setScoreCommand = new SetScore()
             {
@@ -167,17 +143,14 @@ namespace KidsPrize.Tests
                 Task = "task D",
                 Value = 1
             };
-            TestHelper.ValidateModel(setScoreCommand);
+            await _scoreService.SetScore(_userId, setScoreCommand);
 
-            setScoreCommand.SetAuthorisation(_user);
-            await _setScoreHandler.Handle(setScoreCommand);
-
-            var actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfNextWeek(), 1);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
 
             Assert.Equal(0, actual.Child.TotalScore);
-            Assert.Equal(1, actual.WeeklyScores.Count());
+            Assert.Single(actual.WeeklyScores);
             var weeklyScores = actual.WeeklyScores.First();
-            Assert.Equal(0, weeklyScores.Scores.Count(s => s.Value == 1));
+            Assert.Empty(weeklyScores.Scores.Where(s => s.Value == 1));
         }
 
     }

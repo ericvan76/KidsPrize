@@ -1,4 +1,4 @@
-using KidsPrize.Models;
+using KidsPrize.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -23,7 +23,7 @@ namespace KidsPrize
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.HasPostgresExtension("uuid-ossp").Schema("public");
+            modelBuilder.HasPostgresExtension("uuid-ossp").HasDefaultSchema("public");
 
             modelBuilder.RemovePluralizingTableNameConvention();
             modelBuilder.HasDefaultSchema("KidsPrize");

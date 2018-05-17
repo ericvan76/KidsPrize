@@ -3,34 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using AutoMapper;
-using IdentityModel;
-using KidsPrize.Models;
+using KidsPrize.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Tests
 {
     public static class TestHelper
     {
-        public static ClaimsPrincipal CreateUser(KidsPrizeContext context)
-        {
-            var userId = Guid.NewGuid().ToString();
-            context.Preferences.Add(new Preference(userId, -1 * (int)DateTimeOffset.Now.Offset.TotalMinutes));
-            context.SaveChanges();
-            return new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(JwtClaimTypes.Email, userId)
-            }));
-        }
-
-        public static void SetAuthorisation(this Command command, ClaimsPrincipal user)
-        {
-            command.SetHeader("Authorisation", user);
-        }
-
         public static KidsPrizeContext CreateContext()
         {
             var opts = new DbContextOptionsBuilder<KidsPrizeContext>();
-            opts.UseInMemoryDatabase();
+            opts.UseInMemoryDatabase("test");
             return new KidsPrizeContext(opts.Options);
         }
 
@@ -39,11 +22,5 @@ namespace KidsPrize.Tests
             return new MapperConfiguration(c => c.AddProfile(new MappingProfile())).CreateMapper();
         }
 
-        public static void ValidateModel(Command command)
-        {
-            var context = new ValidationContext(command, null, null);
-            var results = new List<ValidationResult>();
-            Validator.ValidateObject(command, context);
-        }
     }
 }

@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using KidsPrize.Resources;
+using KidsPrize.Commands;
+using KidsPrize.Extensions;
+using KidsPrize.Models;
 using Microsoft.EntityFrameworkCore;
+using E = KidsPrize.Entities;
 
 namespace KidsPrize.Services
 {
     public interface IRedeemService
     {
         Task<IEnumerable<Redeem>> GetRedeems(string userId, Guid childId, int limit, int offset);
+        Task<Redeem> CreateRedeem(string userId, CreateRedeem command);
     }
 
     public class RedeemService : IRedeemService
@@ -22,6 +26,19 @@ namespace KidsPrize.Services
         {
             _context = context;
             _mapper = mapper;
+        }
+
+        public async Task<Redeem> CreateRedeem(string userId, CreateRedeem command)
+        {
+            // Ensure the child blongs to current user
+            var child = await this._context.GetChildOrThrow(userId, command.ChildId);
+            var redeem = new E.Redeem(child, DateTimeOffset.Now, command.Description, command.Value);
+
+            child.Update(null, null, child.TotalScore - command.Value);
+            this._context.Redeems.Add(redeem);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<Redeem>(redeem);
         }
 
         public async Task<IEnumerable<Redeem>> GetRedeems(string userId, Guid childId, int limit, int offset)

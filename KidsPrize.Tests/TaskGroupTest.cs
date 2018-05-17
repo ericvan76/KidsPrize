@@ -8,7 +8,7 @@ using KidsPrize.Extensions;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using E = KidsPrize.Models;
+using E = KidsPrize.Entities;
 
 namespace KidsPrize.Tests
 {
@@ -18,11 +18,7 @@ namespace KidsPrize.Tests
         private readonly IMapper _mapper;
         private readonly IChildService _childService;
         private readonly IScoreService _scoreService;
-        private readonly CreateChildHandler _createChildHandler;
-        private readonly UpdateChildHandler _updateChildHandler;
-        private readonly DeleteChildHandler _deleteChildHandler;
-        private readonly SetScoreHandler _setScoreHandler;
-        private readonly ClaimsPrincipal _user;
+        private readonly string _userId;
 
         public TaskGroupTests()
         {
@@ -30,11 +26,7 @@ namespace KidsPrize.Tests
             _mapper = TestHelper.CreateMapper();
             _childService = new ChildService(_context, _mapper);
             _scoreService = new ScoreService(_context, _mapper);
-            _createChildHandler = new CreateChildHandler(_context, _scoreService);
-            _updateChildHandler = new UpdateChildHandler(_context, _scoreService);
-            _deleteChildHandler = new DeleteChildHandler(_context);
-            _setScoreHandler = new SetScoreHandler(_context);
-            _user = TestHelper.CreateUser(_context);
+            _userId = Guid.NewGuid().ToString();
         }
 
         [Fact]
@@ -47,30 +39,25 @@ namespace KidsPrize.Tests
                 Gender = "M",
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            TestHelper.ValidateModel(createCommand);
-
-            createCommand.SetAuthorisation(_user);
-            await _createChildHandler.Handle(createCommand);
+            await _childService.CreateChild(_userId, createCommand);
 
             var updateCommand = new UpdateChild()
             {
                 ChildId = createCommand.ChildId,
                 Tasks = new[] { "Task B", "Task C", "Task E" }
             };
-            TestHelper.ValidateModel(updateCommand);
-
-            updateCommand.SetAuthorisation(_user);
-            var actual = await _updateChildHandler.Handle(updateCommand);
+            await _childService.UpdateChild(_userId, updateCommand);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
 
             Assert.Equal(createCommand.Name, actual.Child.Name);
             Assert.Equal(createCommand.Gender, actual.Child.Gender);
             Assert.Equal(0, actual.Child.TotalScore);
-            Assert.Equal(1, actual.WeeklyScores.Count());
+            Assert.Single(actual.WeeklyScores);
             var weeklyScores = actual.WeeklyScores.First();
-            Assert.Equal(0, weeklyScores.Scores.Count());
+            Assert.Empty(weeklyScores.Scores);
             weeklyScores.Tasks.SequenceEqual(updateCommand.Tasks);
             var allTaskGroups = await _context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == createCommand.ChildId).ToListAsync();
-            Assert.Equal(1, allTaskGroups.Count);
+            Assert.Single(allTaskGroups);
         }
 
         [Fact]
@@ -83,10 +70,7 @@ namespace KidsPrize.Tests
                 Gender = "M",
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            TestHelper.ValidateModel(createCommand);
-
-            createCommand.SetAuthorisation(_user);
-            await _createChildHandler.Handle(createCommand);
+            await _childService.CreateChild(_userId, createCommand);
 
             // mock taskGroup to previous week
             var child = await this._context.Children.FirstAsync(c => c.Id == createCommand.ChildId);
@@ -100,17 +84,15 @@ namespace KidsPrize.Tests
                 ChildId = createCommand.ChildId,
                 Tasks = new[] { "Task D", "Task C", "Task F" }
             };
-            TestHelper.ValidateModel(updateCommand);
-
-            updateCommand.SetAuthorisation(_user);
-            var actual = await _updateChildHandler.Handle(updateCommand);
+            await _childService.UpdateChild(_userId, updateCommand);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
 
             Assert.Equal(createCommand.Name, actual.Child.Name);
             Assert.Equal(createCommand.Gender, actual.Child.Gender);
             Assert.Equal(0, actual.Child.TotalScore);
-            Assert.Equal(1, actual.WeeklyScores.Count());
+            Assert.Single(actual.WeeklyScores);
             var weeklyScores = actual.WeeklyScores.First();
-            Assert.Equal(0, weeklyScores.Scores.Count());
+            Assert.Empty(weeklyScores.Scores);
             weeklyScores.Tasks.SequenceEqual(updateCommand.Tasks);
 
             var allTaskGroups = await _context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == createCommand.ChildId).OrderBy(tg => tg.EffectiveDate).ToListAsync();
@@ -129,10 +111,7 @@ namespace KidsPrize.Tests
                 Gender = "M",
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            TestHelper.ValidateModel(createCommand);
-
-            createCommand.SetAuthorisation(_user);
-            await _createChildHandler.Handle(createCommand);
+            await _childService.CreateChild(_userId, createCommand);
 
             // mock taskGroup to previous week
             var child = await this._context.Children.FirstAsync(c => c.Id == createCommand.ChildId);
@@ -149,20 +128,17 @@ namespace KidsPrize.Tests
                 Task = "Task A",
                 Value = 1
             };
-            TestHelper.ValidateModel(setScoreCommand);
-
-            setScoreCommand.SetAuthorisation(_user);
-            await _setScoreHandler.Handle(setScoreCommand);
+            await _scoreService.SetScore(_userId, setScoreCommand);
 
             // Task A for this week (to be cleaned)
             setScoreCommand.Task = "Task A";
             setScoreCommand.Date = DateTime.Today;
-            await _setScoreHandler.Handle(setScoreCommand);
+            await _scoreService.SetScore(_userId, setScoreCommand);
 
             // Task C for this week
             setScoreCommand.Task = "Task C";
             setScoreCommand.Date = DateTime.Today;
-            await _setScoreHandler.Handle(setScoreCommand);
+            await _scoreService.SetScore(_userId, setScoreCommand);
 
             // update tasks
             var updateCommand = new UpdateChild()
@@ -170,22 +146,20 @@ namespace KidsPrize.Tests
                 ChildId = createCommand.ChildId,
                 Tasks = new[] { "Task D", "Task C", "Task F" }
             };
-            TestHelper.ValidateModel(updateCommand);
-
-            updateCommand.SetAuthorisation(_user);
-            var actual = await _updateChildHandler.Handle(updateCommand);
+            await _childService.UpdateChild(_userId, updateCommand);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
 
             Assert.Equal(createCommand.Name, actual.Child.Name);
             Assert.Equal(createCommand.Gender, actual.Child.Gender);
             Assert.Equal(2, actual.Child.TotalScore);
-            Assert.Equal(1, actual.WeeklyScores.Count());
+            Assert.Single(actual.WeeklyScores);
             var weeklyScores = actual.WeeklyScores.First();
-            Assert.Equal(1, weeklyScores.Scores.Count());
+            Assert.Single(weeklyScores.Scores);
             Assert.Equal("Task C", weeklyScores.Scores.First().Task);
 
-            actual = await _scoreService.GetScores(_user.UserId(), createCommand.ChildId, DateTime.Today.StartOfWeek(), 1);
+            actual = await _scoreService.GetScores(_userId, createCommand.ChildId, DateTime.Today.StartOfWeek(), 1);
             Assert.Equal(2, actual.Child.TotalScore);
-            Assert.Equal(1, actual.WeeklyScores.Count());
+            Assert.Single(actual.WeeklyScores);
             weeklyScores = actual.WeeklyScores.First();
             Assert.Equal("Task A", weeklyScores.Scores.First().Task);
         }

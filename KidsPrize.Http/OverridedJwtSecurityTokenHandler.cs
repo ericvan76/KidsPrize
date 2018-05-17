@@ -4,7 +4,7 @@ using System.Security.Claims;
 using IdentityModel;
 using Microsoft.IdentityModel.Tokens;
 
-namespace KidsPrize.Http.Jwt
+namespace KidsPrize.Http
 {
     public class OverridedJwtSecurityTokenHandler : JwtSecurityTokenHandler
     {
