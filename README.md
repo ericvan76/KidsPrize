@@ -1,4 +1,6 @@
-# KidsPrize [![Build Status](https://travis-ci.org/ericvan76/KidsPrize.svg?branch=master)](https://travis-ci.org/ericvan76/KidsPrize)
+# KidsPrize
+
+[![Build status](https://ci.appveyor.com/api/projects/status/vmqeipo8pjdhu2ih/branch/master?svg=true)](https://ci.appveyor.com/project/ericvan76/kidsprize/branch/master)
 
 A simple behaviour charts for kids - backend
 
