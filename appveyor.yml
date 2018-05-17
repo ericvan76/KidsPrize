@@ -4,7 +4,9 @@ branches:
 
 image: ubuntu
 
-configuration: Release
+environment:
+  DOCKER_PASS:
+    secure: 9WZpiAD5x5TssAf73a+0CS1S+DE3uVrOc0bKutr8gq0=
 
 init:
   - git config --global core.autocrlf input
@@ -28,9 +30,8 @@ test_script:
   - dotnet test ./KidsPrize.Tests/KidsPrize.Tests.csproj
 
 deploy_script:
-  - docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+  - docker login -u="ericvan76" -p="$DOCKER_PASS"
   - docker build docker -t ericvan76/kidsprize
-  - docker tag ericvan76/kidsprize ericvan76/kidsprize:$env:GitVersion_NuGetVersionV2
-  - docker tag ericvan76/kidsprize ericvan76/kidsprize:$env:GitVersion_PreReleaseLabel
+  - docker tag ericvan76/kidsprize ericvan76/kidsprize:$GitVersion_SemVer
   - docker tag ericvan76/kidsprize ericvan76/kidsprize:latest
   - docker push ericvan76/kidsprize
