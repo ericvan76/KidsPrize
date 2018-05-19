@@ -13,26 +13,18 @@ namespace KidsPrize.Http.Controllers
     public class HealthCheckController : VersionedController
     {
         private readonly KidsPrizeContext _context;
-        private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
 
-        public HealthCheckController(KidsPrizeContext context, IConfiguration configuration)
+        public HealthCheckController(KidsPrizeContext context)
         {
             _context = context;
-            _configuration = configuration;
             _httpClient = new HttpClient();
         }
 
         [HttpGet]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
-            var pingUrl = _configuration.GetValue<string>("HealthCheckPingUrl");
-            if (!string.IsNullOrEmpty(pingUrl))
-            {
-                var resp = await _httpClient.GetAsync(pingUrl);
-                resp.EnsureSuccessStatusCode();
-            }
             return NoContent();
         }
     }
