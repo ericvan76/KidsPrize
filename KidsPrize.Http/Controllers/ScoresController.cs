@@ -1,10 +1,10 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using KidsPrize.Commands;
-using KidsPrize.Extensions;
-using KidsPrize.Models;
-using KidsPrize.Services;
+using KidsPrize.Abstractions;
+using KidsPrize.Contracts;
+using KidsPrize.Contracts.Commands;
+using KidsPrize.Contracts.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KidsPrize.Http.Controllers

@@ -1,14 +1,16 @@
 ﻿using Xunit;
-using KidsPrize.Services;
 using AutoMapper;
-using KidsPrize.Commands;
 using System;
 using System.Security.Claims;
-using KidsPrize.Extensions;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using E = KidsPrize.Entities;
+using KidsPrize.Repository.Npgsql;
+using KidsPrize.Contracts.Commands;
+using KidsPrize.Contracts;
+using KidsPrize.Http.Services;
+using KidsPrize.Abstractions;
+using E = KidsPrize.Repository.Npgsql.Entities;
 
 namespace KidsPrize.Tests
 {

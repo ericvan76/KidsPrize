@@ -4,10 +4,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
-using KidsPrize.Commands;
-using KidsPrize.Extensions;
-using KidsPrize.Models;
-using KidsPrize.Services;
+using KidsPrize.Abstractions;
+using KidsPrize.Contracts.Commands;
+using KidsPrize.Contracts.Models;
+using KidsPrize.Http.Services;
+using KidsPrize.Repository.Npgsql;
 using Xunit;
 
 namespace KidsPrize.Tests

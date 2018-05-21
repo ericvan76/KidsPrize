@@ -19,22 +19,18 @@ using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Rewrite;
 using EasyVersioning.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using KidsPrize.Services;
+using KidsPrize.Abstractions;
+using KidsPrize.Http.Services;
+using KidsPrize.Repository.Npgsql;
 
 namespace KidsPrize.Http
 {
     public class Startup
     {
-        private readonly MapperConfiguration _mapperConfiguration;
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
-            _mapperConfiguration = new MapperConfiguration(cfg =>
-                cfg.AddProfile(new MappingProfile()));
         }
-
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
@@ -68,25 +64,17 @@ namespace KidsPrize.Http
             });
 
             // Add DBContext
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            services.AddDbContext<KidsPrizeContext>(builder =>
-            {
-                builder.UseNpgsql(connectionString, options =>
-                {
-                    options.MigrationsAssembly(migrationsAssembly);
-                    options.MigrationsHistoryTable("__MigrationHistory", "KidsPrize");
-                });
-            });
+            services.AddNpgsqlDbContext(Configuration.GetConnectionString("DefaultConnection"));
+
+            services.AddAutoMapper();
 
             services.AddSingleton<IConfiguration>(Configuration);
 
-            // AutoMapper
-            services.AddSingleton<IMapper>(s => _mapperConfiguration.CreateMapper());
             services.AddScoped<IChildService, ChildService>();
             services.AddScoped<IScoreService, ScoreService>();
             services.AddScoped<IRedeemService, RedeemService>();
 
+            // Swagger
             services.AddSwaggerGen(opts =>
             {
                 opts.SetupVersionedDocs("KidsPrize API");
@@ -102,32 +90,21 @@ namespace KidsPrize.Http
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            // DbContext initialise
-            InitializeDatabase(app);
-
             // http://stackoverflow.com/questions/38153044/how-to-force-an-https-callback-using-microsoft-aspnetcore-authentication-google
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedProto
             });
 
+            // DbContext initialise
+            app.UseNpgsqlDbContext();
+
             app.UseAuthentication();
 
             app.UseSwagger();
             app.UseSwaggerUI(opts => opts.SetupEndpoints());
 
-            // rewrite unversioned to v1
-            app.UseRewriter(new RewriteOptions().AddRewrite(@"^(?!v\d+/)(.*)", "v1/$1", skipRemainingRules: true));
             app.UseMvc();
-
-        }
-
-        private static void InitializeDatabase(IApplicationBuilder app)
-        {
-            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                scope.ServiceProvider.GetRequiredService<KidsPrizeContext>().Database.Migrate();
-            }
         }
     }
 }

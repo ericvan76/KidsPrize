@@ -2,9 +2,9 @@
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
-using KidsPrize.Commands;
-using KidsPrize.Extensions;
-using KidsPrize.Models;
+using KidsPrize.Contracts.Commands;
+using KidsPrize.Contracts.Models;
+using KidsPrize.Repository.Npgsql;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +29,7 @@ namespace KidsPrize.Http.Controllers
             var preference = await this._context.Preferences.FirstOrDefaultAsync(p => p.UserId == User.UserId());
             if (preference == null)
             {
-                preference = new KidsPrize.Entities.Preference(User.UserId(), 0);
+                preference = new Repository.Npgsql.Entities.Preference(User.UserId(), 0);
                 this._context.Preferences.Add(preference);
             }
             preference.Update(command.TimeZoneOffset);
