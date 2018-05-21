@@ -29,7 +29,7 @@ namespace KidsPrize.Http
                 .Enrich.WithProperty("ProductName", "KidsPrize API")
                 .Enrich.WithProperty("ProductVersion", productVersion)
                 .WriteTo.Console()
-                .WriteTo.File(new CompactJsonFormatter(), "logs/kidsprize.log", rollingInterval: RollingInterval.Day)
+                .WriteTo.File(new CompactJsonFormatter(), "logs/kidsprize.log", rollingInterval : RollingInterval.Day)
                 .CreateLogger();
 
             BuildWebHost(args).Run();
@@ -37,12 +37,12 @@ namespace KidsPrize.Http
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseConfiguration(new ConfigurationBuilder().AddCommandLine(args).Build())
-                .ConfigureAppConfiguration(b => b.AddEnvironmentVariables("kidsprize:"))
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<Startup>()
-                .UseSerilog()
-                .Build();
+            .UseConfiguration(new ConfigurationBuilder().AddCommandLine(args).Build())
+            .ConfigureAppConfiguration(b => b.AddEnvironmentVariables("kidsprize:"))
+            .UseContentRoot(Directory.GetCurrentDirectory())
+            .UseStartup<Startup>()
+            .UseSerilog()
+            .Build();
     }
 
 }

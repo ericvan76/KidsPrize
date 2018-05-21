@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KidsPrize.Abstractions;
-using KidsPrize.Contracts.Commands;
 using KidsPrize.Contracts;
+using KidsPrize.Contracts.Commands;
 using KidsPrize.Contracts.Models;
 using KidsPrize.Repository.Npgsql;
 using Microsoft.EntityFrameworkCore;
@@ -46,8 +46,8 @@ namespace KidsPrize.Http.Services
                     weeklyScoresList.Add(new WeeklyScores()
                     {
                         Week = weekStart,
-                        Tasks = taskGroup.Tasks.OrderBy(t => t.Order).Select(t => t.Name).ToList(),
-                        Scores = scores.Where(s => s.Date >= weekStart && s.Date < weekEnd).Select(s => _mapper.Map<Score>(s)).ToList()
+                            Tasks = taskGroup.Tasks.OrderBy(t => t.Order).Select(t => t.Name).ToList(),
+                            Scores = scores.Where(s => s.Date >= weekStart && s.Date < weekEnd).Select(s => _mapper.Map<Score>(s)).ToList()
                     });
                 }
             }
@@ -55,7 +55,7 @@ namespace KidsPrize.Http.Services
             return new ScoreResult
             {
                 Child = _mapper.Map<Child>(child),
-                WeeklyScores = weeklyScoresList
+                    WeeklyScores = weeklyScoresList
             };
         }
 

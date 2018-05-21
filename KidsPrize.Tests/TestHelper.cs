@@ -21,6 +21,5 @@ namespace KidsPrize.Tests
         {
             return new MapperConfiguration(c => c.AddProfile(new MappingProfile())).CreateMapper();
         }
-
     }
 }

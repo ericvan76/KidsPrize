@@ -15,7 +15,7 @@ namespace KidsPrize.Http
             var principal = base.ValidateToken(securityToken, validationParameters, out validated);
             if (principal.HasClaim(c => c.Type == JwtClaimTypes.Email) &&
                 principal.HasClaim(c => c.Type == JwtClaimTypes.EmailVerified &&
-                bool.TryParse(c.Value, out emailVerified) && emailVerified))
+                    bool.TryParse(c.Value, out emailVerified) && emailVerified))
             {
                 validatedToken = validated;
                 return principal;

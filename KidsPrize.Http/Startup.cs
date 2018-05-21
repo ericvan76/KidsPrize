@@ -1,27 +1,27 @@
-﻿using AutoMapper;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Reflection;
+using AutoMapper;
+using EasyVersioning.AspNetCore;
+using KidsPrize.Abstractions;
+using KidsPrize.Http.Services;
+using KidsPrize.Repository.Npgsql;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
-using System.IdentityModel.Tokens.Jwt;
-using System.Reflection;
-using System;
-using System.Linq;
+using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
-using Microsoft.AspNetCore.Rewrite;
-using EasyVersioning.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using KidsPrize.Abstractions;
-using KidsPrize.Http.Services;
-using KidsPrize.Repository.Npgsql;
 
 namespace KidsPrize.Http
 {
@@ -45,7 +45,7 @@ namespace KidsPrize.Http
                 .AddMvcOptions(opts =>
                 {
                     var policyBuilder = new AuthorizationPolicyBuilder();
-                    policyBuilder.AddAuthenticationSchemes(new[] { "Bearer" });
+                    policyBuilder.AddAuthenticationSchemes(new [] { "Bearer" });
                     policyBuilder.RequireAuthenticatedUser();
                     opts.Filters.Add(new AuthorizeFilter(policyBuilder.Build()));
                     opts.Filters.Add(new ModelStateValidActionFilter());

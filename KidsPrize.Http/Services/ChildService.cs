@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KidsPrize.Abstractions;
-using KidsPrize.Contracts.Commands;
 using KidsPrize.Contracts;
+using KidsPrize.Contracts.Commands;
 using KidsPrize.Contracts.Models;
 using KidsPrize.Repository.Npgsql;
 using Microsoft.EntityFrameworkCore;
@@ -102,10 +102,10 @@ namespace KidsPrize.Http.Services
                 // delete scores of removed Tasks
                 var endDate = effectiveDate.AddDays(7);
                 var removed = await this._context.Scores.Where(s =>
-                   s.Child.Id == child.Id &&
-                   s.Date >= effectiveDate &&
-                   s.Date < endDate &&
-                   !tasks.Contains(s.Task)
+                    s.Child.Id == child.Id &&
+                    s.Date >= effectiveDate &&
+                    s.Date < endDate &&
+                    !tasks.Contains(s.Task)
                 ).ToListAsync();
                 var delta = removed.Sum(s => s.Value);
                 this._context.RemoveRange(removed);

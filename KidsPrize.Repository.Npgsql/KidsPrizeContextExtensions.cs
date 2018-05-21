@@ -36,8 +36,8 @@ namespace KidsPrize.Repository.Npgsql
 
         public static async Task<Preference> GetPreference(this KidsPrizeContext context, string userId)
         {
-            return await context.Preferences.FirstOrDefaultAsync(p => p.UserId == userId)
-                ?? new Preference(userId, 0);
+            return await context.Preferences.FirstOrDefaultAsync(p => p.UserId == userId) ??
+                new Preference(userId, 0);
         }
     }
 }

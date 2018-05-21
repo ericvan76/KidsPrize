@@ -36,7 +36,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "M",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
             await _childService.CreateChild(_userId, createCommand);
 
@@ -68,7 +68,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "M",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
             await _childService.CreateChild(_userId, createCommand);
 
@@ -92,7 +92,6 @@ namespace KidsPrize.Tests
             Assert.Empty(weeklyScores.Scores.Where(s => s.Value == 1));
         }
 
-
         [Fact]
         public async Task TestSetScoreCaseInsensitive()
         {
@@ -101,7 +100,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "M",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
             await _childService.CreateChild(_userId, createCommand);
 
@@ -133,7 +132,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "M",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
             await _childService.CreateChild(_userId, createCommand);
 

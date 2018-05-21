@@ -12,8 +12,7 @@ namespace KidsPrize.Repository.Npgsql
     {
 
         public KidsPrizeContext(DbContextOptions options) : base(options)
-        {
-        }
+        { }
 
         public DbSet<Child> Children { get; set; }
         public DbSet<Score> Scores { get; set; }

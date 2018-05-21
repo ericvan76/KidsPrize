@@ -40,7 +40,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "Male",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
 
             await _childService.CreateChild(_userId, createCommand);

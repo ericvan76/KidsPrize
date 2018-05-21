@@ -19,7 +19,7 @@ namespace KidsPrize.Repository.Npgsql
 
         public static IApplicationBuilder UseNpgsqlDbContext(this IApplicationBuilder app)
         {
-            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using(var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 scope.ServiceProvider.GetRequiredService<KidsPrizeContext>().Database.Migrate();
             }

@@ -1,13 +1,13 @@
-﻿using Xunit;
-using AutoMapper;
-using System;
+﻿using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using KidsPrize.Repository.Npgsql;
+using AutoMapper;
 using KidsPrize.Abstractions;
-using KidsPrize.Http.Services;
 using KidsPrize.Contracts.Commands;
+using KidsPrize.Http.Services;
+using KidsPrize.Repository.Npgsql;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
 
 namespace KidsPrize.Tests
 {
@@ -36,7 +36,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "Male",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
 
             await _childService.CreateChild(_userId, command);
@@ -59,7 +59,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "M",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
 
             await _childService.CreateChild(_userId, createCommand);
@@ -91,7 +91,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "M",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
 
             await _childService.CreateChild(_userId, createCommand);
@@ -114,7 +114,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "M",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
 
             await _childService.CreateChild(_userId, createCommand);

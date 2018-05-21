@@ -1,15 +1,15 @@
-﻿using Xunit;
-using AutoMapper;
-using System;
-using System.Security.Claims;
+﻿using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using KidsPrize.Repository.Npgsql;
-using KidsPrize.Contracts.Commands;
-using KidsPrize.Contracts;
-using KidsPrize.Http.Services;
+using AutoMapper;
 using KidsPrize.Abstractions;
+using KidsPrize.Contracts;
+using KidsPrize.Contracts.Commands;
+using KidsPrize.Http.Services;
+using KidsPrize.Repository.Npgsql;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
 using E = KidsPrize.Repository.Npgsql.Entities;
 
 namespace KidsPrize.Tests
@@ -39,14 +39,14 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "M",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
             await _childService.CreateChild(_userId, createCommand);
 
             var updateCommand = new UpdateChild()
             {
                 ChildId = createCommand.ChildId,
-                Tasks = new[] { "Task B", "Task C", "Task E" }
+                Tasks = new [] { "Task B", "Task C", "Task E" }
             };
             await _childService.UpdateChild(_userId, updateCommand);
             var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
@@ -70,7 +70,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "M",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
             await _childService.CreateChild(_userId, createCommand);
 
@@ -84,7 +84,7 @@ namespace KidsPrize.Tests
             var updateCommand = new UpdateChild()
             {
                 ChildId = createCommand.ChildId,
-                Tasks = new[] { "Task D", "Task C", "Task F" }
+                Tasks = new [] { "Task D", "Task C", "Task F" }
             };
             await _childService.UpdateChild(_userId, updateCommand);
             var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
@@ -111,7 +111,7 @@ namespace KidsPrize.Tests
                 ChildId = Guid.NewGuid(),
                 Name = "Test-Child-Name",
                 Gender = "M",
-                Tasks = new[] { "Task A", "Task B", "Task C" }
+                Tasks = new [] { "Task A", "Task B", "Task C" }
             };
             await _childService.CreateChild(_userId, createCommand);
 
@@ -146,7 +146,7 @@ namespace KidsPrize.Tests
             var updateCommand = new UpdateChild()
             {
                 ChildId = createCommand.ChildId,
-                Tasks = new[] { "Task D", "Task C", "Task F" }
+                Tasks = new [] { "Task D", "Task C", "Task F" }
             };
             await _childService.UpdateChild(_userId, updateCommand);
             var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
