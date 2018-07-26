@@ -23,13 +23,15 @@ namespace KidsPrize.Http
             var productVersion = FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion;
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
+                // Suppress EF Core, which logs queries at info, to warning
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
                 .Enrich.WithProperty("ProductName", "KidsPrize API")
                 .Enrich.WithProperty("ProductVersion", productVersion)
-                .WriteTo.Console()
-                .WriteTo.File(new CompactJsonFormatter(), "logs/kidsprize.log", rollingInterval : RollingInterval.Day)
+                .Enrich.WithThreadId()
+                .Enrich.WithProcessId()
+                .Enrich.WithProcessName()
+                .Enrich.FromLogContext()
+                .WriteTo.Async(a => a.Console(new RenderedCompactJsonFormatter()), blockWhenFull: true)
                 .CreateLogger();
 
             BuildWebHost(args).Run();
