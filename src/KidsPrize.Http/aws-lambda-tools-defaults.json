@@ -11,5 +11,5 @@
 	"framework": "netcoreapp2.1",
 	"s3-prefix": "KidsPrize/",
 	"template": "serverless.template",
-	"template-parameters": "ShouldCreateBucket=false;BucketName="
+	"template-parameters": ""
 }

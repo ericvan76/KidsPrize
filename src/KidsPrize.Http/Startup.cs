@@ -76,6 +76,14 @@ namespace KidsPrize.Http
                 opts.DescribeAllEnumsAsStrings();
                 opts.MapType<Guid>(() => new Schema() { Type = "string", Format = "uuid" });
                 opts.MapType<DateTime>(() => new Schema() { Type = "string", Format = "date" });
+
+                opts.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
             });
 
             services.AddLogging();
