@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using KidsPrize.Http.Commands;
-using KidsPrize.Http.Models;
-using KidsPrize.Http.Services;
-using KidsPrize.Repository.Npgsql;
+using KidsPrize.Commands;
+using KidsPrize.Models;
+using KidsPrize.Services;
+using KidsPrize.Data;
 using Xunit;
 
 namespace KidsPrize.Tests
@@ -14,7 +13,6 @@ namespace KidsPrize.Tests
     public class RedeemTests
     {
         private readonly KidsPrizeContext _context;
-        private readonly IMapper _mapper;
         private readonly IChildService _childService;
         private readonly IRedeemService _redeemService;
         private readonly IScoreService _scoreService;
@@ -23,10 +21,9 @@ namespace KidsPrize.Tests
         public RedeemTests()
         {
             _context = TestHelper.CreateContext();
-            _mapper = TestHelper.CreateMapper();
-            _childService = new ChildService(_context, _mapper);
-            _scoreService = new ScoreService(_context, _mapper);
-            _redeemService = new RedeemService(_context, _mapper);
+            _childService = new ChildService(_context);
+            _scoreService = new ScoreService(_context);
+            _redeemService = new RedeemService(_context);
             _userId = Guid.NewGuid().ToString();
         }
 

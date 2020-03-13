@@ -1,14 +1,15 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
             "label": "build",
             "command": "dotnet",
-            "type": "shell",
+            "type": "process",
             "args": [
-                "build"
+                "build",
+                "${workspaceFolder}/src/KidsPrize/KidsPrize.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
             ],
             "group": {
                 "kind": "build",
@@ -19,7 +20,7 @@
         {
             "label": "test",
             "command": "dotnet",
-            "type": "shell",
+            "type": "process",
             "args": [
                 "test"
             ],
@@ -32,38 +33,17 @@
         {
             "label": "deploy-serverless",
             "command": "dotnet",
-            "type": "shell",
+            "type": "process",
             "args": [
                 "lambda",
                 "deploy-serverless",
                 "KidsPrize",
                 "--s3-bucket",
-                "2f6bf3f8-bc62-4fea-bf09-d2dd22d3c86b",
-                "--enable-package-optimization",
-                "true"
-            ],
-            "group": "none",
-            "options": {
-                "cwd": "src/KidsPrize.Http"
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "publish-layer",
-            "command": "dotnet",
-            "type": "shell",
-            "args": [
-                "lambda",
-                "publish-layer",
-                "common-core",
-                "--layer-type",
-                "runtime-package-store",
-                "--s3-bucket",
                 "2f6bf3f8-bc62-4fea-bf09-d2dd22d3c86b"
             ],
             "group": "none",
             "options": {
-                "cwd": "src/KidsPrize.Http"
+                "cwd": "src/KidsPrize"
             },
             "problemMatcher": "$msCompile"
         }

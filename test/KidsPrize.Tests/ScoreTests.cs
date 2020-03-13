@@ -1,10 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using KidsPrize.Http.Commands;
-using KidsPrize.Http.Services;
-using KidsPrize.Repository.Npgsql;
+using KidsPrize.Commands;
+using KidsPrize.Services;
+using KidsPrize.Data;
 using Xunit;
 
 namespace KidsPrize.Tests
@@ -12,7 +11,6 @@ namespace KidsPrize.Tests
     public class ScoreTests
     {
         private readonly KidsPrizeContext _context;
-        private readonly IMapper _mapper;
         private readonly IChildService _childService;
         private readonly IScoreService _scoreService;
         private readonly string _userId;
@@ -20,9 +18,8 @@ namespace KidsPrize.Tests
         public ScoreTests()
         {
             _context = TestHelper.CreateContext();
-            _mapper = TestHelper.CreateMapper();
-            _childService = new ChildService(_context, _mapper);
-            _scoreService = new ScoreService(_context, _mapper);
+            _childService = new ChildService(_context);
+            _scoreService = new ScoreService(_context);
             _userId = Guid.NewGuid().ToString();
         }
 

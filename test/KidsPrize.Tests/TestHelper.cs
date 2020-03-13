@@ -1,6 +1,4 @@
-using AutoMapper;
-using KidsPrize.Http;
-using KidsPrize.Repository.Npgsql;
+using KidsPrize.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace KidsPrize.Tests
@@ -12,11 +10,6 @@ namespace KidsPrize.Tests
             var opts = new DbContextOptionsBuilder<KidsPrizeContext>();
             opts.UseInMemoryDatabase("test");
             return new KidsPrizeContext(opts.Options);
-        }
-
-        public static IMapper CreateMapper()
-        {
-            return new MapperConfiguration(c => c.AddProfile(new MappingProfile())).CreateMapper();
         }
     }
 }
