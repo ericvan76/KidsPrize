@@ -1,25 +1,50 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "0.1.0",
-    "command": "dotnet",
-    "isShellCommand": true,
-    "args": [],
+    "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "build",
-            "args": [],
-            "isBuildCommand": true,
-            "showOutput": "silent",
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/KidsPrize/KidsPrize.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "problemMatcher": "$msCompile"
         },
         {
-            "taskName": "test",
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
             "args": [
-                "KidsPrize.Tests/KidsPrize.Tests.csproj"
+                "test"
             ],
-            "isBuildCommand": false,
-            "showOutput": "silent",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "deploy-serverless",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "lambda",
+                "deploy-serverless",
+                "KidsPrize",
+                "--s3-bucket",
+                "2f6bf3f8-bc62-4fea-bf09-d2dd22d3c86b"
+            ],
+            "group": "none",
+            "options": {
+                "cwd": "src/KidsPrize"
+            },
             "problemMatcher": "$msCompile"
         }
     ]
