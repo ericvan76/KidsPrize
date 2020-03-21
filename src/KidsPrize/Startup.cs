@@ -67,9 +67,9 @@ namespace KidsPrize
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "KidsPrize API V1"));
 
-            //app.UseNpgsqlDbContext();
+            app.UseNpgsqlDbContext();
 
-            //  app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseAuthentication();

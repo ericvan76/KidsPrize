@@ -11,7 +11,7 @@
 	"s3-prefix": "KidsPrize/",
 	"template": "serverless.template",
 	"template-parameters": "",
-	"msbuild-parameters": "--self-contained true /p:AssemblyName=bootstrap /p:PublishReadyToRun /p:PublishReadyToRunShowWarnings",
+	"msbuild-parameters": "--self-contained true /p:AssemblyName=bootstrap /p:PublishReadyToRun=true",
 	"framework": "netcoreapp3.1",
 	"s3-bucket": "",
 	"stack-name": ""
