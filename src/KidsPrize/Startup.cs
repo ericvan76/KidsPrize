@@ -51,10 +51,10 @@ namespace KidsPrize
             services.AddScoped<IRedeemService, RedeemService>();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "KidsPrize API", Version = "v1" });
-            });
+            // services.AddSwaggerGen(c =>
+            // {
+            //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "KidsPrize API", Version = "v1" });
+            // });
         }
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
@@ -64,14 +64,13 @@ namespace KidsPrize
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "KidsPrize API V1"));
+            // app.UseSwagger();
+            // app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "KidsPrize API V1"));
 
-            app.UseNpgsqlDbContext();
+            // app.UseNpgsqlDbContext();
+            // app.UseHttpsRedirection();
 
-            app.UseHttpsRedirection();
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 
