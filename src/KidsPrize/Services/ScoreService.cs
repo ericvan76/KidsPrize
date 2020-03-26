@@ -32,17 +32,20 @@ namespace KidsPrize.Services
 
             // todo: improve this query
             var child = await this._context.GetChildOrThrow(userId, childId);
-            var scores = await this._context.Scores.Where(s => s.Child.Id == childId && s.Date >= dateFrom && s.Date < rewindFrom).ToListAsync();
-            var taskGroups = (await this._context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == childId && tg.EffectiveDate > dateFrom && tg.EffectiveDate < rewindFrom).ToListAsync())
-                .Union(await this._context.TaskGroups.Include(tg => tg.Tasks).Where(tg => tg.Child.Id == childId && tg.EffectiveDate <= dateFrom).OrderByDescending(tg => tg.EffectiveDate).Take(1).ToListAsync())
-                .ToList();
+            var scores = await this._context.Scores.AsNoTracking()
+                .Where(s => s.Child.Id == childId && s.Date >= dateFrom && s.Date < rewindFrom)
+                .ToListAsync();
+            var taskGroups = await this._context.TaskGroups.AsNoTracking().Include(tg => tg.Tasks)
+                .Where(tg => tg.Child.Id == childId && tg.EffectiveDate < rewindFrom)
+                .OrderByDescending(tg => tg.EffectiveDate)
+                .Take(numOfWeeks + 1).ToListAsync();
 
             var weeklyScoresList = new List<WeeklyScores>();
             for (int i = 1; i <= numOfWeeks; i++)
             {
                 var weekStart = rewindFrom.AddDays(-7 * i);
                 var weekEnd = weekStart.AddDays(7);
-                var taskGroup = taskGroups.OrderByDescending(tg => tg.EffectiveDate).FirstOrDefault(tg => tg.EffectiveDate <= weekStart);
+                var taskGroup = taskGroups.FirstOrDefault(tg => tg.EffectiveDate <= weekStart);
                 if (taskGroup != null)
                 {
                     weeklyScoresList.Add(new WeeklyScores()

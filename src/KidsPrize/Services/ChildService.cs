@@ -65,7 +65,7 @@ namespace KidsPrize.Services
         public async Task<IEnumerable<Child>> GetChildren(string userId)
         {
             var result = new List<Child>();
-            var children = await _context.Children.Where(i => i.UserId == userId).ToListAsync();
+            var children = await _context.Children.AsNoTracking().Where(i => i.UserId == userId).ToListAsync();
             children.ForEach(i => result.Add(MapChild(i)));
             return result;
         }
