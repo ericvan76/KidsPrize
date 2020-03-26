@@ -43,7 +43,7 @@
             ],
             "group": "none",
             "options": {
-                "cwd": "src/KidsPrize"
+                "cwd": "/home/ec2-user/KidsPrize/src/KidsPrize"
             },
             "problemMatcher": "$msCompile"
         }

@@ -7,10 +7,6 @@
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="4.1.0" />
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.1.0" />
-    <PackageReference Include="GitVersionTask" Version="5.2.4">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
