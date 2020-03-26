@@ -38,7 +38,7 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            await _childService.CreateChild(_userId, createCommand);
+            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
 
             for (int i = 0; i < 100; i++)
             {

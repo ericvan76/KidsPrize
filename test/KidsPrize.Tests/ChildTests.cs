@@ -35,8 +35,8 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            await _childService.CreateChild(_userId, command);
-            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, command.ChildId);
+            await _childService.CreateChild(_userId, command, DateTime.Today);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, command.ChildId, DateTime.Today);
 
             Assert.Equal(command.Name, actual.Child.Name);
             Assert.Equal(command.Gender, actual.Child.Gender);
@@ -58,7 +58,7 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            await _childService.CreateChild(_userId, createCommand);
+            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
 
             var updateCommand = new UpdateChildCommand()
             {
@@ -67,8 +67,8 @@ namespace KidsPrize.Tests
                 Gender = "F"
             };
 
-            await _childService.UpdateChild(_userId, updateCommand);
-            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
+            await _childService.UpdateChild(_userId, updateCommand, DateTime.Today);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId, DateTime.Today);
 
             Assert.Equal(updateCommand.Name, actual.Child.Name);
             Assert.Equal(updateCommand.Gender, actual.Child.Gender);
@@ -90,7 +90,7 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            await _childService.CreateChild(_userId, createCommand);
+            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
 
             await _childService.DeleteChild(_userId, createCommand.ChildId);
 
@@ -113,7 +113,7 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            await _childService.CreateChild(_userId, createCommand);
+            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
 
             var setScoreCommand = new SetScoreCommand()
             {

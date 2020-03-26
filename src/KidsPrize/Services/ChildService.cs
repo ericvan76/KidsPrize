@@ -14,8 +14,8 @@ namespace KidsPrize.Services
     {
         Task<Child> GetChild(string userId, Guid childId);
         Task<IEnumerable<Child>> GetChildren(string userId);
-        Task<Child> CreateChild(string userId, CreateChildCommand command);
-        Task<Child> UpdateChild(string userId, UpdateChildCommand command);
+        Task<Child> CreateChild(string userId, CreateChildCommand command, DateTime today);
+        Task<Child> UpdateChild(string userId, UpdateChildCommand command, DateTime today);
         Task DeleteChild(string userId, Guid childId);
     }
 
@@ -27,14 +27,13 @@ namespace KidsPrize.Services
             this._context = context;
         }
 
-        public async Task<Child> CreateChild(string userId, CreateChildCommand command)
+        public async Task<Child> CreateChild(string userId, CreateChildCommand command, DateTime today)
         {
             var child = new E.Child(command.ChildId, userId, command.Name, command.Gender);
-            var preference = await this._context.GetPreference(userId);
 
             var taskGroup = new E.TaskGroup(
                 child,
-                preference.Today().StartOfWeek(),
+                today.StartOfWeek(),
                 command.Tasks);
 
             this._context.Children.Add(child);
@@ -71,16 +70,14 @@ namespace KidsPrize.Services
             return result;
         }
 
-        public async Task<Child> UpdateChild(string userId, UpdateChildCommand command)
+        public async Task<Child> UpdateChild(string userId, UpdateChildCommand command, DateTime today)
         {
             var child = await this._context.GetChildOrThrow(userId, command.ChildId);
             child.Update(command.Name, command.Gender, null);
 
-            var preference = await this._context.GetPreference(userId);
-
             if (command.Tasks != null && command.Tasks.Length > 0)
             {
-                await UpdateTasks(child, command.Tasks, preference.Today().StartOfWeek());
+                await UpdateTasks(child, command.Tasks, today.StartOfWeek());
             }
 
             await _context.SaveChangesAsync();

@@ -34,24 +34,24 @@ namespace KidsPrize.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(ScoreResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CreateChild([FromBody] CreateChildCommand command)
+        public async Task<IActionResult> CreateChild([FromQuery] DateTime today, [FromBody] CreateChildCommand command)
         {
-            await this._childService.CreateChild(User.UserId(), command);
-            var result = await this._scoreService.GetScoresOfCurrentWeek(User.UserId(), command.ChildId);
+            await this._childService.CreateChild(User.UserId(), command, today);
+            var result = await this._scoreService.GetScoresOfCurrentWeek(User.UserId(), command.ChildId, today);
             return Ok(result);
         }
 
         [HttpPut("{childId:guid}")]
         [ProducesResponseType(typeof(ScoreResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> UpdateChild([FromRoute] Guid childId, [FromBody] UpdateChildCommand command)
+        public async Task<IActionResult> UpdateChild([FromRoute] Guid childId, [FromQuery] DateTime today, [FromBody] UpdateChildCommand command)
         {
             if (childId != command.ChildId)
             {
                 ModelState.AddModelError(nameof(childId), "Unmatched childUid in route and command.");
                 return BadRequest(ModelState);
             }
-            await this._childService.UpdateChild(User.UserId(), command);
-            var result = await this._scoreService.GetScoresOfCurrentWeek(User.UserId(), command.ChildId);
+            await this._childService.UpdateChild(User.UserId(), command, today);
+            var result = await this._scoreService.GetScoresOfCurrentWeek(User.UserId(), command.ChildId, today);
             return Ok(result);
         }
 

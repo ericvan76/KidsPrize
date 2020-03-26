@@ -13,7 +13,7 @@ namespace KidsPrize.Services
     public interface IScoreService
     {
         Task<ScoreResult> GetScores(string userId, Guid childId, DateTime rewindFrom, int numOfWeeks);
-        Task<ScoreResult> GetScoresOfCurrentWeek(string userId, Guid childId);
+        Task<ScoreResult> GetScoresOfCurrentWeek(string userId, Guid childId, DateTime today);
         Task SetScore(string userId, SetScoreCommand command);
     }
 
@@ -73,10 +73,9 @@ namespace KidsPrize.Services
             };
         }
 
-        public async Task<ScoreResult> GetScoresOfCurrentWeek(string userId, Guid childId)
+        public async Task<ScoreResult> GetScoresOfCurrentWeek(string userId, Guid childId, DateTime today)
         {
-            var preference = await this._context.GetPreference(userId);
-            return await this.GetScores(userId, childId, preference.Today().StartOfNextWeek(), 1);
+            return await this.GetScores(userId, childId, today.StartOfNextWeek(), 1);
         }
 
         public async Task SetScore(string userId, SetScoreCommand command)

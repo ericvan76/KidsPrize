@@ -33,11 +33,5 @@ namespace KidsPrize.Services
                 .OrderByDescending(tg => tg.EffectiveDate)
                 .FirstOrDefaultAsync();
         }
-
-        public static async Task<Preference> GetPreference(this KidsPrizeContext context, string userId)
-        {
-            return await context.Preferences.FirstOrDefaultAsync(p => p.UserId == userId) ??
-                new Preference(userId, 0);
-        }
     }
 }

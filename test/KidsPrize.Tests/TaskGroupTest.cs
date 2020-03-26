@@ -35,15 +35,15 @@ namespace KidsPrize.Tests
                 Gender = "M",
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            await _childService.CreateChild(_userId, createCommand);
+            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
 
             var updateCommand = new UpdateChildCommand()
             {
                 ChildId = createCommand.ChildId,
                 Tasks = new[] { "Task B", "Task C", "Task E" }
             };
-            await _childService.UpdateChild(_userId, updateCommand);
-            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
+            await _childService.UpdateChild(_userId, updateCommand, DateTime.Today);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId, DateTime.Today);
 
             Assert.Equal(createCommand.Name, actual.Child.Name);
             Assert.Equal(createCommand.Gender, actual.Child.Gender);
@@ -66,7 +66,7 @@ namespace KidsPrize.Tests
                 Gender = "M",
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            await _childService.CreateChild(_userId, createCommand);
+            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
 
             // mock taskGroup to previous week
             var child = await this._context.Children.FirstAsync(c => c.Id == createCommand.ChildId);
@@ -80,8 +80,8 @@ namespace KidsPrize.Tests
                 ChildId = createCommand.ChildId,
                 Tasks = new[] { "Task D", "Task C", "Task F" }
             };
-            await _childService.UpdateChild(_userId, updateCommand);
-            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
+            await _childService.UpdateChild(_userId, updateCommand, DateTime.Today);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId, DateTime.Today);
 
             Assert.Equal(createCommand.Name, actual.Child.Name);
             Assert.Equal(createCommand.Gender, actual.Child.Gender);
@@ -107,7 +107,7 @@ namespace KidsPrize.Tests
                 Gender = "M",
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
-            await _childService.CreateChild(_userId, createCommand);
+            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
 
             // mock taskGroup to previous week
             var child = await this._context.Children.FirstAsync(c => c.Id == createCommand.ChildId);
@@ -142,8 +142,8 @@ namespace KidsPrize.Tests
                 ChildId = createCommand.ChildId,
                 Tasks = new[] { "Task D", "Task C", "Task F" }
             };
-            await _childService.UpdateChild(_userId, updateCommand);
-            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId);
+            await _childService.UpdateChild(_userId, updateCommand, DateTime.Today);
+            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId, DateTime.Today);
 
             Assert.Equal(createCommand.Name, actual.Child.Name);
             Assert.Equal(createCommand.Gender, actual.Child.Gender);
