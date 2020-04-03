@@ -20,9 +20,8 @@
     "AspNetCoreFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-	"Handler": "not-required",
-      	"Runtime": "provided",
-
+        "Handler": "KidsPrize::KidsPrize.LambdaEntryPoint::FunctionHandlerAsync",
+        "Runtime": "dotnetcore3.1",
         "Layers": [
         ],
         "CodeUri": "",
