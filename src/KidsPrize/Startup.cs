@@ -3,11 +3,9 @@ using KidsPrize.Data;
 using KidsPrize.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 namespace KidsPrize
 {
@@ -59,15 +57,15 @@ namespace KidsPrize
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            // if (env.IsDevelopment())
+            // {
+            //     app.UseDeveloperExceptionPage();
+            // }
 
             // app.UseSwagger();
             // app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "KidsPrize API V1"));
 
-            app.UseNpgsqlDbContext();
+            // app.UseNpgsqlDbContext();
             // app.UseHttpsRedirection();
 
             app.UseRouting();
