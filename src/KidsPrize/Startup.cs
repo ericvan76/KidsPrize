@@ -65,13 +65,11 @@ namespace KidsPrize
             // app.UseSwagger();
             // app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "KidsPrize API V1"));
 
-            // app.UseNpgsqlDbContext();
-            // app.UseHttpsRedirection();
-
+            //app.UseHttpsRedirection();
+            app.UseNpgsqlDbContext();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
