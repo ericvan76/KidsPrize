@@ -29,11 +29,6 @@ namespace KidsPrize
                 var authOptions = Configuration.GetSection("JwtBearerOptions");
                 opt.Authority = authOptions.GetValue<string>("Authority");
                 opt.Audience = authOptions.GetValue<string>("Audience");
-                opt.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
             });
 
             // Add Authorization
