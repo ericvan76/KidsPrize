@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace KidsPrize
 {
@@ -28,8 +29,11 @@ namespace KidsPrize
                 var authOptions = Configuration.GetSection("JwtBearerOptions");
                 opt.Authority = authOptions.GetValue<string>("Authority");
                 opt.Audience = authOptions.GetValue<string>("Audience");
-                opt.SecurityTokenValidators.Clear();
-                opt.SecurityTokenValidators.Add(new OverridedJwtSecurityTokenHandler());
+                opt.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
             });
 
             // Add Authorization
@@ -38,6 +42,8 @@ namespace KidsPrize
                 opts.DefaultPolicy = new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(new[] { "Bearer" })
                     .RequireAuthenticatedUser()
+                    .RequireClaim("email")
+                    .RequireClaim("email_verified", new[] { "true", "True", "1" })
                     .Build();
             });
 
