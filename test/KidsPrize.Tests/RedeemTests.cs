@@ -13,17 +13,13 @@ namespace KidsPrize.Tests
     public class RedeemTests
     {
         private readonly KidsPrizeContext _context;
-        private readonly IChildService _childService;
-        private readonly IRedeemService _redeemService;
-        private readonly IScoreService _scoreService;
+        private readonly IChildService _service;
         private readonly string _userId;
 
         public RedeemTests()
         {
             _context = TestHelper.CreateContext();
-            _childService = new ChildService(_context);
-            _scoreService = new ScoreService(_context);
-            _redeemService = new RedeemService(_context);
+            _service = new ChildService(_context);
             _userId = Guid.NewGuid().ToString();
         }
 
@@ -38,7 +34,7 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
+            await _service.CreateChild(_userId, createCommand, DateTime.Today);
 
             for (int i = 0; i < 100; i++)
             {
@@ -49,10 +45,10 @@ namespace KidsPrize.Tests
                     Task = "Task A",
                     Value = 1
                 };
-                await _scoreService.SetScore(_userId, setScoreCommand);
+                await _service.SetScore(_userId, setScoreCommand);
             }
 
-            var actual = await _childService.GetChild(_userId, createCommand.ChildId);
+            var actual = await _service.GetChild(_userId, createCommand.ChildId);
 
             Assert.Equal(100, actual.TotalScore);
 
@@ -65,10 +61,10 @@ namespace KidsPrize.Tests
                     Description = $"Icecream-{i}",
                     Value = 2
                 };
-                var result = await _redeemService.CreateRedeem(_userId, createRedeem);
+                var result = await _service.CreateRedeem(_userId, createRedeem);
                 expectRedeems.Add(result);
 
-                actual = await _childService.GetChild(_userId, createCommand.ChildId);
+                actual = await _service.GetChild(_userId, createCommand.ChildId);
 
                 Assert.Equal(100 - i * 2, actual.TotalScore);
             }
@@ -76,7 +72,7 @@ namespace KidsPrize.Tests
             var actualRedeems = new List<Redeem>();
             for (int i = 0; i < 99; i++)
             {
-                var redeems = await _redeemService.GetRedeems(_userId, createCommand.ChildId, 5, i * 5);
+                var redeems = await _service.GetRedeems(_userId, createCommand.ChildId, 5, i * 5);
                 if (redeems.Count() == 0)
                 {
                     break;

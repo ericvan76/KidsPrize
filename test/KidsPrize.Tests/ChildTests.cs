@@ -12,15 +12,13 @@ namespace KidsPrize.Tests
     public class ChildTests
     {
         private readonly KidsPrizeContext _context;
-        private readonly IChildService _childService;
-        private readonly IScoreService _scoreService;
+        private readonly IChildService _service;
         private readonly string _userId;
 
         public ChildTests()
         {
             _context = TestHelper.CreateContext();
-            _childService = new ChildService(_context);
-            _scoreService = new ScoreService(_context);
+            _service = new ChildService(_context);
             _userId = Guid.NewGuid().ToString();
         }
 
@@ -35,8 +33,8 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            await _childService.CreateChild(_userId, command, DateTime.Today);
-            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, command.ChildId, DateTime.Today);
+            await _service.CreateChild(_userId, command, DateTime.Today);
+            var actual = await _service.GetScoresOfCurrentWeek(_userId, command.ChildId, DateTime.Today);
 
             Assert.Equal(command.Name, actual.Child.Name);
             Assert.Equal(command.Gender, actual.Child.Gender);
@@ -58,7 +56,7 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
+            await _service.CreateChild(_userId, createCommand, DateTime.Today);
 
             var updateCommand = new UpdateChildCommand()
             {
@@ -67,8 +65,8 @@ namespace KidsPrize.Tests
                 Gender = "F"
             };
 
-            await _childService.UpdateChild(_userId, updateCommand, DateTime.Today);
-            var actual = await _scoreService.GetScoresOfCurrentWeek(_userId, createCommand.ChildId, DateTime.Today);
+            await _service.UpdateChild(_userId, updateCommand, DateTime.Today);
+            var actual = await _service.GetScoresOfCurrentWeek(_userId, createCommand.ChildId, DateTime.Today);
 
             Assert.Equal(updateCommand.Name, actual.Child.Name);
             Assert.Equal(updateCommand.Gender, actual.Child.Gender);
@@ -90,9 +88,9 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
+            await _service.CreateChild(_userId, createCommand, DateTime.Today);
 
-            await _childService.DeleteChild(_userId, createCommand.ChildId);
+            await _service.DeleteChild(_userId, createCommand.ChildId);
 
             var child = await _context.Children.FirstOrDefaultAsync(c => c.Id == createCommand.ChildId);
             var scores = await _context.Scores.Where(c => c.Child.Id == createCommand.ChildId).ToListAsync();
@@ -113,7 +111,7 @@ namespace KidsPrize.Tests
                 Tasks = new[] { "Task A", "Task B", "Task C" }
             };
 
-            await _childService.CreateChild(_userId, createCommand, DateTime.Today);
+            await _service.CreateChild(_userId, createCommand, DateTime.Today);
 
             var setScoreCommand = new SetScoreCommand()
             {
@@ -123,9 +121,9 @@ namespace KidsPrize.Tests
                 Value = 1
             };
 
-            await _scoreService.SetScore(_userId, setScoreCommand);
+            await _service.SetScore(_userId, setScoreCommand);
 
-            await _childService.DeleteChild(_userId, createCommand.ChildId);
+            await _service.DeleteChild(_userId, createCommand.ChildId);
 
             var child = await _context.Children.FirstOrDefaultAsync(c => c.Id == createCommand.ChildId);
             var scores = await _context.Scores.Where(c => c.Child.Id == createCommand.ChildId).ToListAsync();

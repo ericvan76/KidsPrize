@@ -15,20 +15,18 @@ namespace KidsPrize.Controllers
     [Route("[controller]")]
     public class ChildrenController : ControllerBase
     {
-        private readonly IChildService _childService;
-        private readonly IScoreService _scoreService;
+        private readonly IChildService _service;
 
-        public ChildrenController(IChildService childService, IScoreService scoreService)
+        public ChildrenController(IChildService service)
         {
-            this._childService = childService;
-            this._scoreService = scoreService;
+            this._service = service;
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Child>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetChildren()
         {
-            var result = await this._childService.GetChildren(User.UserId());
+            var result = await this._service.GetChildren(User.UserId());
             return Ok(result);
         }
 
@@ -36,8 +34,8 @@ namespace KidsPrize.Controllers
         [ProducesResponseType(typeof(ScoreResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateChild([FromQuery] DateTime today, [FromBody] CreateChildCommand command)
         {
-            await this._childService.CreateChild(User.UserId(), command, today);
-            var result = await this._scoreService.GetScoresOfCurrentWeek(User.UserId(), command.ChildId, today);
+            await this._service.CreateChild(User.UserId(), command, today);
+            var result = await this._service.GetScoresOfCurrentWeek(User.UserId(), command.ChildId, today);
             return Ok(result);
         }
 
@@ -50,8 +48,8 @@ namespace KidsPrize.Controllers
                 ModelState.AddModelError(nameof(childId), "Unmatched childUid in route and command.");
                 return BadRequest(ModelState);
             }
-            await this._childService.UpdateChild(User.UserId(), command, today);
-            var result = await this._scoreService.GetScoresOfCurrentWeek(User.UserId(), command.ChildId, today);
+            await this._service.UpdateChild(User.UserId(), command, today);
+            var result = await this._service.GetScoresOfCurrentWeek(User.UserId(), command.ChildId, today);
             return Ok(result);
         }
 
@@ -59,7 +57,7 @@ namespace KidsPrize.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteChild([FromRoute] Guid childId)
         {
-            await this._childService.DeleteChild(User.UserId(), childId);
+            await this._service.DeleteChild(User.UserId(), childId);
             return Ok();
         }
 

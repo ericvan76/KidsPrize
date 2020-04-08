@@ -15,11 +15,11 @@ namespace KidsPrize.Controllers
     [Route("Children/{childId:guid}/[controller]")]
     public class RedeemsController : ControllerBase
     {
-        private readonly IRedeemService _redeemService;
+        private readonly IChildService _service;
 
-        public RedeemsController(IRedeemService redeemService)
+        public RedeemsController(IChildService service)
         {
-            _redeemService = redeemService;
+            _service = service;
         }
 
         [HttpPost]
@@ -31,7 +31,7 @@ namespace KidsPrize.Controllers
                 ModelState.AddModelError(nameof(childId), "Unmatched childUid in route and command.");
                 return BadRequest(ModelState);
             }
-            var result = await this._redeemService.CreateRedeem(User.UserId(), command);
+            var result = await this._service.CreateRedeem(User.UserId(), command);
             return Ok(result);
         }
 
@@ -39,7 +39,7 @@ namespace KidsPrize.Controllers
         [ProducesResponseType(typeof(IEnumerable<Redeem>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetRedeems([FromRoute] Guid childId, [FromQuery] int limit = 20, [FromQuery] int offset = 0)
         {
-            var result = await this._redeemService.GetRedeems(this.User.UserId(), childId, limit, offset);
+            var result = await this._service.GetRedeems(this.User.UserId(), childId, limit, offset);
             return Ok(result);
         }
     }

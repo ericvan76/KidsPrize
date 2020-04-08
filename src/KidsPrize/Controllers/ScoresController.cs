@@ -14,11 +14,11 @@ namespace KidsPrize.Controllers
     [Route("Children/{childId:guid}/[controller]")]
     public class ScoresController : ControllerBase
     {
-        private readonly IScoreService _scoreService;
+        private readonly IChildService _service;
 
-        public ScoresController(IScoreService scoreService)
+        public ScoresController(IChildService service)
         {
-            this._scoreService = scoreService;
+            this._service = service;
         }
 
         [HttpPut]
@@ -30,7 +30,7 @@ namespace KidsPrize.Controllers
                 ModelState.AddModelError(nameof(childId), "Unmatched childUid in route and command.");
                 return BadRequest(ModelState);
             }
-            await this._scoreService.SetScore(User.UserId(), command);
+            await this._service.SetScore(User.UserId(), command);
             return Ok();
         }
 
@@ -54,7 +54,7 @@ namespace KidsPrize.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = await this._scoreService.GetScores(this.User.UserId(), childId, rewindFrom, numOfWeeks);
+            var result = await this._service.GetScores(this.User.UserId(), childId, rewindFrom, numOfWeeks);
             return Ok(result);
         }
     }
